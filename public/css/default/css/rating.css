@@ -1,0 +1,22 @@
+.rating { float:left; margin-left:18px; }
+.ratingAcent { float:left; width:100%; }
+.ratingAcent .ratingblock { float:none; }
+.ratingblock { display:block; float:left; position:relative; z-index:0; padding-top: 4px; width:70px; }
+.unit-rating { list-style:none; margin: 0px; padding:0px; height: 15px; position: relative; background: url(../images/starrating.png) top left repeat-x; }
+.unit-rating li { /* text-indent: -90000px;*/ padding:0px; margin:0px; /*\*/ float: left;/* */ }
+.unit-rating li a { outline: none; display:block; width:12px; height: 12px; text-decoration: none; /*text-indent: -9000px;*/ z-index: 18; position: absolute; padding: 0px; }
+.unit-rating li a:hover { background: url(../images/starrating.png) left center; z-index: 2; left: 0px; }
+.unit-rating a.r1-unit { left: 0px; }
+.unit-rating a.r1-unit:hover { width:14px; }
+.unit-rating a.r2-unit { left:17px; }
+.unit-rating a.r2-unit:hover { width: 30px; }
+.unit-rating a.r3-unit { left: 32px; }
+.unit-rating a.r3-unit:hover { width: 44px; }
+.unit-rating a.r4-unit { left: 47px; }
+.unit-rating a.r4-unit:hover { width: 58px; }
+.unit-rating a.r5-unit { left: 61px; }
+.unit-rating a.r5-unit:hover { width: 73px; }
+.unit-rating li.current-rating { background: url(../images/starrating.png) left bottom; position: absolute; height: 12px; display: block; left:0px; }
+.ratingblock a { height:13px !important; }
+span.comments { float:right; padding:4px 16px 0 0; }
+span.count { font-family:Calibri, Arial; margin-left: 4px; line-height: 15px; font-size: 12px; }

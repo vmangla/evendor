@@ -1,0 +1,4 @@
+function datePicker()
+{
+	return false;
+}

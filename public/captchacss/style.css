@@ -1,0 +1,42 @@
+@import url(http://fonts.googleapis.com/css?family=Fauna+One|Muli);
+#mainform{
+    width:960px;
+    margin:20px auto;
+    padding-top:20px;
+    font-family: 'Fauna One', serif;
+}
+
+#mainform h2{
+    width:100%; 
+    float:left; 
+    text-align:center;
+    margin-top:35px;
+}
+
+.innerdiv{
+    width:65%; 
+    float:left;
+}
+
+
+
+#myForm div{
+    color:red; 
+    font-size:14px;
+}
+ 
+#imgdiv{
+width:160px;	
+float:left;
+margin-left:20px;
+}
+#reload{
+float:right; 
+margin-right:40px; 
+}
+/* CSS for the right side advertizement*/
+#formget{
+    float:right;
+    width:30%;
+    margin-top:30px;
+}

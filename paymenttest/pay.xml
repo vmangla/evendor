@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<TKKPG>
+		<Request>
+			<Operation>CreateOrder</Operation>
+			<Language>EN</Language>
+			<Order>
+				<Merchant>EVENDOR</Merchant>
+				<Amount>5000</Amount>
+				<Currency>566</Currency>
+				<Description>Payment for test</Description>
+				<ApproveURL>http://miprojects.com.php53-16.ord1-1.websitetestlink.com/projects/paymenttest/index.php</ApproveURL>
+				<CancelURL>http://miprojects.com.php53-16.ord1-1.websitetestlink.com/projects/paymenttest/index.php</CancelURL>
+				<DeclineURL>http://miprojects.com.php53-16.ord1-1.websitetestlink.com/projects/paymenttest/index.php</DeclineURL>
+				<AddParams>
+					<email>mohan.pal@magnoninternational.com</email>
+					<phone>9811677543</phone>
+				</AddParams>
+			</Order>
+		</Request>
+	</TKKPG>
