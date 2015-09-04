@@ -1,0 +1,452 @@
+<?php
+if(isset($this->storePublicationDetail) && !empty($this->storePublicationDetail) && count($this->storePublicationDetail)>0)
+{
+$modelAuthor = new Publisher_Model_DbTable_Publishers();
+$modelLanguage = new Admin_Model_DbTable_Languages();
+$modelImage = new Publisher_Model_DbTable_BookImages();
+$modelStore = new Admin_Model_DbTable_Countries();
+
+$authorInfo = $modelAuthor->getInfoByPublisherId($this->storePublicationDetail[0]['author_id']);
+$imageInfo = $modelImage->getImageInfoByProductId($this->storePublicationDetail[0]['product_id']);
+$langDetail=$modelLanguage->fetchRow('id="'.$this->storePublicationDetail[0]['language_id'].'"');
+$storeDetail=$modelStore->fetchRow('id="'.$this->storePublicationDetail[0]['country_id'].'"');
+
+$getBrandInfo=$this->modelBooks->getBrandInfo($this->storePublicationDetail[0]['title']);
+if(!empty($getBrandInfo) && is_numeric($this->storePublicationDetail[0]['title']))
+{
+	$titleBrand=$getBrandInfo['brand'];
+}else
+{
+	$titleBrand=$this->storePublicationDetail[0]['title'];
+}
+
+if(!empty($this->storePublicationDetail[0]['parent_brand_id']))
+{
+$productInfo=$this->modelBooks->fetchRow('id="'.$this->storePublicationDetail[0]['parent_brand_id'].'"');
+$getParentBrandInfo=$this->modelBooks->getBrandInfo($productInfo->title);
+	if(!empty($getParentBrandInfo))
+	{
+		$titleBrand=$titleBrand.' ('.$getParentBrandInfo['brand'].')';
+	}
+//$all=getPublicationIdsByCategoryName();	
+}
+?>
+<!--left sidebar -->
+<aside class="left_listing">
+	<?php
+	if(is_file(USER_UPLOAD_DIR.$imageInfo['image_name']))
+	{
+	?>
+		<img src="<?php echo $this->serverUrl().$this->baseUrl()."/".USER_UPLOAD_DIR.$imageInfo['image_name'];?>" alt="<?php echo $titleBrand;?>">
+	<?php
+	}
+	else
+	{
+	?>
+		<img src="<?php echo $this->serverUrl().$this->baseUrl()."/public/css/default/images/big_noimage.jpg";?>" alt="<?php echo $titleBrand;?>">
+	<?php	
+	}
+	?>	
+</aside>
+<!--left sidebar -->
+
+<!--Right sidebar -->
+<aside class="right_listing"> 
+	<div class="product_detail">
+		<?php
+		/*echo"<pre>";
+		print_r($this->storePublicationDetail);
+		echo"</pre>";
+		*/
+		?>
+		<h3><?php echo $titleBrand; //echo $this->storePublicationDetail[0]['title'];?></h3>
+		<span>by <em><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></em></span>
+		<p>Lorem Ipsum is simply dummy magazine.</br>
+		<img alt=""  src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/social_icon.jpg';?>">
+		</p>
+		
+		<p><?php echo $this->storePublicationDetail[0]['description'];?></p>
+		
+		<div class="magazine_avialbel">
+			<p>This magazine is available for:</p>
+			<img  alt=""  src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/anroid_img.jpg';?>"> <img  alt=""  src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/ipad_img.jpg';?>">
+			<p>
+				<div class="row">
+					<label>Language</label>
+					<span>: <?php echo $langDetail['language_name'];?></span>
+				</div>
+				
+				<div class="row">
+					<label>Country</label>
+					<span>: <?php echo $storeDetail['country'];?></span>
+				</div>
+				
+				<div class="row">
+					<label>Publisher</label>
+					<span>: <?php echo $this->storePublicationDetail[0]['publisher'];?></span>
+				</div>
+			
+			</p>
+		</div>
+	
+	
+	</div>
+
+</aside>
+
+
+<!--Right sidebar -->
+
+
+<aside class="left_panel">
+		<ul class="tabing">
+			<?php
+			if(!empty($this->backIssuesList) && count($this->backIssuesList)>0)
+			{
+			?>
+				<li id="link_backissues" class="active"><a href="javascript:void(0);">Back Issues</a> <Span>&nbsp;</span></li>
+			<?php
+			}
+			?>
+			<li id="link_publication" <?php if(empty($this->backIssuesList)){?>class="active"<?php } ?>><a href="javascript:void(0);">Publication Detail</a> <Span>&nbsp;</span></li>
+			<li id="link_evendor"><a href="javascript:void(0);">About eVendor</a> <Span>&nbsp;</span></li>
+			<li id="link_review"><a href="javascript:void(0);">Book Reviews</a> <Span>&nbsp;</span></li>
+		</ul>
+		
+		<!-- //Tab 1 -->
+		<?php
+		if(!empty($this->backIssuesList) && count($this->backIssuesList)>0)
+		{
+		?>
+		<div id="conetnt2_backissues" class="tabContentsarea">
+		<div class="box">
+		
+		<?php
+		if(count($this->backIssuesList)>4)
+		{
+		?>
+		<div class=" jcarousel-skin-tango">
+		<div class="jcarousel-container jcarousel-container-horizontal">
+			<div class="jcarousel-clip jcarousel-clip-horizontal">
+				<ul id="mycarouse2" class="jcarousel-list jcarousel-list-horizontal">
+					<?php
+					foreach($this->backIssuesList as $backIssueArray)
+					{
+						if(isset($this->currentIssueId) && $this->currentIssueId==$backIssueArray['product_id'])
+						{ continue;}
+					$authorInfo = $modelAuthor->getInfoByPublisherId($backIssueArray['publisher_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($backIssueArray['product_id']);
+					?>
+						<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal">
+						<div class="slides marg">
+						<div class="book">
+						<?php
+						if(is_file(USER_UPLOAD_DIR.'thumb1_'.$imageInfo['image_name']))
+						{
+						?>
+						<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb1_'.$imageInfo['image_name'];?>" alt="<?php echo $backIssueArray['title'];?>">
+						<?php
+						}
+						else
+						{
+						?>
+						<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/noimage.jpg';?>" alt="">
+						<?php
+						}
+						?>
+						</div>
+							<div class="info">
+								<a href="#"><?php echo $backIssueArray['title'];?></a><br>
+								<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+							</div>
+						</div>
+						</li>
+						<?php
+					}
+					?>
+				</ul>
+			 </div>
+		</div>
+	  </div>
+	  <?php
+	  }
+	  else
+	  {
+		?>
+		<ul class="no-slide">
+		<?php
+			foreach($this->backIssuesList as $backIssueArray)
+			{
+				if(isset($this->currentIssueId) && $this->currentIssueId==$backIssueArray['product_id'])
+				{ continue;}
+			$authorInfo = $modelAuthor->getInfoByPublisherId($backIssueArray['publisher_id']);
+			$imageInfo = $modelImage->getImageInfoByProductId($backIssueArray['product_id']);
+			?>
+				<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal">
+				<div class="slides marg">
+				<div class="book">
+				<?php
+				if(is_file(USER_UPLOAD_DIR.'thumb1_'.$imageInfo['image_name']))
+				{
+				?>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb1_'.$imageInfo['image_name'];?>" alt="<?php echo $backIssueArray['title'];?>">
+				<?php
+				}
+				else
+				{
+				?>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/noimage.jpg';?>" alt="">
+				<?php
+				}
+				?>
+				</div>
+					<div class="info">
+						<a href="#"><?php echo $backIssueArray['title'];?></a><br>
+						<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+					</div>
+				</div>
+				</li>
+				<?php
+			}
+			?>
+		</ul>
+		<?php
+	  }
+	  ?>
+	  
+	  </div>
+	  <div class="view_all"><a href="#">View all</a></div>
+	  </div>
+	  <?php
+	  }
+	  ?>
+		
+		<div id="conetnt2_publication" class="tabContentsarea" <?php if(!empty($this->backIssuesList)){?>style="display:none;"<?php } ?>>
+			<div class="box">
+				<div><span>Published by:</span> St. Martin's Griffin</div>
+				<div><span>ISBN:</span> 9781466801905</div>
+				<div><span>Filesize:</span> 1.10 MB</div>
+			</div>
+			
+			<div class="box">
+				<div><span>Publish Date:</span> February 18, 2013</div>
+				<div><span>Number of Print Pages:</span> N/A</div>
+				<div><span>Format:</span> EPUB</div>
+			</div>
+			
+			<div class="view_all"><a href="#">View all</a></div>
+		</div>
+		
+		<!-- //Tab 2 -->
+		<div id="conetnt2_evendor" class="tabContentsarea" style="display:none;">
+			<div class="box">
+				<div><span>Published by:</span> St. Martin's Griffin</div>
+				<div><span>ISBN:</span> 9781466801905</div>
+
+			</div>
+			
+			<div class="box">
+				<div><span>Publish Date:</span> February 18, 2013</div>
+				<div><span>Number of Print Pages:</span> N/A</div>
+
+			</div>
+			
+			<div class="view_all"><a href="#">View all</a></div>
+		</div>
+		
+		<!-- //Tab 3 -->
+		<div id="conetnt2_review" class="tabContentsarea" style="display:none;">
+			<div class="box">
+				<div><span>Published by:</span> St. Martin's Griffin</div>
+
+			</div>
+			
+			<div class="box">
+				<div><span>Publish Date:</span> February 18, 2013</div>
+
+			</div>
+			
+			<div class="view_all"><a href="#">View all</a></div>
+		</div>
+
+
+	<!--Slider3 -->
+<section class="left_slider">
+<?php
+
+/*echo"<pre>";
+		print_r($this->similarPublicationList);
+		echo"</pre>";
+*/		
+if(!empty($this->similarPublicationList) && count($this->similarPublicationList)>0)
+{
+	foreach($this->similarPublicationList as $cat_name=>$publicationArray)
+	{
+		if(!empty($publicationArray) && count($publicationArray)>0)
+		{
+		?>
+		<h1><?php echo 'Other '.$cat_name;?></h1>
+		<?php
+			if(count($publicationArray)>4)
+			{
+			?>
+			<div class=" jcarousel-skin-tango">
+			<div class="jcarousel-container jcarousel-container-horizontal">
+			<div class="jcarousel-clip jcarousel-clip-horizontal">
+			
+			<ul id="mycarouse3" class="jcarousel-list jcarousel-list-horizontal">
+			<?php
+				foreach($publicationArray as $key=>$record)
+				{
+				$authorInfo = $modelAuthor->getInfoByPublisherId($record['publisher_id']);
+				$imageInfo = $modelImage->getImageInfoByProductId($record['product_id']);
+				$getBrandInfo=$this->modelBooks->getBrandInfo($record['title']);
+				if(!empty($getBrandInfo))
+				{
+					$titleBrand=$getBrandInfo['brand'];
+				}else
+				{
+					$titleBrand=$record['title'];
+				}
+				?>
+				<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal">
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $record['title'];?>">
+					<?php
+					}
+					else
+					{
+					?>
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="">
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+							<a href="#"><?php echo $titleBrand; ?></a><br>
+							<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+							<?php if(strtolower(trim($cat_name))=='ebook' || strtolower(trim($cat_name))=='ebooks')
+							{
+							?>
+							<p class="price">$ <?php echo $record['price'];?></p>
+							<p>RATING <img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/star.png';?>" alt=""> <img src="images/star.png" alt=""> <img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/star.png';?>" alt=""> <img src="images/star.png" alt=""> <img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/star.png';?>" alt="">	
+
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/comments_icon.png';?>"  alt=""> 12</span>
+							</p>
+							<?php
+							}
+							?>
+						</div>
+					</div>
+				</li>
+				<?php
+				}
+			?>
+			</ul>
+			</div>
+			</div>
+			</div>
+			<?php
+			}
+			else
+			{
+			?>
+				<ul class="no-slide">
+				<?php
+				foreach($publicationArray as $key=>$record)
+				{
+					$authorInfo = $modelAuthor->getInfoByPublisherId($record['publisher_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($record['id']);
+					$getBrandInfo=$this->modelBooks->getBrandInfo($record['title']);
+					if(!empty($getBrandInfo))
+					{
+						$titleBrand=$getBrandInfo['brand'];
+					}else
+					{
+						$titleBrand=$record['title'];
+					}
+					?>
+					<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal">
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $record['title'];?>">
+					<?php
+					}
+					else
+					{
+					?>
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="">
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+							<a href="#"><?php echo $titleBrand; ?></a><br>
+							<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+							<?php if(strtolower(trim($cat_name))=='ebook' || strtolower(trim($cat_name))=='ebooks')
+							{
+							?>
+							<p class="price">$ <?php echo $record['price'];?></p>
+							<p>RATING <img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/star.png';?>" alt=""> <img src="images/star.png" alt=""> <img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/star.png';?>" alt=""> <img src="images/star.png" alt=""> <img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/star.png';?>" alt="">	
+
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/comments_icon.png';?>"  alt=""> 12</span>
+							</p>
+							<?php
+							}
+							?>
+						</div>
+					</div>
+				</li>
+					<?php
+				}
+				?>
+				</ul>
+				<?php
+			}
+		}
+	}
+?>		
+<div class="bottom"><a href="#">View all Newspapers</a></div>
+<?php
+}
+?>
+</section>
+<!--Slider3 -->
+</aside>
+<?php
+}
+?>
+
+<aside class="right_panel">
+<?php
+if(isset($this->storePublicationDetail) && !empty($this->storePublicationDetail) && count($this->storePublicationDetail)>0)
+{
+?>
+<ul class="book_price">
+	<h2><span>Buy this book for</span>
+  $  <?php echo $this->storePublicationDetail[0]['price'];?></h2>
+  <p>Note: You can purchase this publication via downloading App for iPad or Android tablet.</p>
+</ul>
+<?php
+}
+?>
+
+<h5>Best Selling Books</h5>
+<ul class="book">
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/img1.gif';?>" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/img2.gif';?>" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/img1.gif';?>" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/img1.gif';?>" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/img1.gif';?>" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/img1.gif';?>" alt=""></a></li>
+</ul>
+</aside>

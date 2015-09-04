@@ -1,0 +1,84 @@
+<div class="cms_content">
+	<h1><?php echo stripslashes($this->pageInfo->title);?></h1>
+	<!--<br clear="all">-->
+	<div><?php echo stripslashes($this->pageInfo->content);?></div>
+	<?php
+	if($this->currentTitle=='contact-us')
+	{
+	$contactActionUrl=$this->url(array('module'=>'default','controller'=>'page','action'=>'index','title'=>'contact-us'),'',true);
+	
+	$formData=(isset($this->formData))?$this->formData:array();
+	$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+	?>
+	<aside class="right_listing contact"> 
+		<div>
+			<div class="contactRight">
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			<br clear="all"/>
+			<br clear="all"/>
+						
+			
+            <p style="color:#ffffff;">Please Fill this form below if you have any questions.</p>
+			<form name="form-contact-us" id="form-contact-us" action="<?php echo $contactActionUrl; ?>" method="post" onsubmit="return validate_contact('form-contact-us');">
+				<ul>
+					<li> <label><span>*</span> Your Name</label><input type="text" name="contact_name" value="<?php if(isset($formData['contact_name'])){echo $formData['contact_name'];}?>" class="contactField req" message="Please enter your name">
+					<?php if(array_key_exists('contact_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['contact_name'].'</div>';}?>
+					</li>
+					
+					<li> <label><span>*</span> Email Address</label><input type="text" name="contact_email" value="<?php if(isset($formData['contact_email'])){echo $formData['contact_email'];}?>" class="contactField req validmail" message="Please enter your email" message="Please enter your username" invalidmessage="Please enter valid email address" >
+					<?php if(array_key_exists('contact_email',$formErrors)){echo '<div class="inline-error">'.$formErrors['contact_email'].'</div>';}?>
+					</li>
+					
+					<li> <label>Phone No.</label><input type="text" name="contact_phone" value="<?php if(isset($formData['contact_phone'])){echo $formData['contact_phone'];}?>" class="contactField">
+					<!--class="contactField req number" message="Please enter your phone" invalidmessage="Please enter numbers only"-->
+					<?php if(array_key_exists('contact_phone',$formErrors)){echo '<div class="inline-error">'.$formErrors['contact_phone'].'</div>';}?>
+					</li>
+					
+					<li> <label><span>*</span> Message</label><textarea name="contact_message" class="contactTextarea req" message="Please enter your message">
+					<?php if(isset($formData['contact_message'])){echo $formData['contact_message'];}?>
+					</textarea>
+					<?php if(array_key_exists('contact_message',$formErrors)){echo '<div class="inline-error">'.$formErrors['contact_message'].'</div>';}?>
+					</li>
+					
+					<li>
+					<label>&nbsp;</label>
+					<?php echo $this->captcha->render($this, null); ?><br />
+					<label><span>*</span> Security Code</label>
+					<input id="captcha" type="text" name="captcha" class="contactField req" message="Please enter above code" />
+					<?php if(array_key_exists('security_code',$formErrors)){echo '<div class="inline-error">'.$formErrors['security_code'].'</div>';}?>
+					<input type="hidden" name="cid" value="<?php echo $this->captcha->getId(); ?>" >
+					</li>
+					
+					<li>
+					<label>&nbsp;</label>
+					<input type="checkbox" name="agree" id="agree" <?php if(isset($formData['agree'])){echo 'checked="checked"';}?>/> <span>It's alright to contact me occasionally for promotional offers.</span>
+					</li>
+					
+					<li><input type="submit" value="Submit" class="button"></li>
+				</ul>
+				</form>
+			</div>
+		</div>
+	</aside>
+	<script type="text/javascript">
+	function validate_contact(pFormId)
+	{
+		if(pFormId)
+		{
+			if(!common_validation(pFormId))
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	</script>
+	<?php
+	}
+	?>
+
+</div>

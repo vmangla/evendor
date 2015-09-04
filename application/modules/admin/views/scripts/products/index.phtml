@@ -1,0 +1,102 @@
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Product Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<br style="clear: both;"/>
+			<div class="action-header">
+				<span class="action-title">Products List</span>
+				
+<table width="99%" border="0" align="center" cellpadding="5" cellspacing="1">
+<form action="" method="get">
+<tr >
+<td colspan="2" align="left">&nbsp;</td>
+</tr>
+<tr >
+<td colspan="2" align="left"><h6>Search Product</h6></td>
+</tr>
+
+<tr>
+<td width="45%" align="right"><div align="right"><h6>Book Name</h6></div>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td width="55%" align="left"><input name='search'  size="30" value="<? echo $_REQUEST['search']; ?>" /></td>
+</tr>
+
+<tr>
+<td width="45%" align="right"><input name="form_member_search" type="submit" id="form_member_search" class="button" value="Search" /> </td>
+<td width="55%" align="left"><input type="button" name="showall" value="Show All" class="button" onclick="javascript:document.location.href='view_orders.php'" /></td>
+</tr>
+</form>
+</table>
+					
+				
+			</div>
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			<br style="clear: both;"/>	
+			<table class="table-list" cellpadding="0" cellspacing="0">
+			   <tr>
+				   <th>SL.No</th><th>ID</th><th>Name</th><th>Type</th><th>Author</th><th>Publish Time</th><th>Status</th><th style="width:80px;">Action</th>
+			   </tr>
+			<?php 
+			  if(isset($this->prodList) && count($this->prodList)>0)
+			  {
+				$sNumber=1;
+				foreach($this->prodList as $row)
+				{
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					   <td><?php echo $row->id;?></td> 
+					   <td><?php echo $row->title;?></td>
+					   <td><?php echo $row->product_type;?></td>
+					   <td><?php $this->modelProducts=new Admin_Model_DbTable_Products();
+					   $publisher_info_array=$this->modelProducts->getPublisherInfo($row->author_id);
+					   echo $publisher_info_array['first_name']."&nbsp;".$publisher_info_array['last_name'];?></td>	   
+					   <td><?php echo CommonFunctions::formatDate($row->publish_time); ?></td>
+					   <td>
+						<?php 
+							if($row->status=='1')
+							{
+							?>
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'products','action'=>'inactive','id'=>$row->id),'',true);?>"><img alt="Active" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/active.png"/></a>
+							<?php  
+							}
+							else
+							{
+							?>
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'products','action'=>'active','id'=>$row->id),'',true);?>"><img alt="Inactive" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/inactive.png"/></a>
+							<?php  
+							}
+							?>
+						<!--<input type="checkbox" <?php if($row->status==1){echo "CHECKED";}?> disabled="disabled">-->
+						
+					   </td>
+					   <td>
+							<!--<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'products','action'=>'edit','id'=>$row->id),'',true);?>"><img alt="Edit" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/icon_edit.png"/></a>-->
+							
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'products','action'=>'view','id'=>$row->id),'',true);?>"><img alt="View" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/application_view_detail.png"/></a>
+							
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'products','action'=>'delete','id'=>$row->id),'',true);?>" onclick="return confirm('Are you sure to delete?');"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>
+					   </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+					if($this->totalCount>$this->pageSize)
+					{
+						echo '<tr><td colspan="9">&nbsp;</td></tr>';
+						echo '<tr><td colspan="9"><div class="pagination">'.$this->paginationControl($this->prodList,'Sliding','pagination.phtml').'</div></td></tr>';
+					}
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="9" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>
+
+	</div>
+</div>

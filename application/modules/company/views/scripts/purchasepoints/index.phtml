@@ -1,0 +1,24 @@
+<?php
+$currUrl=$this->url();
+?>
+<div id="panel">
+	<div class="panel-header"><h3>Purchase Points (Points are equivalent to dollars{$})</h3>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="javascript:void(0);" onclick="return goToPage('/projects/evendor/company/purchasepoints/history','tab6','history');">Payment History</a>
+		</div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+			<?php
+			  
+				for($p=0;$p<count($this->pointsdata);$p++)
+				{
+			?>
+			<div style="float:left; width:120px; text-align:center; border:#818181 solid 1px; height:120px; font-size:18px; line-height:32px; margin:0px 30px 30px 0px;">
+					<span style="display:block; font-size:22px; margin-top:30px;"><?php echo $this->pointsdata[$p]['points'];?>Points</span>
+					<!--<a href="<?php echo $this->serverUrl().$this->baseUrl()."/onlinenaira.php?points=".$this->pointsdata[$p]['points']."";?>">-->
+					<a href="javascript:void(0);">Buy Now</a>
+			</div>
+			
+			<?php } ?> 	
+		</div>	
+	</div>
+</div>

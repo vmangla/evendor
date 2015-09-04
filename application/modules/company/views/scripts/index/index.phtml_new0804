@@ -1,0 +1,204 @@
+<?php
+//$dataModules=explode(",",$_SESSION['company_type']['storage']->modules);
+$dataModules=explode(",","0,1,2,3,4,5,6,7");
+
+$subscriptionUrl=$this->url(array('module'=>'company','controller'=>'subscription','action'=>'manage'),'',true);
+$memberUrl=$this->url(array('module'=>'company','controller'=>'member','action'=>'index'),'',true);
+
+$groupUrl=$this->url(array('module'=>'company','controller'=>'group','action'=>'index'),'',true);
+
+
+$dashboardUrl=$this->url(array('module'=>'company','controller'=>'dashboard','action'=>'index'),'',true);
+
+$purchasepointsUrl=$this->url(array('module'=>'company','controller'=>'purchasepoints','action'=>'index'),'',true);
+$transactionUrl=$this->url(array('module'=>'company','controller'=>'Transactionhistory','action'=>'index'),'',true);
+
+?>
+
+<!-- Start Content Box -->
+<div class="content-box">
+	
+	<div class="content-box-header">
+	
+		<h3>Dashboard</h3>
+			<ul class="content-box-tabs">
+			
+			<li id="t1"><a href="#tab1" class="default-tab" title="Dashboard" onclick="return goToPage('<?php echo $dashboardUrl;?>','tab1','dashboard');">Dashboard</a></li>
+			
+			<!--<li id="t1"><a href="#tab1" class="default-tab" title="Dashboard" onclick="return getDashboard('hide-1');">Dashboard</a></li>-->
+			
+			<li id="t2"><a href="#tab2" title="My subscriptions" onclick="return goToPage('<?php echo $subscriptionUrl;?>','tab2','subscription');">Subscription</a></li>
+			
+			<li id="t3"><a href="#tab3" title="My members" onclick="return goToPage('<?php echo $memberUrl;?>','tab3','member');">Members</a></li>
+			
+			<li id="t5"><a href="#tab5" title="My Groups" onclick="return goToPage('<?php echo $groupUrl;?>','tab5','member');">My Groups</a></li>
+			
+			<li id="t4"><a href="#tab6" onclick="return goToPage('<?php echo $transactionUrl;?>','tab6','transactionhistory');" title="Transaction">My Transaction</a></li>
+			<li id="t4"><a href="#tab4" onclick="return getSettingPanel();" title="Account Settings">My Settings</a></li>
+			
+			<!-- <li id="t6"><a href="#tab6" onclick="return goToPage('<?php echo $purchasepointsUrl;?>','tab6','purchasepoints');" title="Purchase Points">Purchase Points</a></li> -->
+			<!--<li id="t4"><a href="#tab4" title="Password Setting" onclick="return goToPage('<?php echo $this->url(array('module'=>'company','controller'=>'profile','action'=>'changepassword'),'',true);?>','tab4','dashboard');">My Settings</a></li>-->
+			
+			</ul>
+	<div class="clear"></div>
+	</div>
+	<!-- End .content-box-header -->
+	
+	<div class="content-box-content">
+		
+		<div class="tab-content default-tab" id="tab1">
+		
+			<table width="100%">
+			<tr>
+			<td width="50%">
+			<strong>Welcome to company panel</strong><BR /><BR />
+			<ul class="shortcut-buttons-set">
+			<?php 
+			//if(in_array("0", $dataModules)) 
+			//{
+			?>
+			<!--<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'company','controller'=>'profile','action'=>'index'),'',true);?>" title="My Profile" onclick="return goToPage(this.href,'tab4','dashboard');"><span><img src="<?php //echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/staffe.png" alt="My Profile"><br>My Profile</span></a></li>-->
+			<?php 
+			//} 
+			?>
+			
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?>
+			<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'company','controller'=>'profile','action'=>'updateprofile'),'',true);?>" title="Update Profile" onclick="return goToPage(this.href,'tab4','dashboard');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/update_profile.png" alt="Update Profile"><br>Update Profile</span></a></li>
+			<?php
+			}
+			?>
+						
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?> 					
+			<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'company','controller'=>'member','action'=>'index'),'',true);?>" title="Manage Subscriber" onclick="return goToPage('<?php echo $memberUrl;?>','tab3','member');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/subscribers.png" alt="Manage Subscriber"><br>Members</span></a>
+			</li>
+			<?php 
+			} 
+			?>
+			
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?> 					
+			<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'company','controller'=>'subscription','action'=>'manage'),'',true);?>" title="Manage Subscription" onclick="return goToPage(this.href,'tab2','subscription');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/subscription_button.png" alt="Manage Subscription" style="margin-left: -13px;"><br>Manage Subscription</span></a>
+			</li>
+			<?php 
+			} 
+			?>
+			
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?>
+			<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'company','controller'=>'profile','action'=>'changepassword'),'',true);?>" title="Password Setting" onclick="return goToPage(this.href,'tab4','dashboard');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/advancedsettings.png" alt="Settings" ><br>Settings</span></a></li>
+			<?php 
+			} 
+			?>
+			
+			</ul>
+			</td>
+			
+			<?php
+			if(empty($this->sessCompanyInfo->parent_id))
+			{
+			?>
+			<td width="50%" align="right">
+			<strong>Instant Information</strong><BR /><BR />
+			<fieldset class="dashboard_fieldset">
+				<legend>< <a href="javascript:void(0);" title="My Subscription" onclick="return goToPage('<?php echo $subscriptionUrl;?>','tab2','subscription');">Total Subscriptions</a> ></legend>
+					<ul class="company-statistics">
+					<?php
+					//print_r($this->all_subscriptions);
+					foreach($this->all_subscriptions as $subscription_array)
+					{
+					?>
+						<li><strong><?php echo $subscription_array['category_name'];?> :</strong> <?php echo $subscription_array['total_product'];?></li>
+					<?php	
+					}
+					?>
+					<!--<li><strong>Books :</strong> <?php echo $this->totalsubscriptionCount;?></li>
+					<li><strong>Magazines :</strong> <?php echo $this->totalsubscriptionCount;?></li>
+					<li><strong>Newspapers :</strong> <?php echo $this->totalsubscriptionCount;?></li>-->
+					</ul>
+			</fieldset>
+			<br  clear="all"/>
+			
+			<fieldset class="dashboard_fieldset">
+				<legend>< <a href="javascript:void(0);" title="My members" onclick="return goToPage('<?php echo $memberUrl;?>','tab3','member');">Total Members</a> ></legend>
+					<ul class="company-statistics">
+					<li><strong>Members :</strong> <?php echo $this->totalMemberCount;?></li>
+					</ul>
+			</fieldset>
+			<br  clear="all"/>
+			
+			</td>
+			<?php
+			}
+			?>
+			</tr>
+			
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			
+			<tr>
+			<td colspan="2">
+			<fieldset class="dashboard_fieldset">
+				<legend>< Quick Links ></legend>
+			<ul class="shortcut-links-set">
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'company','controller'=>'subscription','action'=>'create'),'',true);?>" title="Add New Subscription" onclick="return goToPage(this.href,'tab2','dashboard');"><span>Add Subscription</span></a>
+			</li>
+			
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'company','controller'=>'member','action'=>'create'),'',true);?>" title="Add New member User" onclick="return goToPage(this.href,'tab3','dashboard');"><span>Add Member</span></a>
+			</li>
+					
+			</ul>
+			</fieldset>
+			</td>
+			</tr>
+			</table>
+			
+		
+		</div><!-- End #tab1 -->
+		
+		
+		<div class="tab-content" id="tab2">
+			<li><a href="#">My Recent subscriptions</a></li>
+			<BR><strong>Content will come soon..</strong><BR><BR>
+						
+		</div><!-- End #tab2 -->
+		
+		<div class="tab-content" id="tab3">
+			<li><a href="#">My Recent members</a></li>
+			<BR><strong>Content will come soon..</strong><BR><BR>
+						
+		</div><!-- End #tab3 -->
+		
+        <div class="tab-content" id="tab4">
+			Setting Panel:<br />
+			Content will come soon..
+		</div><!-- End #tab4 -->
+		
+		<div class="tab-content" id="tab5">
+			<li><a href="#">My Recent Groups</a></li>
+			<BR><strong>Content will come soon..</strong><BR><BR>
+						
+		</div><!-- End #tab5 -->
+		
+		<div class="tab-content" id="tab6">
+			<li><a href="#">My Recent Brands</a></li>
+			<BR><strong>Content will come soon..</strong><BR><BR>
+						
+		</div><!-- End #tab6 -->
+					
+	</div>
+	<!-- End .content-box-content -->
+
+</div> <!-- End .content-box -->
+

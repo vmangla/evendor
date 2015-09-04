@@ -1,0 +1,244 @@
+<?php echo $this->doctype() ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<?php echo $this->headTitle('Electronic Vendor Ltd :: User')?>
+<?php echo $this->headMeta()?>
+<?php echo $this->headLink()?>
+<?php echo $this->headStyle()?>
+<?php echo $this->headScript()?>
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/user/invalid.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/user/reset.css" media="screen" rel="stylesheet" type="text/css"/>
+
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/user/style.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/user/jquery-v1.7.1.js"></script>
+
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/user/company_styles.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/user/simpla.jquery.configuration.js"></script>
+
+
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/user/common_validation.js"></script>
+
+
+<?php
+include_once("public/js/user/common_ajax_functions.php");
+?>
+
+</head>
+
+<body>
+<div id="body-wrapper">
+
+<div>
+	<div id="company_headerinner">
+	<?php
+	if(isset($this->sessUserInfo) && $this->sessUserInfo!=null)
+	{
+	?>
+	<ul class="horizonal-menu" style="margin-right:20px;margin-top:5px;">
+		<li class="userhi">Hi, <?php echo ucfirst($this->sessUserInfo->first_name);?></li>
+		<li class="logout"><a href="<?php echo $this->url(array('module'=>'user','controller'=>'auth','action'=>'logout'),'',true);?>">Logout</a></li>
+	</ul>
+	<?php
+	}
+	?>
+	
+	<div class="logo"><a href="<?php echo $this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);?>"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/logo.png" alt=""></a> <span style="text-decoration:none; color:white;">:: User Panel</span></div>
+	
+<?php
+//$dataModules=explode(",",$_SESSION['company_type']['storage']->modules);
+$dataModules=explode(",","0,1,2,3,4,5,6,7");
+
+//$pageURL .= 'http://'.$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+$pageURL = 'http://'.$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+$parameter =explode("/",$pageURL);
+
+?>
+<div>
+<!-- add started-->
+<header id="heder">
+
+
+<div class="head_right">
+
+<!--Toplink -->
+<div class="toplink">
+<?php
+
+?>
+<div class="tolltip"><?php if(isset($this->storeName) && !empty($this->storeName))echo $this->storeName;?><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/w_arrow.png" alt="">
+
+<div class="tolltip_main">
+<div class="tolltip_content">
+<p class="heading">Find us worldwide</p>
+
+<?php
+if(!empty($this->allStored) && count($this->allStored)>0)
+{
+    $modelContinent= new Admin_Model_DbTable_Continents();
+	foreach($this->allStored as $continent_id=>$country_array)
+	{
+		$continentInfo=$modelContinent->fetchRow("id='$continent_id'");
+		?>
+		<p><?php echo $continentInfo->continent;?><br>
+		<?php
+		foreach($country_array as $cid=>$cname)
+		{
+			?>
+			<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/auth/storechange/storeid/<?php echo $cid; ?>"><?php echo $cname; ?></a> /
+
+			<?php
+		}
+		?>
+		</p>
+		<?php
+	}
+}
+?>
+
+</div>
+</div>
+
+
+</div>         |  
+
+<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/page/index/title/help" <?php if($this->currentController=='page' && $this->currentTitle=='Help') echo $this->class_active;?>>Help</a>  |  
+<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/page/index/title/sitemap" <?php if($this->currentController=='page' && $this->currentTitle=='Sitemap') echo $this->class_active;?>>Sitemap</a>  |
+
+<?php
+if(isset($this->sessPublisherInfo) && $this->sessPublisherInfo!=null)
+{
+?>
+Hi, <a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'index','action'=>'index'),'',true);?>"><?php echo $this->sessPublisherInfo->first_name;?></a> | <a href="<?php echo $this->serverUrl().$this->baseUrl();?>/publisher/auth/logout/">Logout</a> |
+<?php
+}
+elseif(isset($this->sessCompanyInfo) && $this->sessCompanyInfo!=null)
+{
+?>
+Hi, <a href="<?php echo $this->url(array('module'=>'company','controller'=>'index','action'=>'index'),'',true);?>"><?php echo $this->sessCompanyInfo->first_name;?></a> | <a href="<?php echo $this->serverUrl().$this->baseUrl();?>/company/auth/logout/">Logout</a> |
+<?php
+}
+else
+{
+?>
+
+<div class="tolltip">Register<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/w_arrow.png" alt="">
+
+<div class="tolltip_main">
+<div class="tolltip_content">
+<p>Sign up for <a href="<?php echo $this->serverUrl().$this->baseUrl().'/company/register/';?>">Company</a>/<a href="<?php echo $this->serverUrl().$this->baseUrl().'/publisher/register/';?>">Publisher</a>/<a href="<?php echo $this->serverUrl().$this->baseUrl().'/user/register/';?>">User</a></p>
+  
+</div>
+</div>
+
+
+</div>  
+
+
+
+<div class="tolltip">Sign In<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/w_arrow.png" alt="">
+
+<div class="tolltip_main">
+<div class="tolltip_content">
+ <p>Sign In as a <a href="<?php echo $this->serverUrl().$this->baseUrl().'/company/auth/';?>">Company</a>/<a href="<?php echo $this->serverUrl().$this->baseUrl().'/publisher/auth/';?>">Publisher</a>/<a href="<?php echo $this->serverUrl().$this->baseUrl().'/user/auth/';?>">User</a></p>
+</div>
+</div>
+
+
+</div> 
+
+<?php	
+}
+?>
+<span class="share_icons">Follow us on : 
+<a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/twitter_icon.png" alt=""></a> 
+<a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/facebook_icon.png" alt=""></a> 
+<a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/vion_icon.png" alt=""></a> 
+<a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/rss_icon.png" alt=""></a>
+</span>
+</div>
+<!--Toplink -->
+
+
+</div>
+
+<div class="head_right">
+<!--Topmenu -->
+<div class="topmenu">
+<ul>
+<li>
+<a href="<?php echo $this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);?>" <?php if($this->currentController=='index') echo$this->class_active;?>>Home</a>
+</li>
+
+<li>
+<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/page/index/title/about-us" <?php if($this->currentController=='page' && $this->currentTitle=='about-us') echo$this->class_active;?>>About us</a>
+</li>
+
+<li><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/" <?php if($this->currentController=='catalogue') echo$this->class_active;?>>Catalogue</a></li>
+<li><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/page/index/title/readers">Readers</a></li>
+<?php
+if(isset($this->sessPublisherInfo) && $this->sessPublisherInfo!=null)
+{
+?>
+<li>
+<a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'index','action'=>'index'),'',true);?>">Publisher/Author</a>
+</li>
+<?php
+}
+elseif(isset($this->sessCompanyInfo) && $this->sessCompanyInfo!=null)
+{
+?>
+<li>
+<a href="<?php echo $this->url(array('module'=>'company','controller'=>'index','action'=>'index'),'',true);?>">Company Panel</a>
+</li>
+<?php
+}
+else
+{
+?>
+<li>
+<!--<a href="<?php echo $this->url(array('module'=>'default','controller'=>'login','action'=>'index'),'',true);?>">Publisher/Author</a>-->
+<a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'auth','action'=>'index'),'',true);?>">Publisher/Author</a>
+</li>
+
+<li>
+<a href="<?php echo $this->url(array('module'=>'company','controller'=>'auth','action'=>'index'),'',true);?>">Company</a>
+</li>
+<?php
+}
+?>
+
+<!--<li><a href="#">Authors</a></li>-->
+<li><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/page/index/title/contact-us" <?php if($this->currentController=='page' && $this->currentTitle=='contact-us') echo$this->class_active;?>>Contact us</a></li>
+<li><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/faqs" <?php if($this->currentController=='faqs') echo$this->class_active;?>>FAQS</a></li>
+</ul>
+</div>
+<!--Topmenu -->
+</div>
+
+
+</header>
+</div>
+</div>
+<!-- add ended-->
+<div id="tab-content">
+<?php echo $this->layout()->content;?>
+</div>
+
+	
+</div>
+
+<div id="company_footer">
+		<div class="company_footer_info"> 
+		&copy; Copyright <?php echo date("Y");?>. All Rights Reserved By Electronic Vendor Ltd.
+		</div> 
+	</div>
+	
+</div>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<?php 
+$cancelUrl=$this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+<div id="content">
+
+<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+<h3><?php if(isset($this->successMessage)){echo $this->successMessage;}?></h3>
+<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+<br/>
+<h3>Your account activation url is sent to your email</h3>
+</div>
+

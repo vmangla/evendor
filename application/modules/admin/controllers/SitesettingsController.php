@@ -1,0 +1,635 @@
+<?php
+class Admin_SiteSettingsController extends Zend_Controller_Action
+{
+	protected $_flashMessenger=null;	
+	var $sessAdminInfo=null;
+	var $modelAdmiUsers=null;
+	var $modelModuleMenus=null;
+		
+	var $modelSiteSetting=null;
+	var $modelApiKey=null;
+	
+    public function init()
+    {
+	
+		$this->_flashMessenger =$this->_helper->getHelper('FlashMessenger');	
+		$this->notifications = new Admin_Model_DbTable_Notifications();
+		$storage = new Zend_Auth_Storage_Session('admin_type');
+        $data = $storage->read();
+    
+	    if($data)
+		{
+		$this->modelAdmiUsers = new Admin_Model_DbTable_AdminUsers();
+		$this->sessAdminInfo=$this->modelAdmiUsers->fetchRow("id=".$data->id);
+		}
+		
+		if(!$this->sessAdminInfo)
+		{
+            $this->_redirect('admin/auth/');
+        }
+		
+		$this->sessAdminInfo->modules=explode(",",$this->sessAdminInfo->modules);
+		$this->view->sessAdminInfo =$this->sessAdminInfo;
+		
+		$this->modelModuleMenus = new Admin_Model_DbTable_ModulesMenus();
+		$this->view->modelModuleMenus = $this->modelModuleMenus->getModuleMenusList();
+		
+		$this->modelSiteSetting=new Admin_Model_DbTable_SiteSettings();
+		$this->modelApiKey = new Admin_Model_DbTable_ApiKey();
+		
+		/************* To Set The active section and links *******************/
+		$controller=$this->_getParam('controller');
+		$action=$this->_getParam('action');
+		$this->view->currentController=$controller;
+		$this->view->currentAction=$action;
+		/************* To Set The active section and links *******************/
+		$moduleAccessRow=$this->modelModuleMenus->fetchRow("controller='$controller' AND action LIKE '%".$action."%'");
+		
+		$currentModuleId=$moduleAccessRow['id'];
+		if(!in_array($currentModuleId,$this->sessAdminInfo->modules))
+		{
+			$this->_flashMessenger->addMessage('<div class="div-error">"'.$moduleAccessRow['menu_name'].'"   module not accessable to you</div>');
+			$this->_redirect('admin/');
+		}
+		
+    }
+	
+    public function indexAction()
+    {
+ 		$this->view->messages = $this->_flashMessenger->getMessages();
+		
+		$siteConstantList=$this->modelSiteSetting->getList();
+		
+		$page=$this->_getParam('page',1);
+	    $paginator = Zend_Paginator::factory($siteConstantList);
+	    $paginator->setItemCountPerPage(ADMIN_PAGING_SIZE);
+	    $paginator->setCurrentPageNumber($page);
+		
+		$this->view->totalCount=count($siteConstantList);
+		$this->view->pageSize=ADMIN_PAGING_SIZE;
+		$this->view->page=$page;
+		$this->view->siteConstantList=$paginator;
+    }
+	
+	public function addAction()
+    {
+	
+ 		$this->view->messages = $this->_flashMessenger->getMessages();
+		
+		$formData=array();
+		$formErrors=array();
+		
+		if($this->getRequest()->isPost())
+		{
+			$formData=$this->getRequest()->getPost();
+	
+			if(!isset($formData['constant_label']) || trim($formData['constant_label'])=="")
+			{
+				$formErrors['constant_label']="Please enter constant label";
+			}
+			
+			if(!isset($formData['site_constant']) || trim($formData['site_constant'])=="")
+			{
+				$formErrors['site_constant']="Please enter constant name";
+			}
+			
+			if(!isset($formData['constant_value']) || trim($formData['constant_value'])=="")
+			{
+				$formErrors['constant_value']="Please enter constant value";
+			}
+			
+			if(count($formErrors)==0)
+			{
+			    $result=$this->modelSiteSetting->insert($formData);
+				if($result>0)
+				{
+					$this->_flashMessenger->addMessage('<div class="div-success">Site Constant added successfully</div>');
+					$this->_redirect('admin/sitesettings/');
+				}
+				else
+				{
+					$this->view->errorMessage='<div class="div-error">Sorry!, unable to add site constant</div>';
+				}
+			}
+			else
+			{
+				$this->view->errorMessage='<div class="div-error">Please enter required fields properly.</div>';
+			}
+		}
+		$this->view->formData=$formData;
+		$this->view->formErrors=$formErrors;
+    }
+	
+	public function editAction()
+    {			
+	
+ 		$this->view->messages = $this->_flashMessenger->getMessages();
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->modelSiteSetting->isExist($id))
+		{
+			$formData=array();
+			$formErrors=array();
+			
+			$constantInfo=$this->modelSiteSetting->fetchRow('id='.$id);
+			$formData=$constantInfo->toArray();
+			
+			if($this->getRequest()->isPost())
+			{
+				
+				$formData=$this->getRequest()->getPost();
+	
+				if(!isset($formData['constant_label']) || trim($formData['constant_label'])=="")
+				{
+					$formErrors['constant_label']="Please enter constant label";
+				}
+				
+				if(!isset($formData['site_constant']) || trim($formData['site_constant'])=="")
+				{
+					$formErrors['site_constant']="Please enter constant name";
+				}
+				
+				if(!isset($formData['constant_value']) || trim($formData['constant_value'])=="")
+				{
+					$formErrors['constant_value']="Please enter constant value";
+				}
+				
+		
+				if(count($formErrors)==0)
+				{
+					$result=$this->modelSiteSetting->update($formData,'id='.$id);
+					
+					$this->_flashMessenger->addMessage('<div class="div-success">Constant updated successfully</div>');
+					$this->_redirect('admin/sitesettings/');
+				}
+				else
+				{
+					$this->view->errorMessage='<div class="div-error">Please enter required fields properly.</div>';
+				}
+			}
+			$this->view->formData=$formData;
+			$this->view->formErrors=$formErrors;
+		}
+		else
+		{
+			$this->_redirect('admin/sitesettings/');
+		}
+    }
+	
+	public function emailsettingAction()
+    {
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		
+		$emailConstantList=$this->modelSiteSetting->getList("site_constant='ADMIN_NAME' OR site_constant='ADMIN_EMAIL' OR site_constant='SET_FROM_NAME' OR site_constant='SETFROM'");
+		$this->view->emailConstantList=$emailConstantList;
+		
+		$formData=array();
+		$formErrors=array();
+			
+		if($this->getRequest()->isPost())
+		{
+			$formData=$this->getRequest()->getPost();
+			//print_r($formData['constant_value']);exit;
+	
+			if(isset($formData['constant_value']) && !empty($formData['constant_value']))
+			{
+				foreach($formData['constant_value'] as $cnanme=>$constant_value)
+				{
+					if(!isset($formData['constant_value'][$cnanme]) || trim($formData['constant_value'][$cnanme])=="")
+					{
+						$formErrors['constant_value'][$cnanme]="Please enter constant value";
+					}
+					
+					if(($cnanme=='ADMIN_EMAIL' || $cnanme=='SETFROM') && !(CommonFunctions::isValidEmail($constant_value)))
+					{
+						$formErrors['constant_value'][$cnanme]="Please enter valid email";
+					}
+				}
+			}
+				
+			if(count($formErrors)==0)
+			{
+				foreach($formData['constant_value'] as $ucnanme=>$updateconstant_value)
+				{
+					$result=$this->modelSiteSetting->update(array('constant_value'=>$updateconstant_value),'site_constant="'.$ucnanme.'"');
+				}
+							
+				$this->_flashMessenger->addMessage('<div class="div-success">Email settings have been changed successfully</div>');
+				$this->_redirect('admin/sitesettings/');
+			}
+			else
+			{
+				$this->view->errorMessage='<div class="div-error">Please enter required fields properly.</div>';
+			}
+		}
+		$this->view->formData=$formData;
+		$this->view->formErrors=$formErrors;
+	}
+	//upload size setting
+	public function uploadsettingAction()
+    {
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		
+		$emailConstantList=$this->modelSiteSetting->getList("site_constant='IMAGE_UPLOAD_SIZE' OR site_constant='PDF_UPLOAD_SIZE'");
+		$this->view->emailConstantList=$emailConstantList;
+		
+		$formData=array();
+		$formErrors=array();
+			
+		if($this->getRequest()->isPost())
+		{
+			$formData=$this->getRequest()->getPost();
+			//print_r($formData);exit;
+	
+			if(isset($formData['constant_value']) && !empty($formData['constant_value']))
+			{
+				foreach($formData['constant_value'] as $cnanme=>$constant_value)
+				{
+					if(!isset($formData['constant_value'][$cnanme]) || trim($formData['constant_value'][$cnanme])=="")
+					{
+						$formErrors['constant_value'][$cnanme]="Please enter constant value";
+					}
+				}
+			}
+				
+			if(count($formErrors)==0)
+			{
+				foreach($formData['constant_value'] as $ucnanme=>$updateconstant_value)
+				{
+					$result=$this->modelSiteSetting->update(array('constant_value'=>$updateconstant_value),'site_constant="'.$ucnanme.'"');
+				}
+							
+				$this->_flashMessenger->addMessage('<div class="div-success">Upload settings have been changed successfully</div>');
+				$this->_redirect('admin/sitesettings/');
+			}
+			else
+			{
+				$this->view->errorMessage='<div class="div-error">Please enter required fields properly.</div>';
+			}
+		}
+		$this->view->formData=$formData;
+		$this->view->formErrors=$formErrors;
+	}
+	public function smtpsettingAction()
+    {
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		
+		$smtpConstantList=$this->modelSiteSetting->getList("site_constant='SMTP_SERVER' OR site_constant='SMTP_USERNAME' OR site_constant='SMTP_PASSWORD' OR site_constant='SMTP_SSL' OR site_constant='SMTP_PORT' OR site_constant='SMTP_AUTH'");
+		$this->view->smtpConstantList=$smtpConstantList;
+		
+		$formData=array();
+		$formErrors=array();
+			
+		if($this->getRequest()->isPost())
+		{
+			$formData=$this->getRequest()->getPost();
+			//print_r($formData['constant_value']);exit;
+	
+			if(isset($formData['constant_value']) && !empty($formData['constant_value']))
+			{
+				foreach($formData['constant_value'] as $cnanme=>$constant_value)
+				{
+					if(!isset($formData['constant_value'][$cnanme]) || trim($formData['constant_value'][$cnanme])=="")
+					{
+						$formErrors['constant_value'][$cnanme]="Please enter constant value";
+					}
+					
+					/*if(($cnanme=='SMTP_USERNAME') && !(CommonFunctions::isValidEmail($constant_value)))
+					{
+						$formErrors['constant_value'][$cnanme]="Please enter valid email";
+					}
+					*/
+				}
+			}
+				
+			if(count($formErrors)==0)
+			{
+				foreach($formData['constant_value'] as $ucnanme=>$updateconstant_value)
+				{
+					$result=$this->modelSiteSetting->update(array('constant_value'=>$updateconstant_value),'site_constant="'.$ucnanme.'"');
+				}
+							
+				$this->_flashMessenger->addMessage('<div class="div-success">SMTP settings have been changed successfully</div>');
+				$this->_redirect('admin/sitesettings/');
+			}
+			else
+			{
+				$this->view->errorMessage='<div class="div-error">Please enter required fields properly.</div>';
+			}
+		}
+		$this->view->formData=$formData;
+		$this->view->formErrors=$formErrors;
+	}
+	
+	public function generateevendorapikeyAction()
+	{
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		
+		$apikeyList=$this->modelApiKey->fetchAll();
+		$this->view->apikeyList=$apikeyList;
+		
+		$formData=array();
+		$formErrors=array();
+			
+		if($this->getRequest()->isPost())
+		{
+			$formData=$this->getRequest()->getPost();
+			
+			if(!isset($formData['apikeylength']) || trim($formData['apikeylength'])=="")
+			{
+				$formErrors['apikeylength']="Please enter key length";
+			}
+			
+			if(!(is_numeric($formData['apikeylength'])))
+			{
+				$formErrors['apikeylength']="numeric value only";
+			}
+			
+			if($formData['apikeylength']<10 || $formData['apikeylength']>20)
+			{
+				$formErrors['apikeylength']="Key length must be between 10 to 20";
+			}
+										
+			if(count($formErrors)==0)
+			{
+				$apikey = CommonFunctions::generateApiKey($formData['apikeylength']);
+				//echo $apikey; exit;
+							
+				$apiKeyData=array(
+				'apikey'=>$apikey,
+				//'key_type'=>'Production'
+				);
+				
+				$result=$this->modelApiKey->insert($apiKeyData);
+				if($result)
+				{
+					$this->_flashMessenger->addMessage('<div class="div-success">Api key generated  successfully</div>');
+				}
+				else
+				{
+					$this->_flashMessenger->addMessage('<div class="div-error">Api key could not generate.</div>');
+				}
+							
+				$this->_redirect('admin/sitesettings/generateevendorapikey/');
+			}
+			else
+			{
+				$this->view->errorMessage='<div class="div-error">Please enter required fields properly.</div>';
+			}
+		}	
+		
+		$this->view->formData=$formData;
+		$this->view->formErrors=$formErrors;
+	}
+	
+	public function delevendorapikeyAction()
+    {
+ 		$this->view->messages = $this->_flashMessenger->getMessages();
+		
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->modelApiKey->isExist($id))
+		{
+			$success=$this->modelApiKey->delete("id=".$id);
+			if($success)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Api key deleted successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to delete api key</div>');
+			}
+		}
+		$this->_redirect('admin/sitesettings/generateevendorapikey/');
+    }
+	
+	/*
+	public function deleteAction()
+    {
+ 		
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->modelSiteSetting->isExist($id))
+		{
+			$success=$this->modelSiteSetting->delete('id='.$id);
+			if($success)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Constant deleted successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to delete constant</div>');
+			}
+		}
+		$this->_redirect('admin/sitesettings/');
+    }
+	
+	public function inactiveAction()
+    {
+ 		
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->modelSiteSetting->isExist($id))
+		{
+		
+		    $data['status']=0;
+		    $success=$this->modelSiteSetting->update($data,'id="'.$id.'"');
+			
+			if($success)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Constant deactivated successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to deactivate constant</div>');
+			}
+		}
+		$this->_redirect('admin/sitesettings/');
+    }
+	
+	public function activeAction()
+    {
+ 		
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->modelSiteSetting->isExist($id))
+		{
+		
+		    $data['status']=1;
+		    $success=$this->modelSiteSetting->update($data,'id="'.$id.'"');
+			
+			if($success)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Constant activated successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to activate constant</div>');
+			}
+		}
+		$this->_redirect('admin/sitesettings/');
+    }
+	*/
+	
+	public function notificationsAction()
+	{
+		
+		$notificationsdata = $this->notifications->fetchAll();
+		$this->view->notificationsdata = $notificationsdata;
+	}
+	
+	public function neditAction()
+    {			
+	
+ 		$this->view->messages = $this->_flashMessenger->getMessages();
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->modelSiteSetting->isExist($id))
+		{
+			$formData=array();
+			$formErrors=array();
+			
+			$constantInfo=$this->notifications->fetchRow('nid='.$id);
+			$formData=$constantInfo->toArray();
+			
+			if($this->getRequest()->isPost())
+			{
+				
+				$formData=$this->getRequest()->getPost();
+	
+				if(!isset($formData['title']) || trim($formData['title'])=="")
+				{
+					$formErrors['title']="Please enter title";
+				}
+				 
+		
+				if(count($formErrors)==0)
+				{
+					$currentdate = date("Y-m-d H:i:s");
+					$formData['mod_date'] = $currentdate;
+					
+					$result=$this->notifications->update($formData,'nid='.$id);
+					
+					$this->_flashMessenger->addMessage('<div class="div-success">Notification updated successfully</div>');
+					$this->_redirect('admin/sitesettings/notifications');
+				}
+				else
+				{
+					$this->view->errorMessage='<div class="div-error">Please enter required fields properly.</div>';
+				}
+			}
+			$this->view->formData=$formData;
+			$this->view->formErrors=$formErrors;
+		}
+		else
+		{
+			$this->_redirect('admin/notifications');
+		}
+    }
+	
+	public function ninactiveAction()
+    {
+ 		
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->notifications->isExist($id))
+		{
+		
+		    $data['status']=0;
+		    $success=$this->notifications->update($data,'nid="'.$id.'"');
+			
+			if($success)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Notification deactivated successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to deactivate Notification</div>');
+			}
+		}
+		$this->_redirect('admin/sitesettings/notifications');
+    }
+	
+	public function nactiveAction()
+    {
+ 		
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->notifications->isExist($id))
+		{
+		
+		    $data['status']=1;
+		    $success=$this->notifications->update($data,'nid="'.$id.'"');
+			
+			if($success)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Notification activated successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to activate notification</div>');
+			}
+		}
+		$this->_redirect('admin/sitesettings/notifications/');
+    }
+	
+	
+	public function devicetrackingAction()
+    {
+ 		$this->view->messages = $this->_flashMessenger->getMessages();
+	
+		$db = Zend_Registry::get('db');
+	
+		/*$query = "SELECT dev.*, com.user_email FROM pclive_deviceID dev
+				  INNER JOIN pclive_companies com ON dev.user_publisher_id = com.id 
+				  GROUP BY dev.user_publisher_id ORDER BY com.user_email ASC ";		*/
+				  
+		$query = "SELECT dev.*, com.user_email FROM pclive_deviceID dev
+				  INNER JOIN pclive_companies com ON dev.user_publisher_id = com.id 
+				  ORDER BY com.user_email ASC ";				  
+		$result = $db->query($query); 		
+		$dataRecord = $result->fetchAll();
+		
+		/*
+		  echo "<pre>";
+		  print_r($dataRecord);
+		  exit;
+		*/
+
+		$page=$this->_getParam('page',1);
+	    $paginator = Zend_Paginator::factory($dataRecord);
+	    $paginator->setItemCountPerPage(ADMIN_PAGING_SIZE);
+	    $paginator->setCurrentPageNumber($page);
+		
+		$this->view->totalCount=count($dataRecord);
+		$this->view->pageSize=ADMIN_PAGING_SIZE;
+		$this->view->page=$page;
+		$this->view->dataRecord=$paginator;
+    }
+	
+	public function deletedeviceidAction()
+    {
+ 		
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0)
+		{
+			$db = Zend_Registry::get('db');
+			
+			$query = "DELETE FROM pclive_deviceID WHERE id='".$id."'";		
+			$result = $db->query($query); 		
+			if($result)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Device-Id deleted successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to delete device id</div>');
+			}
+		}
+		$this->_redirect('admin/sitesettings/devicetracking');
+    }
+	
+	
+}
+

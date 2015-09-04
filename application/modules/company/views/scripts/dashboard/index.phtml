@@ -1,0 +1,127 @@
+<?php
+//$dataModules=explode(",",$_SESSION['company_type']['storage']->modules);
+$dataModules=explode(",","0,1,2,3,4,5,6,7");
+
+$subscriptionUrl=$this->url(array('module'=>'company','controller'=>'subscription','action'=>'index'),'',true);
+
+$memberUrl=$this->url(array('module'=>'company','controller'=>'member','action'=>'index'),'',true);
+
+?>
+
+<table width="100%">
+			<tr>
+			<td width="50%">
+			<strong>Welcome to company panel</strong><BR /><BR />
+			<ul class="shortcut-buttons-set">
+			<?php 
+			//if(in_array("0", $dataModules)) 
+			//{
+			?>
+			<!--<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'company','controller'=>'profile','action'=>'index'),'',true);?>" title="My Profile" onclick="return goToPage(this.href,'tab4','dashboard');"><span><img src="<?php //echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/staffe.png" alt="My Profile"><br>My Profile</span></a></li>-->
+			<?php 
+			//} 
+			?>
+			
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?>
+			<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'company','controller'=>'profile','action'=>'updateprofile'),'',true);?>" title="Update Profile" onclick="return goToPage(this.href,'tab4','dashboard');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/update_profile.png" alt="Update Profile"><br>Update Profile</span></a></li>
+			<?php
+			}
+			?>
+						
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?> 					
+			<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'company','controller'=>'member','action'=>'index'),'',true);?>" title="Manage Subscriber" onclick="return goToPage(this.href,'tab3','member');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/subscribers.png" alt="Manage Subscriber"><br>Members</span></a>
+			</li>
+			<?php 
+			} 
+			?>
+			
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?> 					
+			<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'company','controller'=>'subscription','action'=>'manage'),'',true);?>" title="Manage Subscription" onclick="return goToPage(this.href,'tab2','subscription');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/subscription_button.png" alt="Manage Subscription" style="margin-left: -13px;"><br>Manage Subscription</span></a>
+			</li>
+			<?php 
+			} 
+			?>
+			
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?>
+			<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'company','controller'=>'profile','action'=>'changepassword'),'',true);?>" title="Password Setting" onclick="return goToPage(this.href,'tab4','dashboard');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/advancedsettings.png" alt="Settings" ><br>Settings</span></a></li>
+			<?php 
+			} 
+			?>
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?>
+			<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'company','controller'=>'transactionhistory','action'=>'index'),'',true);?>" title="Password Setting" onclick="return goToPage(this.href,'tab5','tarnsaction');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/advancedsettings.png" alt="Tarnsaction History" ><br>Transaction History</span></a></li>
+			<?php 
+			} 
+			?>
+			</ul>
+			</td>
+			
+			<?php
+			if(empty($this->sessCompanyInfo->parent_id))
+			{
+			?>
+			<td width="50%" align="right">
+			<strong>Instant Information</strong><BR /><BR />
+			<fieldset class="dashboard_fieldset">
+				<legend>< <a href="javascript:void(0);" title="My Subscription" onclick="return goToPage('<?php echo $subscriptionUrl;?>','tab2','subscription');">Total Subscriptions</a> ></legend>
+					<ul class="company-statistics">
+					<?php
+					foreach($this->all_subscriptions as $subscription_array)
+					{
+					?>
+						<li><strong><?php echo $subscription_array['category_name'];?> :</strong> <?php echo $subscription_array['total_product'];?></li>
+					<?php	
+					}
+					?>
+					</ul>
+			</fieldset>
+			<br  clear="all"/>
+			
+			<fieldset class="dashboard_fieldset">
+				<legend>< <a href="javascript:void(0);" title="My members" onclick="return goToPage('<?php echo $memberUrl;?>','tab3','member');">Total Members</a> ></legend>
+					<ul class="company-statistics">
+					<li><strong>Members :</strong> <?php echo $this->totalMemberCount;?></li>
+					</ul>
+			</fieldset>
+			<br  clear="all"/>
+			
+			</td>
+			<?php
+			}
+			?>
+			</tr>
+			
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			
+			<tr>
+			<td colspan="2">
+			<fieldset class="dashboard_fieldset">
+				<legend>< Quick Links ></legend>
+			<ul class="shortcut-links-set">
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'company','controller'=>'subscription','action'=>'create'),'',true);?>" title="Add New Subscription" onclick="return goToPage(this.href,'tab2','dashboard');"><span>Manage Subscription</span></a>
+			</li>
+			
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'company','controller'=>'member','action'=>'create'),'',true);?>" title="Add New member User" onclick="return goToPage(this.href,'tab3','dashboard');"><span>Add Member</span></a>
+			</li>
+					
+			</ul>
+			</fieldset>
+			</td>
+			</tr>
+			</table>

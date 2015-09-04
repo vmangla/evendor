@@ -1,0 +1,171 @@
+<div class="user_dashboard">
+<?php include('leftnav.phtml');
+$modelBooks = new Publisher_Model_DbTable_Books();
+$modelAuthor = new Publisher_Model_DbTable_Publishers();
+$modelSubscription  = new Publisher_Model_DbTable_Subscriptions();	
+$UsersubObj = new Model_DbTable_Usersubscription();
+
+?>
+</div>
+
+<div class="welcome_user">
+<div class="credithistory" style="width:100%">
+<form name="frm_history" id="frm_history" method="get" action="">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<!--<tr>
+ 
+	<td colspan="6" align="center"><h4>Transaction/Order History</h4></td>
+	<td align="right">
+	<select name="subscription_type" id="subscription_type">
+		<option value="">Select</option>
+		<option value="Weekly" <?php if($this->selectedsubscription=='Weekly') {?>selected<?php } ?>>Weekly</option>
+		<option value="Monthly" <?php if($this->selectedsubscription=='Monthly') {?>selected<?php } ?>>Monthly</option>
+		<option value="Quarterly" <?php if($this->selectedsubscription=='Quarterly') {?>selected<?php } ?>>Quarterly</option>
+		<option value="Half Yearly" <?php if($this->selectedsubscription=='Half Yearly') {?>selected<?php } ?>>Half Yearly</option>
+		<option value="Yearly" <?php if($this->selectedsubscription=='Yearly') {?>selected<?php } ?>>Yearly</option>
+		<option value="" <?php if($this->selectedsubscription=='') {?>selected<?php } ?>>All
+		<option value="NA" <?php if($this->selectedsubscription=='NA') {?>selected<?php } ?>>None</option>
+	</select>
+	<input type="submit" class="button-Add" value="Search" id="searchresult" name="searchresult">
+	</td>
+</tr>-->
+<tr>
+	<td colspan="5" height="25"></td>
+</tr>
+<tr>
+	<td colspan="5">Order Id : <?php echo $this->oderId;?></td><td align="right"><a href="<?php echo $this->url(array('module'=>'user','controller'=>'index','action'=>'transactionhistory'),'',true);?>">Back</a></td>
+</tr>
+<tr>
+	<td colspan="5" height="25"></td>
+</tr>
+<tr>
+	<td style="padding-bottom:8px;">
+		<strong>S.No.</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Item</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Publisher Name</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Subscription Name</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Number of Issues</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Start Date</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>End Date</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Price</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Quantity</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Purchase Date</strong>
+	</td>
+	<td>
+		<strong>Order Desciption</strong>
+	</td>
+	<td>
+		<strong>Order Currency</strong>
+	</td>
+</tr>
+
+<?php
+if(count($this->creditdata)>0)
+{
+$j=1;
+foreach($this->creditdata as $row)
+{	
+	 
+	$product_details = $modelBooks->fetchRow("id='".$row['bookid']."'");
+
+	$publisherDet = $modelAuthor->getInfoByPublisherId($product_details['publisher_id']);
+	
+	$subscription_data = $modelSubscription->fetchAll('id="'.$row['subscription_type'].'"');
+	//$publisherDet = $modelBooks->getInfoByPublicationId($row['bookid']);
+	
+	$subscriptiondetails = $UsersubObj->fetchAll('order_id='.$row['order_id'].' and product_id='.$row['bookid'].' and user_id='.$row['userid'].' and subscription_type='.$row['subscription_type'].'');
+ 
+	 
+ 
+	if(count($subscription_data)>0)
+	{
+		//if($subscription_data[0]->subscription_type!='')
+		//{
+			$subtype = $row['subscription_name'];
+			$numberofissues = $subscriptiondetails[0]['number_of_issues'];
+			$startdate = $subscriptiondetails[0]['start_date'];
+			$enddate = $subscriptiondetails[0]['end_date'];
+		//}
+		
+	}
+	else
+	{
+	 	$subtype = "N/A";
+		$numberofissues = "N/A";
+		$startdate = "N/A";
+		$enddate = "N/A";
+	}
+?>
+<tr>
+	<td style="padding-bottom:8px;">
+		<?php echo $j;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $row['book_name'];?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $publisherDet['publisher'];?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $subtype;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $numberofissues;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $startdate;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $enddate;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $row['price'];;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $row['quantity']; ?>
+	</td>
+	<td>
+		<?php echo $row['add_date']; ?>
+	</td>
+	<td>
+			<?php echo $row['orderDescription']; ?>
+	</td>
+	<td>
+			<?php echo $row['currency']; ?>
+	</td>
+</tr>
+
+<?php
+$j++;} } else { 
+?>
+	<tr>
+		<td colspan="12" style="text-align:center;"><strong>No Record found</strong></td>
+	</tr>
+	
+<?php } ?>
+
+</table> 
+</form>
+
+</div>
+<!--Payment History-->
+</div>
+

@@ -1,0 +1,222 @@
+<?php
+//$addMemberUrl=$this->url(array('module'=>'company','controller'=>'member','action'=>'create'),'',true);
+
+$addMemberUrl=$this->url(array('module'=>'company','controller'=>'member','action'=>'create'),'',true);
+
+$cancelUrl=$this->url(array('module'=>'company','controller'=>'','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'company','controller'=>'member','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+if(isset($formData['tab_ajax']) && $formData['tab_ajax']=='dashboard')
+{
+$return_function="getDashboard('hide-3');";
+}
+elseif(isset($formData['tab_ajax']) && $formData['tab_ajax']=='mysetting')
+{
+$return_function="getSettingPanel('hide-3');";
+}
+else
+{
+	$return_function="goToPage('".$backUrl."','tab3','member');";
+}
+?>
+<div id="panel">
+	<div class="panel-header"><h3>Manage Subscriber</h3><!--<a href="<?php echo $this->url(array('module'=>'company','controller'=>'Member','action'=>'create'),'',true);?>" title="Add New Member User" onclick="return goToPage(this.href,'tab3','Member');" class="addbook">Add Member User</a>--></div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+			
+			<!--<div class="action-header">
+				<span class="action-title">&nbsp;</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>">Back</a></li>
+				</ul>
+			</div>-->	
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br  clear="all"/>
+		
+		<form id="form-add-member" method="post" onsubmit="return validate_common_form('form-add-member','<?php echo $addMemberUrl;?>','tab3');">
+		<table cellpadding="0" cellspacing="0">
+			
+			<tr>
+				<td class="tdleftBold">
+				Group<span class="required">*</span> : 
+				</td>
+				<td>
+				<select name="group_id" id="group_id" class="req" message="Please select a group">
+				<option value="">Select Group</option>
+				<?php
+				foreach($this->GroupList as $row)
+				{
+				?>
+				<option value="<?php echo $row['id']; ?>" <?php if(isset($formData["group_id"]) && $formData["group_id"]==$row['id']){ ?> selected <?php } ?>><?php echo $row['group_name'];?></option>
+				<?php
+				}
+				?>		   
+				</select>
+				<?php 
+				if(array_key_exists('group_id',$formErrors))
+				{
+					echo '<div class="inline-error">'.$formErrors['group_id'].'</div>';
+				}
+				?>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">
+				First name<span class="required">*</span> : 
+				</td>
+				<td>
+					<input type="text" name="first_name" id="first_name" value="<?php if(isset($formData['first_name'])){echo $formData['first_name'];}?>"  class="req form-textfield"  message="Please enter first name"/>
+					<?php if(array_key_exists('first_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['first_name'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">
+				Last Name<span class="required">*</span> : 
+				</td>
+				<td>
+					<input type="text" name="last_name" id="last_name" value="<?php if(isset($formData['last_name'])){echo $formData['last_name'];}?>"  class="req form-textfield"  message="Please enter last name" />
+					<?php if(array_key_exists('last_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['last_name'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>					
+			<tr>
+				<td class="tdleftBold">
+				Email<span class="required">*</span> : 
+				</td>
+				<td>
+					<input type="text" name="user_email" id="user_email" value="<?php if(isset($formData['user_email'])){echo $formData['user_email'];}?>"  class="req validmail form-textfield" message="Please enter email" invalidmessage="Please enter valid email address"/>
+					<?php if(array_key_exists('user_email',$formErrors)){echo '<div class="inline-error">'.$formErrors['user_email'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>					
+		<tr>
+				<td class="tdleftBold">
+				Password<span class="required">*</span> : 
+				</td>
+				<td>
+					<input type="password" name="user_password" id="user_password" value="<?php if(isset($formData['user_password'])){echo $formData['user_password'];}?>" class="req pass form-textfield" message="Please enter password" />
+					<?php if(array_key_exists('user_password',$formErrors)){echo '<div class="inline-error">'.$formErrors['user_password'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>					
+			
+			<tr>
+				<td class="tdleftBold">&nbsp;</td>
+				<td>
+					<input type="hidden" name="create_member" value="Create">
+					<input type="submit" value="Add" title="Add Member" class="button-Save" />
+				</td>
+			</tr>
+		</table>
+					
+	</form>
+	
+	<br  clear="all"/>
+			
+			<table class="table-list" cellpadding="0" cellspacing="0" width="100%">
+			
+			   <tr>
+				   <th width="5%" align="center">S.No</th>
+				   <th width="20%" align="center">Name</th>
+				   <th width="15%" align="center">Group</th>
+				   <th width="25%" align="center">Email Id</th>
+				   <th width="20%" align="center">Created On</th>
+				   <th width="5%" align="center">Status</th>
+				   <th width="10%" align="center">Action</th>
+			   </tr>
+			   
+			<?php 
+			  
+			  if(isset($this->MemberList) && count($this->MemberList)>0)
+			  {
+				$sNumber=1;
+				foreach($this->MemberList as $row)
+				{
+			?>
+					<tr>
+					<td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					<td><a href="<?php echo $this->url(array('module'=>'company','controller'=>'member','action'=>'edit','id'=>$row['id']),'',true);?>" title="View User" onclick="return goToPage(this.href,'tab3','member');"><?php echo $row['first_name']." ".$row['last_name'];?></a></td> 
+					
+					<td>
+					<?php
+					$group_info=$this->modelGroup->getInfoByGroupId($row['group_id']);
+					echo $group_info['group_name'];?></td>
+					<td><?php echo $row['user_email'];?></td>
+					   <td><?php echo $row['added_date'];?></td>
+					   <td>
+						<?php 
+						if($row['group_status']=='1')
+						{
+						?>
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'company','controller'=>'member','action'=>'inactive','id'=>$row['id']),'',true);?>" title="Click To Deactivate User" onclick="return inactive(this.href,'tab3','member');"><img alt="Active" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/active.png"/></a>
+						<?php
+						}
+						else
+						{
+						?>
+						<a class="action-icon" href="<?php echo $this->url(array('module'=>'company','controller'=>'member','action'=>'active','id'=>$row['id']),'',true);?>" title="Click To Activate User" onclick="return active(this.href,'tab3','member');"><img alt="Inactive" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/inactive.png"/></a>
+						<?php
+						}
+						?>
+						
+					   </td>
+					   <td>
+					   
+						<a class="action-icon" href="<?php echo $this->url(array('module'=>'company','controller'=>'member','action'=>'edit','id'=>$row['id']),'',true);?>" title="Edit User" onclick="return goToPage(this.href,'tab3','member');"><img alt="Edit" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/icon_edit.png"/></a>
+						
+						<!--<a class="action-icon" href="<?php echo $this->url(array('module'=>'company','controller'=>'member','action'=>'view','id'=>$row['id']),'',true);?>" title="View User" onclick="return goToPage(this.href,'tab3','member');"><img alt="View" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/application_view_detail.png"/></a>-->
+							
+						<a class="action-icon" href="<?php echo $this->url(array('module'=>'company','controller'=>'member','action'=>'delete','id'=>$row['id']),'',true);?>" title="Delete User" onclick="return deleteAction(this.href,'tab3','member');"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>
+						</td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+				
+				if($this->totalCount>$this->pageSize)
+				{
+					global $tab,$tab_ajax; 
+					$tab=3;$tab_ajax='member';
+					
+					echo '<tr><td colspan="8">&nbsp;</td></tr>';
+					echo '<tr><td colspan="8"><div class="pagination">'.$this->paginationControl($this->MemberList,'Sliding','pagination.phtml').'</div></td></tr>';
+					
+					//echo '<tr><td colspan="8">&nbsp;</td></tr>';
+					//echo '<tr><td colspan="8"><div class="pagination">'.$this->paginationControl($this->MemberList,'Sliding','ajax_pagination.phtml').'</div></td></tr>';
+					
+				}
+				
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="8" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>	
+	</div>
+</div>
+

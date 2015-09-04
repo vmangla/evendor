@@ -1,0 +1,165 @@
+<?php 
+$backUrl=$this->url(array('module'=>'publisher','controller'=>'index','action'=>'index'),'',true);
+$cancelUrl=$this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+
+<div class="panel-content">
+
+<div class="panel-sub-content">
+
+	<div class="action-header">
+		<span class="action-title">&nbsp;</span>
+		<ul class="horizonal-menu">
+			<li class="back"><a href="<?php echo $backUrl;?>" title="Back">Back</a></li>
+		</ul>
+	</div>
+  
+		<form id="form-add-user" method="post" onsubmit="return validate_user('form-add-user');">
+			<table width="100%" align="center">
+				<tr>
+					<td align="center" valign="top">
+					<h1>SignUp</h1>
+                    <h3>Registration</h3>
+					
+						<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+						<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+						<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+						
+							<table align="center" style="margin:0 auto;">
+								<!--<tr>
+									<td class="tdleftBold">User Type<span class="required">*</span> : </td>
+									<td>
+									    <select name="usertype" id="usertype">
+										   <option value="">Select</option>
+										   <option value="author" <?php if($formData["usertype"]=="author"){ ?> selected <?php } ?>>Author</option>
+										   <option value="publisher"  <?php if($formData["usertype"]=="publisher"){ ?> selected <?php } ?>>Publisher</option>
+										</select>
+										
+										 <?php if(array_key_exists('usertype',$formErrors)){echo '<div class="inline-error">'.$formErrors['usertype'].'</div>';}?>
+										 
+									</td>
+								</tr>-->
+								<tr>
+								<td colspan="2">&nbsp;</td>
+								</tr>
+								
+								<tr>
+									<td class="tdleftBold">First name<span class="required">*</span> : </td>
+									<td>
+										<input type="text" name="first_name" id="first_name" value="<?php if(isset($formData['first_name'])){echo $formData['first_name'];}?>"  class="req form-textfield"  message="Please enter first name"/>
+										<?php if(array_key_exists('first_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['first_name'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+								<td colspan="2">&nbsp;</td>
+								</tr>
+								
+								<tr>
+									<td class="tdleftBold">Last Name<span class="required">*</span> : </td>
+									<td>
+										<input type="text" name="last_name" id="last_name" value="<?php if(isset($formData['last_name'])){echo $formData['last_name'];}?>"  class="req form-textfield"  message="Please enter last name" />
+										<?php if(array_key_exists('last_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['last_name'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+								<td colspan="2">&nbsp;</td>
+								</tr>
+				
+								<tr>
+									<td class="tdleftBold">Email<span class="required">*</span> : </td>
+									<td>
+										<input type="text" name="emailid" id="emailid" value="<?php if(isset($formData['emailid'])){echo $formData['emailid'];}?>"  class="req validmail form-textfield" message="Please enter your email" invalidmessage="Please enter valid email address"/>
+										<?php if(array_key_exists('emailid',$formErrors)){echo '<div class="inline-error">'.$formErrors['emailid'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+								<td colspan="2">&nbsp;</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Password<span class="required">*</span> : </td>
+									<td>
+										<input type="password" name="password" id="password" value="<?php if(isset($formData['password'])){echo $formData['password'];}?>" class="req pass form-textfield" message="Please enter password" />
+										<?php if(array_key_exists('password',$formErrors)){echo '<div class="inline-error">'.$formErrors['password'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+								<td colspan="2">&nbsp;</td>
+								</tr>
+								
+								<tr>
+									<td class="tdleftBold">Country<span class="required">*</span> : </td>
+									<td>
+									
+										<?php
+										$modelPublisher = new Publisher_Model_DbTable_Publishers();
+										$countryList=$modelPublisher->getCountryList();
+										?>
+										
+										<select name="country" id="country" class="req" message="Please select country">
+										<option value="">Select Country</option>
+										
+										<?php
+										for($ii=0;$ii<count($countryList);$ii++)
+										{
+										?>
+										<option value="<?php echo $countryList[$ii]['id']; ?>" <?php if($formData["country"]==$countryList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $countryList[$ii]['country']; ?></option>
+										<?php
+										}
+										?>		   
+										</select>
+										
+									    <?php if(array_key_exists('country',$formErrors)){echo '<div class="inline-error">'.$formErrors['country'].'</div>';}?>
+
+									</td>
+								</tr>
+								<tr>
+								<td colspan="2">&nbsp;</td>
+								</tr>
+								
+								<tr>
+									<td class="tdleftBold" colspan="2">
+										<input type="checkbox" name="agree" id="agree" class="req" message="Please check to agree Terms and Conditions" <?php if(isset($formData['agree'])){echo 'checked="checked"';}?>/>I agree to the <a href="<?php echo $this->baseUrl();?>/page/index/title/terms-&-condition" target="_blank">Terms and Conditions</a>
+										<?php if(array_key_exists('agree',$formErrors)){echo '<div class="inline-error">'.$formErrors['agree'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+								<tr>
+								<td colspan="2">&nbsp;</td>
+								</tr>
+								
+					<td>&nbsp;</td>
+					<td>
+					<input type="submit" value="Register" class="button-Save"/>
+					</td>
+				</tr>
+							 </table>
+						 
+					</td>
+				</tr>
+			</table>
+		</form>
+</div>
+</div>
+
+<?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+
+function validate_user(pFormId)
+{
+	
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>
+

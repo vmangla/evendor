@@ -1,0 +1,1315 @@
+<?php
+class Admin_PublicationsController extends Zend_Controller_Action
+{
+	protected $_flashMessenger=null;
+	var $sessAdminInfo=null;
+	var $modelAdmiUsers=null;
+	var $modelModuleMenus=null;
+		
+	var $modelPublications=null;
+	var $modelBrand=null;
+	var $modelGenre=null;
+	var $modelIssue=null;
+	var $modelEditon=null;
+		
+    public function init()
+    {
+		/*creating flashMessanger object to display message*/
+		$this->_flashMessenger =$this->_helper->getHelper('FlashMessenger');	
+		
+		/* check for admin login*/
+		$storage = new Zend_Auth_Storage_Session('admin_type');
+        $data = $storage->read();
+        
+		if($data)
+		{
+		$this->modelAdmiUsers = new Admin_Model_DbTable_AdminUsers();
+		$this->sessAdminInfo=$this->modelAdmiUsers->fetchRow("id=".$data->id);
+		}
+		
+		if(!$this->sessAdminInfo)
+		{
+            $this->_redirect('admin/auth/');
+        }
+		$this->sessAdminInfo->modules=explode(",",$this->sessAdminInfo->modules);
+		$this->view->sessAdminInfo =$this->sessAdminInfo;
+		
+		$this->modelModuleMenus = new Admin_Model_DbTable_ModulesMenus();
+		$this->view->modelModuleMenus = $this->modelModuleMenus->getModuleMenusList();
+		
+		$this->modelPublications=new Admin_Model_DbTable_Publications();
+		$this->modelBrand = new Publisher_Model_DbTable_Brand();
+		$this->modelGenre = new Publisher_Model_DbTable_Genres();
+		$this->modelIssue = new Publisher_Model_DbTable_Issues();
+		$this->modelEditon = new Publisher_Model_DbTable_Edition();
+		
+		$this->modelSubscriptions = new Publisher_Model_DbTable_Subscriptions();
+		
+		
+		$this->view->modelPublications=$this->modelPublications;
+		$this->view->modelGenre=$this->modelGenre;
+		$this->view->modelIssue=$this->modelIssue;
+		$this->view->modelEditon=$this->modelEditon;
+		
+		/************* To Set The active section and links *******************/
+		$controller=$this->_getParam('controller');
+		$action=$this->_getParam('action');
+		
+	 
+		
+		$this->view->currentController=$controller;
+		$this->view->currentAction=$action;
+		/************* To Set The active section and links *******************/
+		$moduleAccessRow=$this->modelModuleMenus->fetchRow("controller='$controller'");
+		 
+		$currentModuleId=$moduleAccessRow['id'];
+		 
+	 
+		if(!in_array($currentModuleId,$this->sessAdminInfo->modules))
+		{
+			$this->_flashMessenger->addMessage('<div class="div-error">"'.$moduleAccessRow['menu_name'].'"   module not accessable to you</div>');
+			$this->_redirect('admin/');
+		}
+	}
+	
+	
+    public function indexAction()
+    {
+ 		
+		$this->_flashMessenger =$this->_helper->getHelper('FlashMessenger');
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		$formData=$this->getRequest()->getPost();
+		
+		if(isset($formData['set_featured']) && $formData['set_featured']!='')
+		{
+			 for($x=0;$x<count($formData['chk']);$x++)
+			 {
+				$data['is_featured']=1;
+				$success=$this->modelPublications->update($data,'id="'.$formData['chk'][$x].'"');
+				  
+			 }
+			 $this->_flashMessenger->addMessage('<div class="div-success">Product set as featured successfully.</div>');
+			 $this->_redirect('admin/publications');
+			
+		}		
+		
+		if(isset($formData['remove_featured']) && $formData['remove_featured']!='')
+		{
+			 for($x=0;$x<count($formData['chk']);$x++)
+			 {
+				$data['is_featured']=0;
+				$success=$this->modelPublications->update($data,'id="'.$formData['chk'][$x].'"');
+				  
+			 }
+			 $this->_flashMessenger->addMessage('<div class="div-success">Product removed from featured successfully.</div>');
+			  $this->_redirect('admin/publications');
+			
+		}
+		 
+		if(isset($formData['approve_all']) && $formData['approve_all']!='')
+		{
+			 for($x=0;$x<count($formData['chk']);$x++)
+			 {
+				$data['admin_approve']=1;
+				$success=$this->modelPublications->update($data,'id="'.$formData['chk'][$x].'"');
+				  
+			 }
+			 
+			  $this->_flashMessenger->addMessage('<div class="div-success">Product approved successfully.</div>');
+			   $this->_redirect('admin/publications');
+			
+		} 
+		
+		if(isset($formData['unapprove_all']) && $formData['unapprove_all']!='')
+		{
+			 for($x=0;$x<count($formData['chk']);$x++)
+			 {
+				$data['admin_approve']=0;
+				$success=$this->modelPublications->update($data,'id="'.$formData['chk'][$x].'"');
+				  
+			 }
+			 
+			 $this->_flashMessenger->addMessage('<div class="div-success">Product unapproved successfully.</div>');
+			  $this->_redirect('admin/publications');
+			
+		} 
+		 
+		 
+		 			
+		if(isset($formData['searchword']) && (trim($formData['searchword'])!="" || trim($formData['booktype'])!="" || trim($formData['searchisbn'])!=""))
+		{
+		  $bookname=trim($formData['searchword']);
+		  $booktype=trim($formData['booktype']);
+		  $isbnnumber=trim($formData['searchisbn']);
+		  
+		  $getBrandIds=$this->modelBrand->getBrandIds($bookname);
+		  	  
+		  $whrcls="";
+		  if($bookname!="")
+		  {
+		    $whrcls.=" title LIKE '%".$bookname."%'";
+			
+			if(!empty($getBrandIds))
+			{
+				$whrcls.=" OR title in(".$getBrandIds.")";
+			}
+		  }
+		  if($booktype!="")
+		  {
+		    if($bookname!="")
+		    {
+			$whrcls.=" AND product_type LIKE '%".$booktype."%'";
+			}
+			else
+			{
+		    $whrcls.=" product_type LIKE '%".$booktype."%'";
+			}
+		  }
+		  
+		  if(!empty($isbnnumber))
+		  {
+			if($bookname!="")
+		    {
+				$whrcls.=" AND isbn_number LIKE '%".$isbnnumber."%'";
+			}
+			elseif($booktype!="")
+			{
+				$whrcls.=" AND isbn_number LIKE '%".$isbnnumber."%'";
+			}
+			else
+			{
+				$whrcls.=" isbn_number LIKE '%".$isbnnumber."%'";
+			}
+		  }
+		    
+		  $prodList=$this->modelPublications->getListWhere($whrcls);
+		}
+		else
+		{
+		  $prodList=$this->modelPublications->getList();
+		}
+		
+		$page=$this->_getParam('page',1);
+	    $paginator = Zend_Paginator::factory($prodList);
+	    $paginator->setItemCountPerPage(ADMIN_PAGING_SIZE);
+	    $paginator->setCurrentPageNumber($page);
+		
+		$this->view->totalCount=count($prodList);
+		$this->view->pageSize=ADMIN_PAGING_SIZE;
+		$this->view->page=$page;
+		$this->view->prodList=$paginator;
+		
+		$this->view->formData=$formData;
+		
+	}
+	############### export users as csv format #######################################
+	public function exportusercsvAction()
+	{
+		$bookname = $this->_request->getParam('searchword');
+		$booktype = $this->_request->getParam('booktype');
+		$isbnnumber = $this->_request->getParam('searchisbn');
+		if(isset($bookname) && (trim($bookname)!="" || trim($booktype)!="" || trim($isbnnumber)!=""))
+		{
+		  $bookname=trim($bookname);
+		  $booktype=trim($booktype);
+		  $isbnnumber=trim($isbnnumber);		  
+		  $getBrandIds=$this->modelBrand->getBrandIds($bookname);		  	  
+		  $whrcls="";
+		  if($bookname!="")
+		  {
+		  	$whrcls.=" title LIKE '%".$bookname."%'";
+			if(!empty($getBrandIds))
+			{
+				$whrcls.=" OR title in(".$getBrandIds.")";
+			}
+		  }
+		  if($booktype!="")
+		  {
+		    if($bookname!="")
+		    {
+				$whrcls.=" AND product_type LIKE '%".$booktype."%'";
+			}
+			else
+			{
+		    	$whrcls.=" product_type LIKE '%".$booktype."%'";
+			}
+		  }
+		  if(!empty($isbnnumber))
+		  {
+			if($bookname!="")
+		    {
+				$whrcls.=" AND isbn_number LIKE '%".$isbnnumber."%'";
+			}
+			elseif($booktype!="")
+			{
+				$whrcls.=" AND isbn_number LIKE '%".$isbnnumber."%'";
+			}
+			else
+			{
+				$whrcls.=" isbn_number LIKE '%".$isbnnumber."%'";
+			}
+		  }
+		    
+		 // $prodList=$this->modelPublications->getListWhere($whrcls);
+		  
+		  $sql = "select id,title,product_type,parent_brand_id,author_id,publish_time,publisher,publisher_id,admin_approve,isbn_number,is_featured from pclive_products  where $whrcls order by id desc";		
+			//$request_list=$this->modelconnections->fetchAll("intro_id='".$_SESSION['Zend_Auth']['storage']->user_id."' and conn_linkedin_id!=''");
+			$request_list = $this->modelPublications->getAdapter()->fetchAll($sql);
+			
+		}
+		else
+		{
+		  //$prodList=$this->modelPublications->getList();
+		  
+		 	 $sql = "select id,title,parent_brand_id,product_type,author_id,publish_time,publisher,publisher_id,admin_approve,isbn_number,is_featured from pclive_products order by id desc";		
+			//$request_list=$this->modelconnections->fetchAll("intro_id='".$_SESSION['Zend_Auth']['storage']->user_id."' and conn_linkedin_id!=''");
+			$request_list = $this->modelPublications->getAdapter()->fetchAll($sql);
+		}
+		
+			$separator=","; // separate column in csv				
+			$modelCategory = new Publisher_Model_DbTable_Books();
+			$productPrice = new Publisher_Model_DbTable_BookPrices(); 
+			if(count($request_list)>0)
+			{
+				$csv_output="";				
+				$csv_output.="Title / Brand".$separator."Genre".$separator."Author / Publisher".$separator."ISBN / ISSN".$separator."Publish Time".$separator."Status".$separator."Featured\n";
+				
+				$content='<table class="table-list" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+				  <th>Title / Brand</th>
+				  <th>Genre</th>
+				  <th>Author / Publisher</th>
+				  <th>ISBN / ISSN</th>
+				  <th>Publish Time</th>
+				  <th>Price</th>	
+				   <th>Account Number</th>
+				   <th>Account Holder Name</th>
+				   <th>Banker</th>
+				  <th>Status</th>
+				  <th>Featured</th>
+				</tr>';			
+				foreach($request_list as $req)
+				{
+					$productPriceInfo = array();
+					$productPriceInfo = $productPrice->getPriceList($req['id']);
+					$price_details ='';
+					foreach($productPriceInfo as $priceDet)
+					{
+						$countryDet = $modelCategory->getCountryName($priceDet['country_id']);
+						if($priceDet['price']!='')
+						{
+							$price_details.= $priceDet['price']."(P) ";
+						}
+						if($priceDet['group_price']!='')
+						{
+							$price_details.=$priceDet['group_price']."(GP) ";
+						}
+						$price_details.= "in ".$countryDet['country']."<br/>";
+					}
+					$getBrandInfo=$modelCategory->getBrandInfo($req['title']);
+					if(!empty($getBrandInfo))
+					{
+						$titleBrand=$getBrandInfo['brand'];
+					}else{
+						$titleBrand=$req['title'];
+					}
+					if(!empty($req['parent_brand_id']))
+					{
+						$productInfo=$this->modelPublications->fetchRow('id='.$req['parent_brand_id']);
+						$getParentBrandInfo=$modelCategory->getBrandInfo($productInfo->title);
+						if(!empty($getParentBrandInfo))
+						{
+							$titleBrand=$getParentBrandInfo['brand']." - ".$titleBrand;
+						}
+					}						
+					$title =  stripslashes($titleBrand);
+					
+					$genreInfo=$this->modelGenre->getGenreInfo($req['product_type']);
+					$genre = $genreInfo['genre'];					
+				  $publisher_info_array = array();
+				  $publisher_info_array=$this->modelPublications->getPublisherInfo($req['publisher_id']);
+				  $account_det = " Account No:".$publisher_info_array['account_no']." Account Holder Name:".$publisher_info_array['account_no']." Bank Name:".$publisher_info_array['banker'];
+				  /* if(!empty($publisher_info_array))
+				   {
+				   	 $publisherName =$publisher_info_array['first_name']."&nbsp;".$publisher_info_array['last_name'];
+				   }
+				   else
+				   {
+						$publisherName = $req['publisher'];
+				   }	*/
+				   $publisherName = $req['publisher'];
+				   $isbnNumber = $req['isbn_number']; 
+				   $pubTime = $req['publish_time'];
+				   if($req['admin_approve'] == '1')	
+				   {
+				   	 $status = "Aproved";
+				   }
+				   else
+				   {
+				   	  $status = "Not Aproved";
+				   }
+				   if($req['is_featured'] =='1')	
+				   {
+				   	  $featured ="Yes";
+				   }
+				   else {
+					   $featured ="No";
+				   }
+				   $content.='<tr>
+					 			<td>'.str_replace(",","",$title).'</td>
+				 				<td>'.str_replace(",","",$genre).'</td>
+				  				<td>'.stripslashes($publisherName).'</td>
+				 				<td>'.$isbnNumber.'</td>
+				 				<td>'.$pubTime.'</td>
+								<td>'.$price_details.'</td>
+								<td>'.$publisher_info_array['account_no'].'</td>
+								<td>'.$publisher_info_array['account_holder_name'].'</td>
+								<td>'.$publisher_info_array['banker'].'</td>
+				  				<td>'.$status.'</td>
+				  				<td>'.$featured.'</td>
+					   		</tr>';	
+					$csv_output .= str_replace(",","",$title).$separator.str_replace(",","",$genre).$separator.str_replace(",","",$publisherName).$separator.str_replace(",","",$isbnNumber).$separator.str_replace(",","",$pubTime).$separator.str_replace(",","",$status ).$separator.$featured."\n";
+				}
+			}
+			else {
+				$content.='<tr><td colspan="8" class="list-not-found">Data Not Found</td></tr>';
+			}
+			$content.='</table>';
+		  
+			$file = "publications";
+			$filename = $file."_".time().".xls";
+			
+			$test=$content;
+			header("Content-type: application/vnd.ms-excel");
+			header("Content-Disposition: attachment; filename=$filename");
+			echo $test;
+			exit;
+			
+			/*header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+			header("Content-type: application/vnd.ms-excel");
+			header("Content-type: application/vnd.ms-excel");
+			header("Content-type: application/xls");
+			//header("Content-disposition: excel".time().".csv");
+			header("Content-Disposition: attachment; filename=".$filename.".xls");
+			header( "Content-disposition: filename=".$filename.".xls");
+			print $csv_output;
+			exit;*/
+		
+	}
+	public function viewAction()
+    { 
+		$id=$this->_request->getParam('id',0);
+		$parent_publication_id=$this->_request->getParam('parentid',0);
+		if(!empty($parent_publication_id))
+		{
+		$parent_publication_info=$this->modelIssue->getParentPublicationInfo($parent_publication_id);
+		$parent_brand_info=$this->modelIssue->getParentBrandInfo($parent_publication_info['title']);
+		$this->view->ParentPublicationInfo=$parent_publication_info;
+		$this->view->ParentBrandInfo=$parent_brand_info;
+		}
+		
+		$formDataValue=array();
+		$formDataValue=$this->getRequest()->getPost();
+		
+		
+		
+		if($id>0 && $this->modelPublications->isExist($id))
+		{
+		  
+			$formData=array();
+			
+			$productInfo=$this->modelPublications->fetchRow('id='.$id);
+			
+			$publisherInfo=$this->modelPublications->getPublisherInfo($productInfo['publisher_id']);
+			
+			if(isset($formDataValue['submit_status']) && $formDataValue['submit_status']!='')
+			{
+				$data = array("is_featured"=>$formDataValue['featured'],"admin_approve"=>$formDataValue['status']);
+				$success=$this->modelPublications->update($data,'id="'.$id.'"');
+				$this->_flashMessenger->addMessage('<div class="div-success">Product updated successfully.</div>');
+				$this->_redirect('admin/publications');
+			
+			}
+			
+			
+			if($this->getRequest()->isPost() && (!empty($formDataValue['sendemail']) && $formDataValue['sendemail']=='Send Mail'))
+	     	{
+		                            $mailhost= SMTP_SERVER; 
+									
+									$mailconfig = array(
+									'ssl' => SMTP_SSL, 
+									'port' => SMTP_PORT, 
+									'auth' => SMTP_AUTH, 
+									'username' => SMTP_USERNAME, 
+									'password' => SMTP_PASSWORD);
+									
+									$transport = new Zend_Mail_Transport_Smtp ($mailhost, $mailconfig);
+									Zend_Mail::setDefaultTransport($transport);
+								
+								    	$message ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+									<html xmlns="http://www.w3.org/1999/xhtml">
+									<head>
+									<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+									<title>Electronic Vendor Ltd</title>
+									<style type="text/css">
+									body{
+									margin:0;
+									padding:0px;
+									}
+									#container{
+									width:700px;
+									margin:0 auto;
+									}
+									#header{
+									width:700px;
+									float:left;
+									padding:40px 0 10px 0;
+									font-family:Arial, Helvetica, sans-serif;
+									color:#3A3B3F;
+									text-align:center;
+									font-size:11px;
+									
+									}
+									#header a{
+									color:#3A3B3F;
+									font-weight:bold;
+									text-decoration:none;
+									}
+									#header a:hover{
+									color:#40BBE3;
+									}
+									#logopart
+									{
+									border:0px solid red;
+									width:698px;
+									height:140px;
+									background-color:#1B75BB;
+									margin-left:0px;
+									}
+									#content{
+									width:698px;
+									float:left;
+									padding:0px 0px 10px 0px;
+									font-family:Arial, Helvetica, sans-serif;
+									color:#3A3B3F;
+									border:1px solid #D6D6D6;
+									font-size:12px;
+									}
+									#content p{
+									margin:0px 20px;
+									padding:0px 0 20px 0;
+									font-family:Arial, Helvetica, sans-serif;
+									font-size:12px;
+									color:#3A3B3F;
+									}
+									#content p.logo{
+									margin:0px;
+									padding:15px 0 0 20px;
+									height:77px
+									}
+									#content p.title{
+									margin:0px;
+									font-size:20px;
+									font-family:Arial, Helvetica, sans-serif;
+									border-bottom:3px solid #D6D6D6;
+									padding:0px 0 13px 0;
+									margin:25px 20px 14px 20px;
+									color:#3A3B3F;
+									}
+									#content p a{
+									color:#40BBE3;
+									text-decoration:none;
+									}
+									#content p a:hover{
+									color:#3A3B3F;
+									text-decoration:underline;
+									}
+									#content h2{
+									margin:0px;
+									padding:0 0 14px 0;
+									font-size:14px;
+									font-family:Arial, Helvetica, sans-serif;
+									font-weight:bold;
+									}
+									#footer{
+									width:700px;
+									float:left;
+									}
+									#footer p{
+									margin:0 0 0 0;
+									padding:0 0 0 0;
+									font-family:Arial, Helvetica, sans-serif;
+									font-size:11px;
+									color:#78797E;
+									}
+									#footer p.disclamer{
+									margin: 0 0 0 0;
+									padding:16px 6px 10px 6px;
+									text-align: justify;
+									border-bottom:1px solid #3A3B3F;
+									color:#78797E;
+									}
+									#footer p.notice{
+									margin: 0 0 15px 0;
+									padding:16px 6px 10px 6px;
+									text-align: justify;
+									color:#78797E;
+									}
+									
+									</style>
+									</head>
+									<body>
+									
+									<div id="container">
+									<div id="header"></div>
+									<div id="content">
+									
+									<div id="logopart">
+									<p class="logo"><a href="'.SVN_URL.'" target="_blank">
+									Electronic Vendor Ltd
+									</a></p>
+									</div>
+									
+									<p class="title">New Admin Message Email</p>
+									<p>You have new message from admin. </p>
+									<p>Book :&nbsp;'.$formDataValue['searchword'].'</p>
+									<BR />
+									<p>&nbsp;</p>
+									
+									</div>
+									<div id="footer">&nbsp;</div>
+									</div>
+									</body>
+									</html>';
+									
+									/*echo $publisherInfo['emailid'];
+									exit;*/
+									$mail = new Zend_Mail();
+									$mail->addTo($publisherInfo['emailid']);
+									$mail->setSubject("New Admin Message Email");
+									$mail->setBodyHtml($message);
+									$mail->setFrom(SETFROM, SETNAME);
+									
+									if($mail->send())
+									{
+									echo "<script>alert('Message send successfully.');</script>";
+									//$this->_flashMessenger->addMessage('<div class="div-success">Message send successfully</div>');
+									} 
+									else 
+									{	
+									echo "<script>alert('Mail could not be sent. Try again later.');</script>";
+									//$this->view->errorMessage='<div class="div-error">Mail could not be sent. Try again later.</div>';
+									}
+		    }
+			
+			$formData=$productInfo->toArray();	
+			$this->view->formData=$formData;
+		}
+    }
+	
+		
+	/*
+	public function editAction()
+    {			
+ 		$this->view->messages = $this->_flashMessenger->getMessages();
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->modelPublications->isExist($id))
+		{
+			$formData=array();
+			$formErrors=array();
+			
+			$userInfo=$this->modelPublications->fetchRow('id='.$id);
+			$formData=$userInfo->toArray();
+			//print_r($formData);exit;
+			
+			if($this->getRequest()->isPost())
+			{
+				$formData=$this->getRequest()->getPost();
+				
+				if(trim($formData['category_name'])=="")
+				{
+					$formErrors['category_name']="Please enter category name";
+				}
+				if(count($formErrors)==0)
+				{
+					$formData['updated_date']=date('Y-m-d H:i:s');
+					$result=$this->modelPublications->update($formData,'id='.$id);
+					
+					$this->_flashMessenger->addMessage('<div class="div-success">Category updated successfully</div>');
+					$this->_redirect('admin/categories/');
+				}
+				else
+				{
+					$this->view->errorMessage='<div class="div-error">Please enter required field properly.</div>';
+				}
+			}
+			$this->view->formData=$formData;
+			$this->view->formErrors=$formErrors;
+			$this->view->parentCategoryList=$this->modelPublications->getParentList();
+		}
+		else
+		{
+			$this->_redirect('admin/publications/');
+		}
+    }
+	*/
+	
+	public function issuesAction()
+    {
+ 		$this->view->messages = $this->_flashMessenger->getMessages();
+		
+		$parent_publication_id=$this->_request->getParam('parentid',0);
+		$parent_publication_info=$this->modelIssue->getParentPublicationInfo($parent_publication_id);
+		$parent_brand_info=$this->modelIssue->getParentBrandInfo($parent_publication_info['title']);
+		//print_r($parent_brand_info);
+				
+		$formData=$this->getRequest()->getPost();
+						
+		if(isset($formData['searchword']) && (trim($formData['searchword'])!="" || trim($formData['edition'])!="" || trim($formData['status'])!=""))
+		{
+		  $issuname=trim($formData['searchword']);
+		  $edition=trim($formData['edition']);
+		  $status=trim($formData['status']);
+		  
+		  $whrcls="";
+		  if($issuname!="")
+		  {
+		    $whrcls.=" title LIKE '%".$issuname."%'";
+		  }
+		  if($edition!="")
+		  {
+		    if($issuname!="")
+		    {
+			$whrcls.=" AND edition_id LIKE '%".$edition."%'";
+			}
+			else
+			{
+		    $whrcls.=" edition_id LIKE '%".$edition."%'";
+			}
+		  }
+		  
+		  if($status!="")
+		  {
+			if($issuname!="")
+		    {
+				$whrcls.=" AND admin_approve='".$status."'";
+			}
+			elseif($edition!="")
+			{
+				$whrcls.=" AND admin_approve='".$status."'";
+			}
+			else
+			{
+				$whrcls.=" admin_approve='".$status."'";
+			}
+		  }
+		    
+		  $issueList=$this->modelIssue->getListWhere($whrcls." AND parent_brand_id='$parent_publication_id'");
+		}
+		else
+		{
+		  $issueList=$this->modelIssue->getList(0,$parent_publication_id);
+		}
+		//$issueList=$this->modelIssue->getList(0,$parent_publication_id);
+		
+		$page=$this->_getParam('page',1);
+	    $paginator = Zend_Paginator::factory($issueList);
+	    $paginator->setItemCountPerPage(ADMIN_PAGING_SIZE);
+	    $paginator->setCurrentPageNumber($page);
+		
+		$this->view->totalCount=count($issueList);
+		$this->view->pageSize=ADMIN_PAGING_SIZE;
+		$this->view->page=$page;
+		$this->view->issueList=$paginator;
+		
+		$this->view->ParentPublicationInfo=$parent_publication_info;
+		$this->view->ParentBrandInfo=$parent_brand_info;
+		$this->view->formData=$formData;
+	}
+		
+	
+	public function deleteAction()
+    {
+ 		
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->modelPublications->isExist($id))
+		{
+			$success=$this->modelPublications->delete('id='.$id);
+			if($success)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Product deleted successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to delete product</div>');
+			}
+		}
+		$this->_redirect('admin/publications/');
+    }
+	
+	
+	public function inactiveAction()
+    {
+ 		
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->modelPublications->isExist($id))
+		{
+		
+		    $data['admin_approve']=0;
+		    $success=$this->modelPublications->update($data,'id="'.$id.'"');
+			
+			if($success)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Product deactivated successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to deactivate product</div>');
+			}
+		}
+		$this->_redirect('admin/publications/');
+    }
+	
+	
+	public function activeAction()
+    {
+ 		
+		$arrayids = array();
+		
+		$this->usersubscriptions = new Model_DbTable_Usersubscription();
+		
+		$this->userdetails = new Model_DbTable_Companies();
+		
+		$modelCategory = new Publisher_Model_DbTable_Books();
+		
+		$this->notifications = new Admin_Model_DbTable_Notifications();
+		
+		$modelImage = new Admin_Model_DbTable_ProductImages();
+		
+		$modelPrice = new Admin_Model_DbTable_ProductPrices();
+		
+		$creditHistoryObj = new User_Model_DbTable_Chistory();
+		
+		$this->modelBooks = new Publisher_Model_DbTable_Books();
+		
+		$notificationdata = $this->notifications->fetchAll('ntype="booksubscription" and status=1');
+		
+		$bookuploaddata = $this->notifications->fetchAll('ntype="bookupload" and status=1');
+		
+		$pid=$this->_request->getParam('pid',0);
+		
+		$id=$this->_request->getParam('id',0);
+		
+		
+		
+ 
+		if($id>0 && $this->modelPublications->isExist($id))
+		{
+		    $data['admin_approve']=1;
+		    $success=$this->modelPublications->update($data,'id="'.$id.'"');
+			
+			if($success)
+			{
+
+				$this->usersubscriptionsdata = $this->usersubscriptions->fetchAll('subscription_type >0
+				AND number_of_issues > number_of_downloaded and publication_id='.$pid.' and start_date!="0000-00-00 00:00:00"');	
+			
+				
+				
+				if(count($this->usersubscriptionsdata)>0)	
+				{
+				if(count($bookuploaddata)>0)
+				{
+					foreach($this->usersubscriptionsdata as $row_subdata)
+					{
+						/*echo "publication id : - ".$pid;
+						echo 'subscription_type >0
+						AND number_of_issues > number_of_downloaded and product_id='.$id.' and user_id="'.$row_userids['id'].'"';
+						die();*/
+						
+							
+						$this->totalactivesubscription = $this->usersubscriptions->fetchAll('subscription_type >0
+						 and publication_id='.$pid.' and user_id="'.$row_subdata['user_id'].'" and start_date IS NULL');
+						
+						$this->totalactivesubscription_with_startdate = $this->usersubscriptions->fetchAll('subscription_type >0
+						AND number_of_issues > number_of_downloaded and publication_id='.$pid.' and user_id="'.$row_subdata['user_id'].'" and start_date IS NOT NULL');
+						
+					 
+						
+				 
+						if($this->totalactivesubscription_with_startdate[0]['number_of_issues']>count($this->totalactivesubscription))
+						 {
+						$this->userdata = $this->userdetails->fetchAll('id="'.$row_subdata['user_id'].'" and status="1"');
+						
+						$chk_subscription = $this->usersubscriptions->fetchAll('user_id="'.$row_subdata['user_id'].'" and product_id="'.$id.'"');
+						
+						if(count($chk_subscription)==0)
+						{
+							$product_details = $this->modelBooks->fetchRow("id='".$id."'");
+							 
+							$getBrandInfo=$this->modelBooks->getBrandInfo($product_details['title']);
+							
+							if(!empty($getBrandInfo) && is_numeric($product_details['title']))
+							{
+								$titleBrand=$getBrandInfo['brand'];
+							}
+							else
+							{
+								$titleBrand=$product_details['title'];
+							}
+							
+							if(!empty($product_details['parent_brand_id']) && $product_details['cat_id']!='3')
+							{
+								$productInfo=$this->modelBooks->fetchRow('id="'.$product_details['parent_brand_id'].'"');
+								$getParentBrandInfo=$this->modelBooks->getBrandInfo($productInfo->title);
+								if(!empty($getParentBrandInfo))
+								{
+									$titleBrand=$getParentBrandInfo['brand'];
+								}				
+							}
+							
+							
+							
+							$productInfo=$this->modelBooks->fetchRow('id="'.$product_details['parent_brand_id'].'"');
+							$getParentBrandInfo=$this->modelBooks->getBrandInfo($productInfo->title);
+							if(!empty($getParentBrandInfo))
+							{
+							//$titleBrand=$titleBrand.' ('.$getParentBrandInfo['brand'].')';
+							//$titleBrand=$getParentBrandInfo['brand']." - ".$titleBrand;
+							$titleBrand=$getParentBrandInfo['brand'];
+							}				
+							
+							
+							$tempDatInsert = array();
+							
+							$tempDatInsert['userid'] = $row_subdata['user_id'];
+							$tempDatInsert['bookid'] = $id;
+							$tempDatInsert['store_id'] = '226';
+							$tempDatInsert['price'] = $row_subdata['subscription_price'];
+							$tempDatInsert['quantity'] = '1';
+							$tempDatInsert['book_name'] = $titleBrand;
+							$tempDatInsert['add_date'] = date('Y-m-d H:i:s');
+							$tempDatInsert['group_id'] = $this->userdata[0]['group_id'];
+							$tempDatInsert['order_id'] = $row_subdata['order_id'];
+							$tempDatInsert['payment_status'] = '1';
+							$tempDatInsert['converted_price'] = $row_subdata['subscription_price'];
+							$tempDatInsert['subscription_type'] = $row_subdata['subscription_type'];
+							$tempDatInsert['subscription_store'] = $row_subdata['country'];
+							$tempDatInsert['subscription_language'] = $row_subdata['language'];
+							$tempDatInsert['subscription_name'] = $row_subdata['subscription_name'];
+							
+							$creditHistoryObj->insert($tempDatInsert);	
+							
+							
+							
+							$insert_user_sub_details_array = array("order_id"=>$row_subdata['order_id'],"product_id"=>$id,"publisher_id"=>$row_subdata['publisher_id'],"author_id"=>$row_subdata['author_id'],"group_id"=>$this->userdata[0]['group_id'],"user_id"=>$row_subdata['user_id'],"subscription_type"=>$row_subdata['subscription_type'],"subscription_name"=>$row_subdata['subscription_name'],"subscription_price"=>$row_subdata['subscription_price'],"country"=>$row_subdata['country'],"language"=>$row_subdata['language'],"publication_id"=>$row_subdata['publication_id'],"company_id"=>$this->userdata[0]['parent_id'],"active_date"=>date('Y-m-d H:i:s'));
+						
+						
+							$this->usersubscriptions->insert($insert_user_sub_details_array);
+						}
+						
+						
+						$publicationdetails = $this->modelPublications->fetchAll('id='.$id.'');
+						
+						$product_price = $modelPrice->fetchAll('product_id="'.$id.'" and country_id=226 and language_id=1');
+						 
+						
+						$getproductimage = $modelImage->fetchAll('product_id="'.$publicationdetails[0]['id'].'"');
+						
+						$publisher_info_array=$this->modelPublications->getPublisherInfo($publicationdetails[0]['publisher_id']); 
+					   
+						$author_info_array=$this->modelPublications->getAuthorInfo($publicationdetails[0]['author_id']);
+					
+					
+						$getBrandInfo=$modelCategory->getBrandInfo($publicationdetails[0]['title']);
+						if(!empty($getBrandInfo))
+						{
+							$titleBrand=$getBrandInfo['brand'];
+						}else{
+							$titleBrand=$publicationdetails[0]['title'];
+						}
+						
+						$fullname =  $this->userdata[0]['first_name'].' '.$this->userdata[0]['last_name'];
+					   
+						$description_full = stripslashes($bookuploaddata[0]['message_body']);
+						
+						$description_full = nl2br($description_full);
+					   
+						$description = str_replace("{name}",$fullname,$description_full);
+						
+						$description = str_replace("{title}",$titleBrand,$description);
+
+						
+						if(count($this->usersubscriptionsdata) > 0)
+						{						
+							$description = str_replace("{price}","N/A",$description);
+						}
+						else
+						{
+							
+							if(isset($product_price[0]['price']) && $product_price[0]['price']!='')
+							{
+								$description = str_replace("{price}","&#8358;".$product_price[0]['price'],$description);
+							}
+						}
+						
+						if(count($getproductimage)>0)
+						{
+							$linkdata = 'http://miprojects2.com.php53-6.ord1-1.websitetestlink.com/projects/evendor/catalogue/detail/id/'.$publicationdetails[0]['id'].'/store/226/lang/1';
+						}
+						else
+						{
+							$linkdata = "javascript:void(0);";
+						}
+						$description = str_replace("{link}",$linkdata,$description);
+
+						
+						if(count($getproductimage)>0)
+						{
+							$imagedata = 'http://miprojects2.com.php53-6.ord1-1.websitetestlink.com/projects/evendor/public/uploads/users/'.$getproductimage[0]['image_name_thumb'].'';
+						}
+						else
+						{
+							$imagedata = "";
+						}
+						
+						$description = str_replace("{image}",$imagedata,$description);
+						
+						$publishername = $publisher_info_array['first_name']." " .$publisher_info_array['last_name'];
+						
+						$authorname = $author_info_array['first_name']." " .$author_info_array['last_name'];
+						
+						$description = str_replace("{publisher}",$publishername,$description);
+						
+						$description = str_replace("{desc}",$publicationdetails[0]['description'],$description);
+						
+						 
+						
+						$description = str_replace("{author}",$authorname,$description);
+						
+					  
+						$mailhost= SMTP_SERVER; 
+
+						$mailconfig = array(
+						'ssl' => SMTP_SSL, 
+						'port' => SMTP_PORT, 
+						'auth' => SMTP_AUTH, 
+						'username' => SMTP_USERNAME, 
+						'password' => SMTP_PASSWORD);
+						
+					 
+
+						$transport = new Zend_Mail_Transport_Smtp ($mailhost, $mailconfig);
+						Zend_Mail::setDefaultTransport($transport);
+
+						 
+				 
+						$mail = new Zend_Mail();
+						$mail->addTo($this->userdata[0]['user_email']);
+						$mail->setSubject(stripslashes($bookuploaddata[0]['title']));
+						$mail->setBodyHtml($description);
+						$mail->setFrom(SETFROM, SETNAME);
+						//$mail->send();
+						
+						/*$reg='APA91bEZVTcqtar_br_cipLae9TyYe26JhsE2jHHnV76K_zWSAAyly2ZW6SCd4-REMgY_lGtHLh-2VvObjlj-pRvHd2932KlKY7anEOKQMyviVLs1A1Y7RYDPNtXwuRqTY7rILdF_LcXvY4GntxKouBU1EUv8E1mCQ';
+
+						$title = str_replace("_"," ",$title);
+						$regID = array($reg);
+						// $message="You have registerted successfully";
+						$message = array("userID" =>$row_userids['id'],"msg" =>$bookuploaddata[0]['title']." is ready to download","email" =>$row_userids['user_email']);
+						send_push_notification($regID, $message);*/
+						
+						if($publicationdetails[0]['file_name']!='' && count($getproductimage)>0 && $product_price[0]['price']!='')
+						{
+							$get_registeration_id = mysql_query("select * from pclive_deviceID where user_publisher_id='".$this->userdata[0]['id']."' and reg_id!=''");
+							$res_registeration_id=mysql_fetch_array($get_registeration_id);
+				
+							$reg= $res_registeration_id['reg_id'];
+						
+							$regID = array($reg);
+						// $message="You have registerted successfully";
+							$message = array("userID" =>$this->userdata[0]['id'],"msg" =>"publication is ready to download","email" =>$this->userdata[0]['user_email']);
+						
+							if($res_registration_id['os_type']==0)
+							{
+								send_push_notification($regID, $message);
+							}
+							else
+							{
+								send_push_notification_ios($regID, $row_userids['user_email'], $this->userdata[0]['id'], "publication is ready to download");
+							}
+						}
+						 }
+				 			
+					}
+				 }
+				}
+			
+				$this->_flashMessenger->addMessage('<div class="div-success">Product activated successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to activate product</div>');
+			}
+		}
+		$this->_redirect('admin/publications/');
+    }
+	
+	public function deleteimageAction()
+    {
+	
+		$id=$this->_request->getParam('id',0);
+		
+	 
+		$modelImage = new Admin_Model_DbTable_ProductImages();
+		$imageDetail=$modelImage->getImageInfo($id);
+		
+		unlink(USER_UPLOAD_DIR.$imageDetail['image_name']);
+		unlink(USER_UPLOAD_DIR.$imageDetail['image_name_thumb']);
+	
+		if($id>0 && $modelImage->isExist($id))
+		{
+			$success=$modelImage->delete('id='.$id);
+			if($success)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Image deleted successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to delete image</div>');
+			}
+			
+		}
+	
+		$this->_redirect('admin/publications/');
+			
+	}
+	
+	
+	public function deletepriceAction()
+    {
+		$id=$this->_request->getParam('id',0);
+		
+		$modelPrice = new Admin_Model_DbTable_ProductPrices();
+		
+		if($id>0 && $modelPrice->isExist($id))
+		{
+			$success=$modelPrice->delete('id='.$id);
+			
+			if($success)
+			{	
+				$this->_flashMessenger->addMessage('<div class="div-success">Price deleted successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to delete price</div>');
+			}
+		}
+		
+		$this->_redirect('admin/publications/');
+		
+	}
+	
+	public function deleteepubfileAction()
+    {
+	
+		$id=$this->_request->getParam('id',0);
+	
+		$bookDetail=$this->modelPublications->getInfoByPublisherId($id);
+		
+		unlink(EPUB_UPLOAD_DIR.$bookDetail['file_name']);
+	
+		if($id>0 && $this->modelPublications->isExist($id))
+		{
+		   
+		    $Filedata=array('file_name'=>'',
+						    'file_size'=>'');
+		
+			$result=$this->modelPublications->update($Filedata,'id='.$id);  
+			
+			if($result)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Epub file deleted successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to delete epub file</div>');
+			}
+			
+		}
+	
+		$this->_redirect('admin/publications/');
+			
+	}
+	
+	public function downloadpubfileAction()
+    {
+		    $id=$this->_request->getParam('id',0);
+			
+			$bookDetail=$this->modelPublications->getInfoByPublisherId($id);
+			
+			if($id>0 && $this->modelPublications->isExist($id))
+			{
+			  
+					$filename = EPUB_UPLOAD_DIR.$bookDetail['file_name']; 
+					
+					header('Pragma: public');
+					header('Expires: 0');
+					header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+					header('Cache-Control: private', false); 
+					header('Content-Type: application/epub');
+					header('Content-Disposition: attachment; filename="'. basename($filename) . '";');
+					header('Content-Transfer-Encoding: binary');
+					header('Content-Length: ' . filesize($filename));
+					readfile($filename);
+					exit;
+			
+			}
+				
+	}
+	
+	
+	public function featuredinactiveAction()
+    {
+ 		
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->modelPublications->isExist($id))
+		{
+		
+		    $data['is_featured']=0;
+		    $success=$this->modelPublications->update($data,'id="'.$id.'"');
+		}
+		$this->_redirect('admin/publications/');
+    }
+	
+	
+	public function featuredactiveAction()
+    {
+ 		
+		$id=$this->_request->getParam('id',0);
+		
+		if($id>0 && $this->modelPublications->isExist($id))
+		{
+		
+		    $data['is_featured']=1;
+		    $success=$this->modelPublications->update($data,'id="'.$id.'"');
+		}
+		$this->_redirect('admin/publications/');
+    }
+	public function downloadAction()
+	{
+		$this->modelBooks = new Publisher_Model_DbTable_Books();
+		$this->_helper->layout->disableLayout();
+		$id=$this->_request->getParam('id',0);			
+		$bookDetail=$this->modelBooks->getInfoByPublicationId($id);			
+		if($id>0 && $this->modelBooks->isExist($id))
+		{
+			$filename = EPUB_UPLOAD_DIR.$bookDetail['file_name']; 
+			$file_details = pathinfo($filename);			
+			$ext = $file_details['extension'];		
+			if($ext=='pdf')
+			{
+				header('Pragma: public');
+				header('Expires: 0');
+				header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+				header('Cache-Control: private', false);
+				header('Content-Type: application/pdf');
+				header('Content-Disposition: attachment; filename="'. basename($filename) . '";');
+				header('Content-Transfer-Encoding: binary');
+				header('Content-Length: ' . filesize($filename));
+				readfile($filename);
+				exit;
+			}
+			else {
+				echo "Message";
+				header('Pragma: public');
+				header('Expires: 0');
+				header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+				header('Cache-Control: private', false);
+				header('Content-Type: application/epub');
+				header('Content-Disposition: attachment; filename="'. basename($filename) . '";');
+				header('Content-Transfer-Encoding: binary');
+				header('Content-Length: ' . filesize($filename));
+				readfile($filename);
+				
+				exit;
+			}
+		}
+	}
+	public function subscriptionsAction()
+	{
+		$idvalue = $this->_request->getParams('id');
+		
+		$bookDetail=$this->modelPublications->getInfoByPublisherId($idvalue['id']);
+		 
+		 
+		$subscriptions_data = $this->modelSubscriptions->fetchAll('product_id='.$idvalue['id'].'');
+		$this->view->subscriptiondata = $subscriptions_data;
+		
+		$whrcls = 'id='.$idvalue['id'].'';
+
+		$get_publicationname = $this->modelPublications->getListWhere($whrcls);
+    	$modelCategory = new Publisher_Model_DbTable_Books();
+		$getBrandInfo=$modelCategory->getBrandInfo($get_publicationname[0]->title);
+		if(!empty($getBrandInfo))
+		{
+			$titleBrand=$getBrandInfo['brand'];
+		}else
+		{
+			$titleBrand=$get_publicationname[0]->title;
+		}
+		$this->view->publicationname = $titleBrand;
+	}
+	public function activesubscriptionAction()
+    {
+ 		
+		$id=$this->_request->getParam('id',0);
+		$pub_id=$this->_request->getParam('pub_id',0);
+		
+		if($id>0 && $this->modelSubscriptions->isExist($id))
+		{
+		
+		    $data['admin_approve']=1;
+		    $success=$this->modelSubscriptions->update($data,'id="'.$id.'"');
+			
+			if($success)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Subscription activated successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to activate Subscription</div>');
+			}
+		}
+		$this->_redirect('admin/publications/subscriptions/id/'.$pub_id);
+    }
+	public function inactivesubscriptionAction()
+    {
+ 		
+		$id=$this->_request->getParam('id',0);
+		$pub_id=$this->_request->getParam('pub_id',0);
+		
+		if($id>0 && $this->modelSubscriptions->isExist($id))
+		{
+		
+		    $data['admin_approve']=0;
+		    $success=$this->modelSubscriptions->update($data,'id="'.$id.'"');
+			
+			if($success)
+			{
+				$this->_flashMessenger->addMessage('<div class="div-success">Subscription inactivated successfully</div>');
+			}
+			else
+			{
+				$this->_flashMessenger->addMessage('<div class="div-error">Sorry!, unable to inactivate Subscription</div>');
+			}
+		}
+		$this->_redirect('admin/publications/subscriptions/id/'.$pub_id);
+    }
+	
+}
+

@@ -1,0 +1,22 @@
+<?php
+$productHistory = $this->tempOrderData;
+?>
+<section id="middle">
+
+<!--cart section start -->
+<div class="cart" id="cardId">
+
+404
+
+Sorry, this page isn't available
+The link you followed may be broken, or the page may have been removed.
+
+Please click the home to go home page <a href="<?php echo $this->serverUrl().$this->baseUrl();?>" ><font color='white' size='5px'>Home</a></a>
+</div>
+<div id="det_tot"></div>
+</form>
+<!--cart section start end -->
+</section>
+ 
+
+

@@ -1,0 +1,90 @@
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">CMS Pages</h3></div>
+	<div class="content-box-content">
+	
+	<div>
+
+			<!--<div class="action-header">
+				<span class="action-title">Page List</span>
+				<ul class="horizonal-menu">
+					<li class="add"><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'pages','action'=>'add'),'',true);?>" title="Add Page">Add Page</a></li>
+				</ul>
+			</div>-->
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br style="clear: both;"/>	
+			
+			<table class="table-list" cellpadding="0" cellspacing="0">
+			<tr>
+				   <th width="5%">Sr.No</th>
+				   <th width="5%">ID</th>
+				   <th width="20%">Title</th>
+				   <th width="20%">Meta Title</th>
+				   <th width="15%">Added Date</th>
+				   <th width="15%">Updated Date</th>
+				   <th width="5%">Status</th>
+				   <th width="5%">Action</th>
+			</tr>
+			
+			<?php 
+			  if(isset($this->pageList) && count($this->pageList)>0)
+			  {
+				$sNumber=1;
+				foreach($this->pageList as $row)
+				{
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					   <td><?php echo $row->id;?></td> 
+					   <td><?php echo $row->title;?></td>
+					   <td><?php echo $row->meta_title;?></td> 
+					   <td><?php echo CommonFunctions::formatDate($row->added_date);?></td>
+					   <td><?php echo CommonFunctions::formatDate($row->updated_date);?></td>
+					   <td>
+					   
+					        <?php 
+							if($row->status=='1')
+							{
+							?>
+							<a class="action-icon" title="Active" href="<?php echo $this->url(array('module'=>'admin','controller'=>'pages','action'=>'inactive','id'=>$row->id),'',true);?>"><img alt="Active" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/active.png"/></a>
+							<?php  
+							}
+							else
+							{
+							?>
+							<a class="action-icon" title="Inactive" href="<?php echo $this->url(array('module'=>'admin','controller'=>'pages','action'=>'active','id'=>$row->id),'',true);?>"><img alt="Inactive" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/inactive.png"/></a>
+							<?php  
+							}
+							?>
+							
+					   </td>
+					   <td>
+					   
+							<a class="action-icon" title="Edit" href="<?php echo $this->url(array('module'=>'admin','controller'=>'pages','action'=>'edit','id'=>$row->id),'',true);?>"><img alt="Edit" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/icon_edit.png"/></a>
+							
+						<!-- <a class="action-icon" title="Delete" href="<?php echo $this->url(array('module'=>'admin','controller'=>'pages','action'=>'delete','id'=>$row->id),'',true);?>" onclick="return confirm('Are you sure to delete?');"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a> -->
+							
+					   </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+					if($this->totalCount>$this->pageSize)
+					{
+						echo '<tr><td colspan="8">&nbsp;</td></tr>';
+						echo '<tr><td colspan="8"><div class="pagination">'.$this->paginationControl($this->pageList,'Sliding','pagination.phtml').'</div></td></tr>';
+					}
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="8" class="list-not-found">Page Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>
+
+	</div>
+</div>

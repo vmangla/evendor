@@ -1,0 +1,31 @@
+<div class="cms_content">
+	<h1>FAQS</h1>
+	<br clear="all">
+	<aside class="right_listing contact"> 
+		<div class="listing">
+				<?php
+				if(isset($this->faqInfo) && count($this->faqInfo)>0)
+				{
+				?>
+				<ul class="accordion">
+					<?php
+					foreach($this->faqInfo as $row)
+					{
+					?>
+					<li>
+					<a href="javascript:void(0);"><?php echo stripslashes($row->question); ?></a>
+					<div>
+					<?php echo stripslashes($row->answer); ?>
+					</div>
+					</li>
+					<?php
+					}
+					?>
+				</ul>
+				<?php
+				}
+				?>
+		</div>
+	</aside>
+
+</div>

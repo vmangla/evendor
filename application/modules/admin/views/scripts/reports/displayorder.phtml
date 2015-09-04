@@ -1,0 +1,253 @@
+<?php
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+$this->modelPublisher = new Publisher_Model_DbTable_Publishers();
+?>
+<script type="text/javascript">	
+	$(document).ready(function(){			
+		new JsDatePick({
+			useMode:2,
+			target:"from_date",
+			dateFormat:"%Y-%m-%d"
+			/*selectedDate:{				This is an example of what the full configuration offers.
+				day:5,						For full documentation about these settings please see the full version of the code.
+				month:9,
+				year:2006
+			},
+			yearsRange:[1978,2020],
+			limitToToday:false,
+			cellColorScheme:"beige",
+			dateFormat:"%m-%d-%Y",
+			imgPath:"img/",
+			weekStartDay:1*/
+		});
+	});
+	
+	$(document).ready(function(){			
+		new JsDatePick({
+			useMode:2,
+			target:"to_date",
+			dateFormat:"%Y-%m-%d"
+			/*selectedDate:{				This is an example of what the full configuration offers.
+				day:5,						For full documentation about these settings please see the full version of the code.
+				month:9,
+				year:2006
+			},
+			yearsRange:[1978,2020],
+			limitToToday:false,
+			cellColorScheme:"beige",
+			dateFormat:"%m-%d-%Y",
+			imgPath:"img/",
+			weekStartDay:1*/
+		});
+	});
+	
+</script>
+
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Report Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<br style="clear: both;"/>
+			<div class="action-header">
+				<span class="action-title">Reports</span>
+				<!--<ul class="horizonal-menu">
+					<li class="add"><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'add'),'',true);?>">Add Category</a></li>
+				</ul>-->
+			</div>
+			<br style="clear: both;"/>	
+			<form id="form-search" method="post" onsubmit="return validate_search('form-search');">
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">View Orders</th>
+				</tr>
+				<tr>
+					<td align="center" colspan="2">
+					<div align="center">
+					<input type="button" name="showall" value="Export" class="button-Add" onclick="javascript:document.location.href='<?php echo $this->url(array('module'=>'admin','controller'=>'reports','action'=>'exportordertxls',"orderid"=>$this->order_id),'',true);?>'" title="Export"/>
+					</div>
+					</td>
+				</tr>
+				</table>
+			 </form>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			<br style="clear: both;"/>	
+			<table class="table-list" cellpadding="0" cellspacing="0">
+			   <tr>
+				   <th>SL.No</th>
+				   <th>Order Id</th>	
+				   <th>Transaction Id</th>				  
+				   <th>Title / Brand</th>
+				   <th>Username</th>
+				   <th>Publisher</th>
+				   <th>Quantity</th>
+				   <th>Unit Price</th>
+				   <th>Total Price</th>
+				   <th>Payment Status</th>
+				   <th>Last Purchased</th>				 
+			   </tr>
+			<?php 
+			//userid
+			
+			$this->modelCompany_user = new Company_Model_DbTable_Companies();
+			 
+			$productPrice = new Publisher_Model_DbTable_BookPrices();
+			$producturrency = new Admin_Model_DbTable_Countries();
+			  if(isset($this->prodList) && count($this->prodList)>0)
+			  {
+				$sNumber=1;
+				foreach($this->prodList as $row)
+				{
+					$userdata = $this->modelCompany_user->fetchAll('id='.$row['userid'].'');
+					 
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					     <td><?php echo $row['order_id'];?></td> 
+					   <td><?php echo $row['transaction_id'];?></td> 
+					   <td>
+					   <?php
+					   $modelCategory = new Publisher_Model_DbTable_Books();
+					   $getProductInfo=$this->modelCompany->getProductInfo($row['id']);
+					   $productPriceInfo = $productPrice->getPriceByStoreId($row['id'],$row['store_id']);
+					   $getBrandInfo=$modelCategory->getBrandInfo($getProductInfo['title']);
+					   if(!empty($getBrandInfo))
+					   {
+							$titleBrand=$getBrandInfo['brand'];
+					   }
+					   else
+					   {
+							$titleBrand=$getProductInfo['title'];
+					   }
+						if(!empty($getProductInfo['parent_brand_id']))
+						{
+						$productInfo=$this->modelCompany->getProductInfo($getProductInfo['parent_brand_id']);
+						$getParentBrandInfo=$modelCategory->getBrandInfo($productInfo['title']);
+							if(!empty($getParentBrandInfo))
+							{
+								$titleBrand=$getParentBrandInfo['brand']." - ".$titleBrand;
+							}
+						}
+					   echo stripslashes($titleBrand);
+						?></td>
+						<td>
+							<?php echo $userdata[0]['user_name']; ?>
+						</td>
+					   <td>
+					   <?php
+					   /*$modelCompanyInfo=new Company_Model_DbTable_Companies();
+					   $company_info_array = $modelCompanyInfo->getInfoByCompanyId($row['company_id']);
+					   echo $company_info_array['first_name']."&nbsp;".$company_info_array['last_name'];
+					    * 
+					    * 
+					    */
+					    $publiseherDetails = $this->modelPublisher->getInfoByPublisherId($row['publisher_id']);
+						echo $row['publisher'];
+					     ?>				   
+					  
+					   </td>	   
+					   <td><?php echo $row['quantity'] ?></td>
+					   <td> <?php
+					  if($row['group_id']!=0)
+					  {
+						echo $producturrency->getCurrencyInfo($row['store_id']).$row['price'];
+					  }
+					  else
+					  {
+						 echo $producturrency->getCurrencyInfo($row['store_id']).$row['price'];
+					  }					
+					  ?></td>
+					   <td><?php
+					   //echo $producturrency->getCurrencyInfo($row['store_id']).$row['quantity']*$row['price'] 
+					    $getCurrencyName = $producturrency->getCurrencyCode($row['store_id']);
+					  $totNairaPrice = $producturrency->currencyconverter($getCurrencyName,"NGN",$row['quantity']*$row['price']);
+					   echo $producturrency->getCurrencyInfo(226).@number_format($totNairaPrice,2);
+					   
+					   ?></td>
+					   <td><?php
+					   if($row['payment_status'] == '1')
+					   {
+					   	 echo "Complete";
+					   }
+					   elseif($row['payment_status'] == '2')
+					   {
+					   	 echo "Declined";
+					   }
+					   elseif($row['payment_status'] == '0'){
+					   	echo "Pending";
+					   }
+					    ?></td>
+					  
+					  <td>
+						<?php 
+						echo $row['add_date'];
+						?>
+					  </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+					if($this->totalCount>$this->pageSize)
+					{
+						echo '<tr><td colspan="9">&nbsp;</td></tr>';
+						echo '<tr><td colspan="9"><div class="pagination">'.$this->paginationControl($this->prodList,'Sliding','pagination.phtml').'</div></td></tr>';
+					}
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="9" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			  
+			  
+			?> 
+			 </table>
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+function validate_search(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
+function get_book_issues(ajax_url,parent_type_id,product_id)
+{
+//alert(ajax_url+'=>'+parent_type_id+'=>'+product_id);
+	$.ajax({
+	    type: "POST",
+		url: ajax_url,
+		async: false,
+		data: "cat_id="+parent_type_id+"&product_id="+product_id,
+		success: function(result) {
+			//alert(result);
+			$('#product_list').html(result);
+		}
+	});
+	
+	return false;
+}
+
+<?php
+if(isset($formData["category"]) && !empty($formData["category"]))
+{
+?>
+get_book_issues('<?php echo $title_brand_url;?>','<?php echo $formData["category"];?>','<?php echo $formData["product_id"];?>');
+<?php
+}
+?>
+</script>

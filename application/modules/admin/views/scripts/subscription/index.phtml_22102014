@@ -1,0 +1,287 @@
+<?php
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+$this->modelPublisher = new Publisher_Model_DbTable_Publishers();
+$order_key = Zend_Controller_Front::getInstance()->getRequest()->getParam('order_key');
+$from_date = Zend_Controller_Front::getInstance()->getRequest()->getParam('from_date');
+$to_date = Zend_Controller_Front::getInstance()->getRequest()->getParam('to_date');
+$subscription_name = Zend_Controller_Front::getInstance()->getRequest()->getParam('subscription_name');
+$user_type = Zend_Controller_Front::getInstance()->getRequest()->getParam('user_type');
+?>
+<script type="text/javascript">	
+	$(document).ready(function(){			
+		new JsDatePick({
+			useMode:2,
+			target:"from_date",
+			dateFormat:"%Y-%m-%d"
+			/*selectedDate:{				This is an example of what the full configuration offers.
+				day:5,						For full documentation about these settings please see the full version of the code.
+				month:9,
+				year:2006
+			},
+			yearsRange:[1978,2020],
+			limitToToday:false,
+			cellColorScheme:"beige",
+			dateFormat:"%m-%d-%Y",
+			imgPath:"img/",
+			weekStartDay:1*/
+		});
+	});
+	
+	$(document).ready(function(){			
+		new JsDatePick({
+			useMode:2,
+			target:"to_date",
+			dateFormat:"%Y-%m-%d"
+			/*selectedDate:{				This is an example of what the full configuration offers.
+				day:5,						For full documentation about these settings please see the full version of the code.
+				month:9,
+				year:2006
+			},
+			yearsRange:[1978,2020],
+			limitToToday:false,
+			cellColorScheme:"beige",
+			dateFormat:"%m-%d-%Y",
+			imgPath:"img/",
+			weekStartDay:1*/
+		});
+	});
+	
+</script>
+
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Subscription Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<br style="clear: both;"/>
+			<div class="action-header">
+				<span class="action-title">Subscription Report</span>
+				<!--<ul class="horizonal-menu">
+					<li class="add"><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'add'),'',true);?>">Add Category</a></li>
+				</ul>-->
+			</div>
+			<br style="clear: both;"/>	
+			<form id="form-search" method="post" action="" onsubmit="return validate_search('form-search');">
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">View Orders Subscription</th>
+				</tr>
+				
+				<tr>
+				<td align="right" width="50%">
+				<div align="right">Order Id<span class="required">*</span> :  </div></td>
+				<td>
+					<input type="text" size="12" name="order_key" id="order_key" value="<?php echo $order_key;?>" />
+				</td>
+				</tr>
+				<tr>
+					<td align="right" width="50%"><div align="right">Start Date<span class="required">*</span> : </div></td>
+					<td width="50%"><div id="product_list">
+					 <input type="text" size="12" name="from_date" id="from_date" value="<?php echo $from_date;?>" />
+				
+					</div></td>
+				</tr>
+				<tr>
+					<td align="right" width="50%"><div align="right">End Date<span class="required">*</span> : </div></td>
+					<td width="50%"><div id="product_list">
+					<input type="text" name="to_date" id="to_date" value="<?php echo $to_date;?>" />
+					</div></td>
+				</tr>
+				
+				<tr>
+					<td align="right" width="50%"><div align="right">Subscription Type<span class="required">*</span> : </div></td>
+					<td width="50%">
+						<select name="subscription_name" id="subscription_name" >
+						<option value="">All</option>
+						<option value="Weekly" <?php if($subscription_name=='Weekly') {?>selected<?php } ?>>Weekly</option>
+						<option value="Monthly" <?php if($subscription_name=='Monthly') {?>selected<?php } ?>>Monthly</option>
+						<option value="Quarterly" <?php if($subscription_name=='Quarterly') {?>selected<?php } ?>>Quarterly</option>
+						<option value="Half Yearly" <?php if($subscription_name=='Half Yearly') {?>selected<?php } ?>>Half Yearly</option>
+						<option value="Yearly" <?php if($subscription_name=='Yearly') {?>selected<?php } ?>>Yearly</option>
+						</select>
+					</td>
+				</tr>
+				
+				<tr>
+					<td align="right" width="50%"><div align="right">User Type<span class="required">*</span> : </div></td>
+					<td width="50%">
+						<select name="user_type" id="user_type" >
+						<option value="">All</option>
+						<option value="Individual" <?php if($user_type=='Individual') {?>selected<?php } ?>>Individual</option>
+						<option value="Group" <?php if($user_type=='Group') {?>selected<?php } ?>>Group</option>
+						</select>
+					</td>
+				</tr>
+				 
+				<tr>
+					<td align="center" colspan="2">
+					<div align="center">
+					<input type="button" name="searchresult" id="searchresult" value="Search"  class="button-Add" onclick="return validate_search('form-search');">
+					
+					<input type="button" name="showall" value="Show All" class="button-Add" onclick="javascript:document.location.href='<?php echo $this->url(array('module'=>'admin','controller'=>'subscription','action'=>'index'),'',true);?>'" />
+					<input type="button" name="export" value="Export" class="button-Add" onclick="javascript:document.location.href='<?php echo $this->url(array('module'=>'admin','controller'=>'subscription','action'=>'exportorderhistory',"order_key"=>$order_key,"from_date"=>$from_date,"to_date"=>$to_date,"subscription_name"=>$subscription_name,"user_type"=>$user_type),'',true);?>'" />
+					</div>
+					</td>
+				</tr>
+				</table>
+			 </form>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			<br style="clear: both;"/>	
+			<table class="table-list" cellpadding="0" cellspacing="0">
+			   <tr>
+				   <th>SL.No</th>
+				   <th>Order Id</th>	
+				   <th>User</th>	
+				   <th>Group Name</th>
+				   <th>Company User</th>
+				   <th>Title / Brand</th>
+				   <th>Subscription Name</th>
+				   <th>Number of issues</th>
+				   <th>Number of Downloaded issues</th>
+				   <th>Subscription Price</th>
+				   <th>Start Date</th>				 
+				   <th>End Date</th>
+			   </tr>
+			<?php 
+			$productPrice = new Publisher_Model_DbTable_BookPrices();
+			$producturrency = new Admin_Model_DbTable_Countries();
+			$this->group_members = new Company_Model_DbTable_Groups();
+			$this->modelCompanydata = new Model_DbTable_Companies();
+			
+			
+			  if(isset($this->prodList) && count($this->prodList)>0)
+			  {
+				$sNumber=1;
+				foreach($this->prodList as $row)
+				{
+					$this->sessCompanyInfo = $this->modelCompanydata->getInfoByUserId($row['user_id']);
+					
+					$this->sesscompany_user = $this->modelCompanydata->getInfoByUserId($row['company_id']);
+				 
+					$this->sessgroup_members = $this->group_members->getInfoByGroupId($row['group_id']);
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					     <td><?php echo $row['order_id'];?></td>
+						 <td><?php echo $this->sessCompanyInfo['first_name']." ".$this->sessCompanyInfo['last_name'] ;?></td> 
+						 <td><?php echo $this->sessgroup_members['group_name'];?></td> 
+						 <td><?php echo $this->sesscompany_user['first_name']." ".$this->sesscompany_user['last_name'] ;?></td>
+					   <td>
+					   <?php
+					   $modelCategory = new Publisher_Model_DbTable_Books();
+					   $getProductInfo=$this->modelCompany->getProductInfo($row['product_id']);
+					  
+					   $getBrandInfo=$modelCategory->getBrandInfo($getProductInfo['title']);
+					   if(!empty($getBrandInfo))
+					   {
+							$titleBrand=$getBrandInfo['brand'];
+					   }
+					   else
+					   {
+							$titleBrand=$getProductInfo['title'];
+					   }
+						if(!empty($getProductInfo['parent_brand_id']))
+						{
+						$productInfo=$this->modelCompany->getProductInfo($getProductInfo['parent_brand_id']);
+						$getParentBrandInfo=$modelCategory->getBrandInfo($productInfo['title']);
+							if(!empty($getParentBrandInfo))
+							{
+								$titleBrand=$getParentBrandInfo['brand']." - ".$titleBrand;
+							}
+						}
+					   echo stripslashes($titleBrand);
+						?></td>
+					   	   
+					   <td><?php echo $row['subscription_name']; ?></td>
+					   <td><?php echo $row['number_of_issues'] ?></td>
+					    <td><?php echo $row['number_of_downloaded'] ?></td>
+					   <td><?php
+					   //echo $producturrency->getCurrencyInfo($row['store_id']).$row['quantity']*$row['price'] 
+					    $getCurrencyName = $producturrency->getCurrencyCode($row['country']);
+					  $totNairaPrice = $producturrency->currencyconverter($getCurrencyName,"NGN",$row['subscription_price']);
+					   echo $producturrency->getCurrencyInfo(226).@number_format($totNairaPrice,2);
+					   
+					   ?></td>
+					 
+					  
+					  <td>
+						<?php 
+						echo $row['start_date'];
+						?>
+					  </td>
+					  <td>
+						<?php 
+						echo $row['end_date'];
+						?>
+					  </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+					if($this->totalCount>$this->pageSize)
+					{
+						echo '<tr><td colspan="9">&nbsp;</td></tr>';
+						echo '<tr><td colspan="9"><div class="pagination">'.$this->paginationControl($this->prodList,'Sliding','pagination.phtml').'</div></td></tr>';
+					}
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="9" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			  
+			  
+			?> 
+			 </table>
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+function validate_search(pFormId)
+{
+	var groupdata = document.getElementById('user_type').value;
+	var order_key = document.getElementById('order_key').value;
+	var from_date = document.getElementById('from_date').value;
+	var to_date = document.getElementById('to_date').value;
+	var subscription_name = document.getElementById('subscription_name').value;
+	 
+	 
+	window.location.href = 'http://miprojects2.com.php53-6.ord1-1.websitetestlink.com/projects/evendor/admin/subscription/index/order_key/'+order_key+'/user_type/'+groupdata+'/from_date/'+from_date+'/to_date/'+to_date+'/subscription_name/'+subscription_name+'';
+		 
+	
+	return true;
+}
+
+
+function get_book_issues(ajax_url,parent_type_id,product_id)
+{
+//alert(ajax_url+'=>'+parent_type_id+'=>'+product_id);
+	$.ajax({
+	    type: "POST",
+		url: ajax_url,
+		async: false,
+		data: "cat_id="+parent_type_id+"&product_id="+product_id,
+		success: function(result) {
+			//alert(result);
+			$('#product_list').html(result);
+		}
+	});
+	
+	return false;
+}
+
+<?php
+if(isset($formData["category"]) && !empty($formData["category"]))
+{
+?>
+get_book_issues('<?php echo $title_brand_url;?>','<?php echo $formData["category"];?>','<?php echo $formData["product_id"];?>');
+<?php
+}
+?>
+</script>

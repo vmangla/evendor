@@ -1,0 +1,364 @@
+<?php
+$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+$publisher_data = $storage_publisher->read();
+
+$storage_company = new Zend_Auth_Storage_Session('company_type');
+$company_data = $storage_company->read();
+
+//$storage_storeinfo= new Zend_Session_Namespace('storeInfo');
+
+$producturrency = new Admin_Model_DbTable_Countries();
+
+?>
+
+<!--left sidebar -->
+<aside class="right_panel search_left"> 
+<h5>Category</h5>
+<?php
+$catsearchUrl=$this->serverUrl().$this->baseUrl().'/search/index/publication/';
+if(isset($this->categoriesList) && count($this->categoriesList)>0)
+{
+?>
+<ul>
+<?php
+	foreach($this->categoriesList as $key=>$catArray)
+	{
+		?>
+		<li><a href="<?php echo $catsearchUrl.strtolower(trim($catArray['category_name']));?>"><?php echo $catArray['category_name'].'('.$catArray['total_publications'].')';?></a></li>
+		<?php
+	}
+?>
+<li><a href="<?php echo $this->serverUrl().$this->baseUrl().'/catalogue/';?>">view all</a></li>
+</ul>
+<?php
+}
+?>
+
+<h5>Genre</h5>
+<?php
+$genresearchUrl=$this->serverUrl().$this->baseUrl().'/search/index/publication/genre/id/';
+if(isset($this->genresList) && count($this->genresList)>0)
+{
+?>
+<ul>
+<?php
+	 
+	foreach($this->genresList as $key=>$genreArray)
+	{
+	
+	$modelBooks = new Publisher_Model_DbTable_Books();
+	$genrecount = $modelBooks->getGenreCount($genreArray['id']);
+		
+		?>
+		<li><a href="<?php echo $genresearchUrl.$genreArray['id'];?>"><?php echo $genreArray['genre'].'('.count($genrecount).')';?></a></li>
+		<?php
+	}
+?>
+<li><a href="<?php echo $this->serverUrl().$this->baseUrl().'/catalogue/';?>">view all</a></li>
+</ul>
+<?php
+}
+?>
+
+<h5>Country</h5>
+<?php
+$storesearchUrl=$this->serverUrl().$this->baseUrl().'/search/index/publication/store/id/';
+if(isset($this->allStoredWithPublications) && count($this->allStoredWithPublications)>0)
+{
+?>
+<ul>
+<?php
+	foreach($this->allStoredWithPublications as $country_id=>$country_array)
+	{
+		
+		if($country_array['total_publications']>0)
+		{
+	?>
+	<li><a href="<?php echo $storesearchUrl.$country_array['cid'];?>"><?php echo $country_array['cname'].'('.$country_array['total_publications'].')';?></a></li>
+	<?php
+		}
+	}
+?>
+<li><a href="<?php echo $this->serverUrl().$this->baseUrl().'/catalogue/';?>">view all</a></li>
+</ul>
+<?php	
+}
+?>
+
+
+<!--<h5>Days</h5>
+<ul>
+<li><a href="#">10 days</a></li>
+<li><a href="#">30 days</a></li>
+<li><a href="#">60 days</a></li>
+<li><a href="#">90 days</a></li>
+<li><a href="#">120 days</a></li>
+<li><a href="#">True Crime</a></li>
+
+</ul>-->
+</aside>
+<!--left sidebar -->
+
+<!--right sidebar -->
+<aside class="left_panel search_right">
+		<ul class="tab">
+			<li id="link_grid" class="grid active"><a href="javascript:void(0);">&nbsp;</a></li>
+			<li id="link_view" class="list_view"><a href="javascript:void(0);">&nbsp;</a></li>
+		</ul>
+		<!-- //Tab buttons -->
+<!-- //Tab 1 -->
+<div id="conetnt2_grid" class="tabContents">
+
+<?php
+/*if(isset($this->searchKeyword) && !empty($this->searchKeyword))
+{
+?>
+<h1>Result for "<?php echo $this->searchKeyword;?>"</h1>
+<?php
+}
+else
+{
+?>
+<h1>All Publications</h1>
+<?php
+}
+*/
+?>
+	<aside class="right_listing"> 
+	<div class="listing">
+	<?php
+	 
+	if(isset($this->approvedPublicatiobList) && !empty($this->approvedPublicatiobList) && count($this->approvedPublicatiobList)>0)
+	{ 
+	?>
+		<ul>
+		<?php
+		$modelAuthor = new Publisher_Model_DbTable_Publishers();
+		$modelLanguage = new Admin_Model_DbTable_Languages();
+		$modelImage = new Publisher_Model_DbTable_BookImages();
+		$productPrice = new Publisher_Model_DbTable_BookPrices();
+
+		 
+		
+		foreach($this->approvedPublicatiobList as $publicationArray)
+		{
+		$authorInfo = $modelAuthor->getInfoByPublisherId($publicationArray['author_id']);
+		 
+		$langDetail=$modelLanguage->fetchRow('id="'.$publicationArray['language_id'].'"');
+		$imageInfo = $modelImage->getImageInfoByProductId($publicationArray['product_id']);
+		
+		$productPriceInfo = $productPrice->getPriceByStoreId($publicationArray['product_id'],$publicationArray['country_id']);
+		
+		
+		
+		?>
+			<li>
+				<div class="produt_img">
+				<?php
+				if(is_file(USER_UPLOAD_DIR.'thumb1_'.$imageInfo['image_name']))
+				{
+				?>
+				<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$publicationArray['product_id']."/store/".$publicationArray['country_id']."/lang/".$publicationArray['language_id'];?>">
+				<img  src="<?php echo $this->serverUrl().$this->baseUrl()."/".USER_UPLOAD_DIR.'thumb1_'.$imageInfo['image_name'];?>" alt="<?php echo$publicationArray['title'];?>">
+				</a>
+				<?php
+				}
+				else
+				{
+				?>
+				<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$publicationArray['product_id']."/store/".$publicationArray['country_id']."/lang/".$publicationArray['language_id'];?>">
+				<img src="<?php echo $this->serverUrl().$this->baseUrl()."/public/css/default/images/noimage.jpg";?>" alt="<?php echo$publicationArray['title'];?>">
+				</a>
+				<?php
+				}
+				?><br>
+					
+							 
+				
+				<div class="date">
+				<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$publicationArray['product_id']."/store/".$publicationArray['country_id']."/lang/".$publicationArray['language_id'];?>" style="text-decoration:none; color:#000000;">
+				<?php echo stripslashes($publicationArray['title']);?>
+				</a>
+				</div>
+                
+                <div class="date">by <i>
+							<?php  
+							if($publicationArray['cat_id']=='1' || $publicationArray['cat_id']=='2')
+							{
+							echo $publicationArray['publisher'];
+							}
+							else
+							{
+							echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];
+							} ?>
+							</i>
+							</div>
+				</div>
+				<!--<div class="date"><?php $date = new Zend_Date(strtotime($publicationArray['publish_time']));print $date;//print $date->toString('YYYY-MM-dd HH:mm:ss');
+				?></div>-->
+				
+				<?php
+		if(count($company_data)>0 && count($company_data)!=0)
+		{
+		?>
+		<div class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".$productPriceInfo['group_price'];?></div>
+		<?php 
+		}
+		else
+		{
+		?>
+		<div class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".$productPriceInfo['price'];?></div>
+		<?php
+		}
+		?>
+				
+				
+				
+			</li>
+		<?php
+		}
+		?>
+		</ul>
+		<?php
+		if($this->totalCount>$this->pageSize)
+		{
+			global $tab,$tab_ajax;
+			$tab=2; $tab_ajax='book';
+			echo $this->paginationControl($this->approvedPublicatiobList,'Sliding','pagination.phtml');
+		}
+	}
+	else
+	{	
+	?>
+	<h1>Publication Not Found!</h1>
+	<?php
+	}	
+	?>
+	</div>
+	
+	
+</aside>
+</div>
+ 
+ <!-- //Tab 2 -->
+<div id="conetnt2_view" class="tabContents" style="display:none;">
+	<h1><!--Result for "Keyword"L-->&nbsp;</h1>
+	
+	<?php
+	
+		
+	
+	if(isset($this->approvedPublicatiobList) && !empty($this->approvedPublicatiobList) && count($this->approvedPublicatiobList)>0)
+	{	 
+	?>
+	<aside class="right_listing"> 
+	<div class="listing">
+	
+		<?php
+		$modelAuthor = new Publisher_Model_DbTable_Publishers();
+		$modelLanguage = new Admin_Model_DbTable_Languages();
+		$modelImage = new Publisher_Model_DbTable_BookImages();
+		$productPrice = new Publisher_Model_DbTable_BookPrices();
+
+		
+		foreach($this->approvedPublicatiobList as $publicationArray)
+		{
+		$authorInfo = $modelAuthor->getInfoByPublisherId($publicationArray['author_id']);
+		$langDetail=$modelLanguage->fetchRow('id="'.$publicationArray['language_id'].'"');
+		$imageInfo = $modelImage->getImageInfoByProductId($publicationArray['product_id']);
+		
+		$productPriceInfo = $productPrice->getPriceByStoreId($publicationArray['product_id'],$publicationArray['country_id']);
+		?>
+		<div class="slides marg">
+		<div class="book">
+		<?php
+		if(is_file(USER_UPLOAD_DIR.'thumb1_'.$imageInfo['image_name']))
+		{
+		?>
+		<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$publicationArray['product_id']."/store/".$publicationArray['country_id']."/lang/".$publicationArray['language_id'];?>">
+		<img  src="<?php echo $this->serverUrl().$this->baseUrl()."/".USER_UPLOAD_DIR.'thumb1_'.$imageInfo['image_name'];?>" alt="<?php echo$publicationArray['title'];?>">
+		
+		<?php
+		}
+		else
+		{
+		?>
+	    <a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$publicationArray['product_id']."/store/".$publicationArray['country_id']."/lang/".$publicationArray['language_id'];?>">
+		<img src="<?php echo $this->serverUrl().$this->baseUrl()."/public/css/default/images/noimage.jpg";?>" alt="<?php echo$publicationArray['title'];?>">
+		</a>
+		<?php
+		}
+		?>
+		
+		</div>
+		<br> 
+					
+			<div class="info">
+				  <a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$publicationArray['product_id']."/store/".$publicationArray['country_id']."/lang/".$publicationArray['language_id'];?>" style="text-decoration:none; color:#000000;"><?php echo stripslashes($publicationArray['title']);?></a><br>
+			<!--	<span><?php $date = new Zend_Date(strtotime($publicationArray['publish_time']));print $date;//print $date->toString('YYYY-MM-dd HH:mm:ss');
+				?></span>-->
+				
+			<?php
+			if(count($company_data)>0 && count($company_data)!=0)
+			{
+			?>
+			<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".$productPriceInfo['group_price'];?></p>
+			<?php 
+			}
+			else
+			{
+			?>
+			
+			<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".$productPriceInfo['price'];?></p>
+			<?php
+			}
+			?>
+				
+				<br>
+		<span class="by">by <i>
+							<?php  
+							if($publicationArray['cat_id']=='1' || $publicationArray['cat_id']=='2')
+							{
+							echo $publicationArray['publisher'];
+							}
+							else
+							{
+							echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];
+							} ?>
+							</i>
+							</span>
+				
+				<p><?php echo stripslashes($publicationArray['description']);?></p>
+			</div>
+		</div>
+	    <?php
+		}
+		?>
+	<?php
+			if($this->totalCount>$this->pageSize)
+			{
+				global $tab,$tab_ajax;
+				$tab=2; $tab_ajax='book';
+				echo $this->paginationControl($this->approvedPublicatiobList,'Sliding','pagination.phtml');
+			}
+		?>
+	</div>
+	
+	
+</aside>
+
+		 
+		
+		 
+	<?php	
+	}
+	else
+	{	
+	?>
+	<h1>Publication Not Found!</h1>
+	<?php
+	}	
+	?>	
+</div>
+</aside>
+<!--right sidebar -->

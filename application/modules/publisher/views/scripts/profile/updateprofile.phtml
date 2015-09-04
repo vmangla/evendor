@@ -1,0 +1,333 @@
+<?php 
+$currUrl=$this->url();
+$cancelUrl=$this->url(array('module'=>'publisher','controller'=>'index','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'publisher','controller'=>'index','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+if(isset($formData['tab_ajax']) && $formData['tab_ajax']=='dashboard')
+{
+$return_function="getDashboard('hide-4');";
+}
+else
+{
+	$return_function="getSettingPanel();";
+}
+?>
+<div id="panel" class="panel_main">
+	<div class="panel-header"><h3>Edit Profile</h3></div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+		
+		<div class="action-header">
+			<span class="action-title">&nbsp;</span>
+			<ul class="horizonal-menu">
+				<li class="back"><a href="<?php echo $backUrl;?>" title="Back" onclick="return <?php echo $return_function;?>">Back</a></li>
+			</ul>
+		</div>				
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>		
+		<br clear="all"/>	
+		<form id="form-add-user" method="post" onsubmit="return validate_common_form('form-add-user','<?php echo $currUrl;?>','tab4');">
+			<table class="edit_profile">
+			<!--<tr>
+				<td class="tdleftBold">User Type<span class="required">*</span> : </td>
+				<td>
+			    <select name="user_type" id="user_type" class="req" message="Please select a type">
+			    <option value="">Select</option>
+			    <option value="author" <?php if($formData["user_type"]=="author"){ ?> selected <?php } ?>>Author</option>
+				<option value="publisher"  <?php if($formData["user_type"]=="publisher"){ ?> selected <?php } ?>>Publisher</option>
+				</select>
+				<?php if(array_key_exists('user_type',$formErrors)){echo '<div class="inline-error">'.$formErrors['user_type'].'</div>';}?>
+				</td>
+			</tr>-->	
+			<tr>
+			<td colspan="2" class="heading"><strong>Personal Details</strong></td>
+			</tr>		
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>			
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>		
+			<tr>
+				<td class="tdleftBold">Name<span class="required">*</span> : </td>
+				<td>
+				<input type="text" name="pub_name" id="pub_name" value="<?php if(isset($formData['name'])){echo $formData['name'];}?>"  class="req form-textfield"  message="Please enter name"/>
+				<?php if(array_key_exists('pub_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['pub_name'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			
+			<tr>
+				<td class="tdleftBold">Publisher<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="publisher" id="publisher" value="<?php if(isset($formData['publisher'])){echo $formData['publisher'];}?>"  class="req form-textfield"  message="Please enter publisher name" />
+					<?php if(array_key_exists('publisher',$formErrors)){echo '<div class="inline-error">'.$formErrors['publisher'].'</div>';}?>
+				</td>
+			</tr>
+			
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+						
+			<!--	
+			-->
+			
+			<tr>
+				<td class="tdleftBold">Country<span class="required">*</span> : </td>
+				<td>
+					<?php
+					$modelPublisher = new Publisher_Model_DbTable_Publishers();
+					$countryList=$modelPublisher->getCountryList();
+					?>
+					<select name="country" id="country">
+						<option value="">Select Country</option>					
+					<?php
+					for($ii=0;$ii<count($countryList);$ii++)
+					{
+					?>
+						<option value="<?php echo $countryList[$ii]['id']; ?>" <?php if($formData["country"]==$countryList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $countryList[$ii]['country']; ?></option>
+					<?php
+					}
+					?>		   
+					</select>
+					
+					<?php if(array_key_exists('country',$formErrors)){echo '<div class="inline-error">'.$formErrors['country'].'</div>';}?>
+
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>			
+			<tr>
+				<td class="tdleftBold">State<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="state" id="state" value="<?php if(isset($formData['state'])){echo $formData['state'];}?>"  class="req form-textfield"  message="Please enter state" />
+					<?php if(array_key_exists('state',$formErrors)){echo '<div class="inline-error">'.$formErrors['state'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>		
+			<tr>
+				<td class="tdleftBold">City<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="city" id="city" value="<?php if(isset($formData['city'])){echo $formData['city'];}?>"  class="req form-textfield"  message="Please enter city" />
+					<?php if(array_key_exists('city',$formErrors)){echo '<div class="inline-error">'.$formErrors['city'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>								
+			<!--<tr>
+				<td class="tdleftBold">Pincode<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="pincode" id="pincode" value="<?php if(isset($formData['pincode'])){echo $formData['pincode'];}?>"  class="req form-textfield"  message="Please enter pincode" />
+					<?php if(array_key_exists('pincode',$formErrors)){echo '<div class="inline-error">'.$formErrors['pincode'].'</div>';}?>
+				</td>
+			</tr>-->			
+										
+			<tr>
+				<td class="tdleftBold">Phone : </td>
+				<td>
+					<input type="text" name="phone" id="phone" value="<?php if(isset($formData['phone'])){echo $formData['phone'];}?>"  class="form-textfield"  message="Please enter phone" />
+					<?php if(array_key_exists('phone',$formErrors)){echo '<div class="inline-error">'.$formErrors['phone'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>	
+            </table>
+            <table class="edit_profile">
+			<tr>
+				<td colspan="2" align="center" class="heading">Contact Details </td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+            <tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">First name<span class="required">*</span> : </td>
+				<td>
+				<input type="text" name="first_name" id="first_name" value="<?php if(isset($formData['first_name'])){echo $formData['first_name'];}?>"  class="req form-textfield"  message="Please enter first name"/>
+				<?php if(array_key_exists('first_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['first_name'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>				
+			
+			<tr>
+				<td class="tdleftBold">Last Name<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="last_name" id="last_name" value="<?php if(isset($formData['last_name'])){echo $formData['last_name'];}?>"  class="req form-textfield"  message="Please enter last name" />
+					<?php if(array_key_exists('last_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['last_name'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			
+			<tr>
+				<td class="tdleftBold">Country<span class="required">*</span> : </td>
+				<td>
+					<?php
+					$modelPublisher = new Publisher_Model_DbTable_Publishers();
+					$countryList=$modelPublisher->getCountryList();
+					?>
+					<select name="c_country" id="c_country" >
+						<option value="">Select Country</option>					
+					<?php
+					for($ii=0;$ii<count($countryList);$ii++)
+					{
+					?>
+						<option value="<?php echo $countryList[$ii]['id']; ?>" <?php if($formData["c_country"]==$countryList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $countryList[$ii]['country']; ?></option>
+					<?php
+					}
+					?>		   
+					</select>
+					
+					<?php if(array_key_exists('c_country',$formErrors)){echo '<div class="inline-error">'.$formErrors['c_country'].'</div>';}?>
+
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>			
+			<tr>
+				<td class="tdleftBold">State<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="c_state" id="c_state" value="<?php if(isset($formData['c_state'])){echo $formData['c_state'];}?>"  class="req form-textfield"  message="Please enter state" />
+					<?php if(array_key_exists('c_state',$formErrors)){echo '<div class="inline-error">'.$formErrors['c_state'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>		
+			<tr>
+				<td class="tdleftBold">City<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="c_city" id="c_city" value="<?php if(isset($formData['c_city'])){echo $formData['c_city'];}?>"  class="req form-textfield"  message="Please enter city" />
+					<?php if(array_key_exists('c_city',$formErrors)){echo '<div class="inline-error">'.$formErrors['c_city'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>								
+			<!--<tr>
+				<td class="tdleftBold">Pincode<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="pincode" id="pincode" value="<?php if(isset($formData['pincode'])){echo $formData['pincode'];}?>"  class="req form-textfield"  message="Please enter pincode" />
+					<?php if(array_key_exists('pincode',$formErrors)){echo '<div class="inline-error">'.$formErrors['pincode'].'</div>';}?>
+				</td>
+			</tr>-->			
+										
+			<tr>
+				<td class="tdleftBold">Phone : </td>
+				<td>
+					<input type="text" name="c_phone" id="c_phone" value="<?php if(isset($formData['phone'])){echo $formData['phone'];}?>"  class="form-textfield"  message="Please enter phone" />
+					<?php if(array_key_exists('c_phone',$formErrors)){echo '<div class="inline-error">'.$formErrors['c_phone'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>	
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+            </table>
+            <table class="edit_profile">
+			<tr>
+				<td colspan="2" class="heading">Bank Details </td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>	
+            <tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Account No<span class="required">*</span>: </td>
+				<td>
+					<input type="text" name="account_no" id="account_no" value="<?php if(isset($formData['account_no'])){echo $formData['account_no'];}?>"  class="req form-textfield"  message="Please enter account no" />
+					<?php if(array_key_exists('account_no',$formErrors)){echo '<div class="inline-error">'.$formErrors['account_no'].'</div>';}?>
+				</td>
+			</tr>			
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>			
+			<tr>
+				<td class="tdleftBold">Account Holder Name<span class="required">*</span>: </td>
+				<td>
+					<input type="text" name="account_holder_name" id="account_holder_name" value="<?php if(isset($formData['account_holder_name'])){echo $formData['account_holder_name'];}?>"  class="req form-textfield"  message="Please enter account holder name" />
+					<?php if(array_key_exists('account_holder_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['account_holder_name'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Banker<span class="required">*</span>: </td>
+				<td>
+					<input type="text" name="banker" id="banker" value="<?php if(isset($formData['banker'])){echo $formData['banker'];}?>"  class="req form-textfield"  message="Please enter banker" />
+					<?php if(array_key_exists('banker',$formErrors)){echo '<div class="inline-error">'.$formErrors['banker'].'</div>';}?>
+				</td>
+			</tr>
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Routing Number: </td>
+				<td>
+					<input type="text" name="routing_number" id="routing_number" value="<?php if(isset($formData['routing_number'])){echo $formData['routing_number'];}?>"  class="form-textfield"  message="Please enter banker" />
+					<?php if(array_key_exists('routing_number',$formErrors)){echo '<div class="inline-error">'.$formErrors['routing_number'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">&nbsp;</td>
+				<td>
+					<input type="hidden" name="update_profile" value="Update Profile">
+					<input type="submit" value="Update" title="Update Profile" class="button-Save" />
+					<input type="button" value="Cancel" name="btnCancel" title="Cancel" class="button-cancel" onclick="return <?php echo $return_function;?>" />
+				</td>
+			</tr>
+			
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			
+		</table>
+	    </form>
+	</div>
+</div>	
+</div>
+

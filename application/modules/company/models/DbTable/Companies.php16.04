@@ -1,0 +1,159 @@
+<?php
+class Company_Model_DbTable_Companies extends Zend_Db_Table
+{
+	protected $_name =TBL_COMPANIES;
+	protected $_countryname =TBL_COUNTRY;
+	protected $_membername =TBL_COMPANY_MEMBERS;
+	
+	public function isExist($pWhere)
+	{
+		$retVal=false;
+		if(isset($pWhere) && $pWhere!="")
+		{
+			$result=$this->fetchRow($pWhere);
+			if($result && $result!=null)
+			{
+				$retVal=true;
+			}
+		}
+		return $retVal;
+	}
+	 public function getInfoByCompanyId($pCompanyId)
+	 {
+		$retVal=false;
+		
+		if(isset($pCompanyId) && $pCompanyId!="")
+		{
+			$result=$this->fetchRow('id='.$pCompanyId);
+			if($result)
+			{
+				$retVal=$result;
+			}
+		}
+		return $retVal;
+	 }
+	public function getInfoByCompanyEmail($emailid)
+	{
+		$retVal=false;
+		if(isset($emailid) && $emailid!="")
+		{
+			$result=$this->fetchRow("user_email='".$emailid."'");
+			if($result)
+			{
+				$retVal=$result;
+			}
+		}
+		return $retVal;
+	}
+	public function getCountryList()
+	{   
+		$retVal=array();  
+		$select='SELECT * from '.$this->_countryname.' order by country asc';
+		$retVal=$this->getAdapter()->FetchAll($select); 
+		return $retVal;
+	}
+	public function activateUser($varificationcode)
+	{   
+        $retVal=array();  
+		
+		$datavalue=$this->fetchRow("activation_code='".$varificationcode."' and status='0'"); 
+		if(isset($datavalue) && $datavalue!="")
+		{
+			$update="update ".$this->_name." set status=1 where activation_code='".$varificationcode."'";
+			$retVal=$this->getAdapter()->query($update); 
+			
+			if(isset($retVal) && $retVal!="")
+		    {
+			   return 1;
+			}
+			else
+			{
+			   return 0;
+			}			
+		}
+		else
+		{
+		    return 0;
+		}
+	}	
+	public function getCountryInfo($country_id=0)
+	{   
+		$retVal=array();  
+		$select='SELECT * from '.$this->_countryname.' WHERE id="'.$country_id.'"';
+		$retVal=$this->getAdapter()->fetchRow($select); 
+		return $retVal;
+	}	
+	public function getMemberList($parentCompany_id=0)
+	{
+		$list=array();
+
+		$query="SELECT * FROM ".$this->_name." WHERE parent_id<>0 AND parent_id=".$parentCompany_id."  AND group_id<>0 AND account_type=3 ORDER BY id ASC";
+		
+		$result=$this->getAdapter()->fetchAll($query);
+		if($result && $result!=null)
+		{
+			$list=$result;
+		}
+		return $list;
+	}	
+	public function getMemberByGroupId($group_id=0)
+	{
+		$list=array();
+		$query="SELECT * FROM ".$this->_name." WHERE parent_id<>0 AND group_id<>0 AND group_id=".$group_id." AND account_type=3 ORDER BY id ASC";
+		$result=$this->getAdapter()->fetchAll($query);
+		if($result && $result!=null)
+		{
+			$list=$result;
+		}
+		return $list;
+	}
+	public function getNonMemberUser($user_email)
+	{
+		$list=array();
+		$query="SELECT * FROM ".$this->_name." WHERE user_email ='".$user_email."' AND parent_id='0' AND group_id='0' AND account_type=2 ORDER BY id ASC";
+		$result=$this->getAdapter()->fetchAll($query);
+		if($result && $result!=null)
+		{
+			$list=$result;
+		}
+		return $list;
+	}
+	public function isExistCompany($pWhere)
+	{
+		$retVal=false;
+		if(isset($pWhere) && $pWhere!="")
+		{
+			$result=$this->fetchRow($pWhere);
+			if($result && $result!=null)
+			{
+				$retVal=true;
+			}
+		}
+		return $retVal;
+	}
+	public function activateGroupUser($varificationcode,$group_id)
+	{   
+        $retVal=array();  
+		
+		$datavalue=$this->fetchRow("activation_code='".$varificationcode."' and group_varify_id ='".$group_id."' and status='1'"); 
+		if(isset($datavalue) && $datavalue!="")
+		{
+			$update="update ".$this->_name." set group_id='".$group_id."' where activation_code='".$varificationcode."'";
+			$retVal=$this->getAdapter()->query($update); 
+			
+			if(isset($retVal) && $retVal!="")
+		    {
+			   return 1;
+			}
+			else
+			{
+			   return 0;
+			}			
+		}
+		else
+		{
+		    return 0;
+		}
+	}
+}
+?>

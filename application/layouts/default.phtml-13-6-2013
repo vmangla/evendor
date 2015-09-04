@@ -1,0 +1,385 @@
+<?php echo $this->doctype(); ?>
+<html>
+<head>
+<?php echo $this->headTitle('Electronic Vendor Ltd');?>
+
+
+<?php
+
+$currenturl= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+
+$posa = strpos($currenturl, "about-us");  
+$posb = strpos($currenturl, "faqs"); 
+$posc = strpos($currenturl, "contact-us"); 
+
+$pageModel=new Model_DbTable_Page();
+
+if($posa) 
+{
+ $metaInfo=$pageModel->getInfoById("1");  
+?>
+<meta name="title" content="<?php echo stripslashes($metaInfo['meta_title']);  ?>">
+<meta name="keywords" content="<?php echo stripslashes($metaInfo['meta_keywords']); ?>">
+<meta name="description" content="<?php echo stripslashes($metaInfo['meta_description']); ?>">	
+<?php
+}
+
+if($posb) 
+{
+ $metaInfo=$pageModel->getInfoById("5");  
+?>
+<meta name="title" content="<?php echo stripslashes($metaInfo['meta_title']);  ?>">
+<meta name="keywords" content="<?php echo stripslashes($metaInfo['meta_keywords']); ?>">
+<meta name="description" content="<?php echo stripslashes($metaInfo['meta_description']); ?>">	
+<?php
+}
+
+if($posc) 
+{
+ $metaInfo=$pageModel->getInfoById("7");  
+?>
+<meta name="title" content="<?php echo stripslashes($metaInfo['meta_title']);  ?>">
+<meta name="keywords" content="<?php echo stripslashes($metaInfo['meta_keywords']); ?>">
+<meta name="description" content="<?php echo stripslashes($metaInfo['meta_description']); ?>">	
+<?php
+}
+?>
+
+
+
+
+
+<?php
+/********************************* Head Meta **************************/
+//$this->headMeta()->appendHttpEquiv('X-UA-Compatible',"IE=edge,chrome=1");
+//$this->headMeta()->setCharset('UTF-8');
+//$this->headMeta()->appendName("viewport", "width=device-width,initial-scale=1.0");
+echo $this->headMeta();
+/********************************* Head Meta Ends Here**************************/
+
+/********************************* Head Css **************************/
+$this->headLink()->appendStylesheet($this->serverUrl().$this->baseUrl().'/public/css/default/css/style.css');
+$this->headLink()->appendStylesheet($this->serverUrl().$this->baseUrl().'/public/css/default/css/skin.css');
+//$this->headLink()->appendStylesheet($this->serverUrl().$this->baseUrl().'/public/css/default/banner-slider/slidy.css');
+
+$this->headLink()->appendStylesheet($this->serverUrl().$this->baseUrl().'/public/css/default/css/flexslider.css');
+
+
+echo $this->headLink();
+/******* Inline Css **********/
+echo $this->headStyle();
+/******* Inline Css **********/
+/********************************* Head Css Ends Here **************************/
+
+/********************************* Head Script **************************/
+$this->headScript()->prependFile($this->serverUrl().$this->baseUrl().'/public/css/default/js/jquery.min.js');
+
+$this->headScript()->appendFile($this->serverUrl().$this->baseUrl().'/public/js/default/common_validation.js');
+
+$this->headScript()->appendFile($this->serverUrl().$this->baseUrl().'/public/css/default/js/jquery.js');
+
+//$this->headScript()->appendFile($this->serverUrl().$this->baseUrl().'/public/css/default/banner-slider/slidy.js');
+
+$this->headScript()->appendFile($this->serverUrl().$this->baseUrl().'/public/css/default/js/jquery.flexslider.js');
+
+
+echo $this->headScript();
+/********************************* Head Script Ends Here **************************/
+
+$controller_name = Zend_Controller_Front::getInstance()->getRequest()->getControllerName();
+$action_name = Zend_Controller_Front::getInstance()->getRequest()->getActionName();
+
+//echo "controller name".$controller_name;
+//echo "action name".$action_name;
+
+?>
+
+<script type="text/javascript">
+function clearText(field){
+if (field.defaultValue == field.value) field.value = '';
+else if (field.value == '') field.value = field.defaultValue;
+}
+</script>
+	<!--[if IE]>
+            <script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/js/html5.js" type="text/javascript"></script>
+        <![endif]-->
+
+		
+	<!-- tabing -->
+	<script type="text/javascript">
+            $(document).ready(function(){
+                 //tabing hide show
+                $("[id^=link]").click(function(){
+                    idArr = this.id.split("_");
+                    $("[id^=link]").removeClass("active");
+                    $("#link_" + idArr[1]).addClass("active");
+
+                    $("[id^=conetnt2_]").hide();
+                    $("#conetnt2_" + idArr[1]).show();
+                });
+			});
+        
+	/*if(window.sessionStorage.getItem('name'))
+	{
+		alert(window.sessionStorage.getItem('name'));
+	}
+	else
+	{
+		window.sessionStorage.setItem('name', "jai")
+	}
+	*/
+	</script>
+<script language="javascript" type="text/javascript">
+function searchsubmit()
+{
+	var searchval = document.getElementById('search_box').value;
+	 
+	window.location.href = '<?php echo $this->serverUrl().$this->baseUrl();?>/search/index/val/'+searchval;
+}
+</script>
+	
+		
+</head>
+
+<body>
+<div id="container">
+<!--Header part -->
+<header id="heder">
+<div class="logo"><a href="<?php echo $this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);?>"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/logo.png" alt=""></a></div>
+
+<div class="head_right">
+
+<!--Toplink -->
+<div class="toplink">
+<?php
+
+?>
+<div class="tolltip"><?php if(isset($this->storeName) && !empty($this->storeName))echo $this->storeName;?><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/w_arrow.png" alt="">
+
+<div class="tolltip_main">
+<div class="tolltip_content">
+<p class="heading">Find us worldwide</p>
+
+<?php
+if(!empty($this->allStored) && count($this->allStored)>0)
+{
+    $modelContinent= new Admin_Model_DbTable_Continents();
+	foreach($this->allStored as $continent_id=>$country_array)
+	{
+		$continentInfo=$modelContinent->fetchRow("id='$continent_id'");
+		?>
+		<p><?php echo $continentInfo->continent;?><br>
+		<?php
+		foreach($country_array as $cid=>$cname)
+		{
+			?>
+			<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/auth/storechange/storeid/<?php echo $cid; ?>"><?php echo $cname; ?></a> /
+
+			<?php
+		}
+		?>
+		</p>
+		<?php
+	}
+}
+?>
+
+</div>
+</div>
+
+
+</div>         |  
+<a href="#">Help</a>  |  
+<a href="#">Sitemap</a>  |  
+<?php
+if(isset($this->sessPublisherInfo) && $this->sessPublisherInfo!=null)
+{
+?>
+Hi, <a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'index','action'=>'index'),'',true);?>"><?php echo $this->sessPublisherInfo->first_name;?></a> | <a href="<?php echo $this->serverUrl().$this->baseUrl();?>/publisher/auth/logout/">Logout</a> |
+<?php
+}
+elseif(isset($this->sessCompanyInfo) && $this->sessCompanyInfo!=null)
+{
+?>
+Hi, <a href="<?php echo $this->url(array('module'=>'company','controller'=>'index','action'=>'index'),'',true);?>"><?php echo $this->sessCompanyInfo->first_name;?></a> | <a href="<?php echo $this->serverUrl().$this->baseUrl();?>/company/auth/logout/">Logout</a> |
+<?php
+}
+else
+{
+?>
+
+<div class="tolltip">Register<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/w_arrow.png" alt="">
+
+<div class="tolltip_main">
+<div class="tolltip_content">
+<p>Sign up for <a href="<?php echo $this->serverUrl().$this->baseUrl().'/company/register/';?>">Company</a>/<a href="<?php echo $this->serverUrl().$this->baseUrl().'/publisher/register/';?>">Publisher</a>/<a href="<?php echo $this->serverUrl().$this->baseUrl().'/user/register/';?>">User</a></p>
+  
+</div>
+</div>
+
+
+</div>  
+
+
+
+<div class="tolltip">Sign In<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/w_arrow.png" alt="">
+
+<div class="tolltip_main">
+<div class="tolltip_content">
+ <p>Sign In as a <a href="<?php echo $this->serverUrl().$this->baseUrl().'/company/auth/';?>">Company</a>/<a href="<?php echo $this->serverUrl().$this->baseUrl().'/publisher/auth/';?>">Publisher</a>/<a href="<?php echo $this->serverUrl().$this->baseUrl().'/user/auth/';?>">User</a></p>
+</div>
+</div>
+
+
+</div> 
+
+<?php	
+}
+?>
+<span class="share_icons">Follow us on : 
+<a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/twitter_icon.png" alt=""></a> 
+<a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/facebook_icon.png" alt=""></a> 
+<a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/vion_icon.png" alt=""></a> 
+<a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/rss_icon.png" alt=""></a>
+</span>
+</div>
+<!--Toplink -->
+
+
+</div>
+
+<div class="head_right">
+<!--Topmenu -->
+<div class="topmenu">
+<ul>
+<li>
+<a href="<?php echo $this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);?>" <?php if($this->currentController=='index') echo$this->class_active;?>>Home</a>
+</li>
+
+<li>
+<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/page/index/title/about-us" <?php if($this->currentController=='page' && $this->currentTitle=='about-us') echo$this->class_active;?>>About us</a>
+</li>
+
+<li><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/" <?php if($this->currentController=='catalogue') echo$this->class_active;?>>Catalogue</a></li>
+<li><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/page/index/title/readers">Readers</a></li>
+<?php
+if(isset($this->sessPublisherInfo) && $this->sessPublisherInfo!=null)
+{
+?>
+<li>
+<a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'index','action'=>'index'),'',true);?>">Publisher/Author</a>
+</li>
+<?php
+}
+elseif(isset($this->sessCompanyInfo) && $this->sessCompanyInfo!=null)
+{
+?>
+<li>
+<a href="<?php echo $this->url(array('module'=>'company','controller'=>'index','action'=>'index'),'',true);?>">Company Panel</a>
+</li>
+<?php
+}
+else
+{
+?>
+<li>
+<!--<a href="<?php echo $this->url(array('module'=>'default','controller'=>'login','action'=>'index'),'',true);?>">Publisher/Author</a>-->
+<a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'auth','action'=>'index'),'',true);?>">Publisher/Author</a>
+</li>
+
+<li>
+<a href="<?php echo $this->url(array('module'=>'company','controller'=>'auth','action'=>'index'),'',true);?>">Company</a>
+</li>
+<?php
+}
+?>
+
+<!--<li><a href="#">Authors</a></li>-->
+<li><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/page/index/title/contact-us" <?php if($this->currentController=='page' && $this->currentTitle=='contact-us') echo$this->class_active;?>>Contact us</a></li>
+<li><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/faqs" <?php if($this->currentController=='faqs') echo$this->class_active;?>>FAQS</a></li>
+</ul>
+</div>
+<!--Topmenu -->
+</div>
+
+<!--Magazine link -->
+<nav>
+<div id="breadcrumb">
+<?php
+if($this->currentController=='page')
+{
+	echo"<a href='".$this->serverUrl().$this->baseUrl()."'>Home</a> > ".$this->pageInfo->title;	
+}
+else
+{
+echo $this->navigation()->breadcrumbs()->setLinkLast(false)->setMinDepth(0)->render();
+}
+?>
+</div>
+
+<ul>
+<li class="search">
+<?php
+//$searchUrl=$this->url(array('module'=>'default','controller'=>'search','action'=>'index'),'',true);
+$searchkey = "";
+$searchUrl=$this->serverUrl().$this->baseUrl().'/search/storeinsession';
+
+$postkeyword = new Zend_Session_Namespace('searchkeyword');
+$searchkey = $postkeyword->searchword;
+
+?>
+<form id="form-add-book" method="post" action="<?php echo $searchUrl;?>">
+Search  <input type="text" name="search_box" id="search_box" value="<?php if($searchkey!=''){ echo $searchkey; } else { ?>Enter search here<?php } ?>" onBlur="if (this.value == '') this.value = 'Enter search here';" onFocus="if (this.value == 'Enter search here') this.value = '';"/> <input type="submit" value="GO!" name="btn_search" id="btn_search" /></form></li>
+</ul>
+</nav>
+<!--Magazine link -->
+
+</header>
+<!--Header part -->
+
+<!--Middle Section -->
+<section id="middle" <?php if($controller_name=='index') { ?>class="gap" <?php } ?>>
+
+<?php echo $this->layout()->content;?>
+
+</section>
+<!--Middle Section -->
+
+
+<!--Footer section-->
+<footer>
+<a href="<?php echo $this->serverUrl().$this->baseUrl();?>">Home</a>        
+<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/page/index/title/about-us">About us</a>
+<a href="#">Catalogue</a>
+<a href="#">Readers</a>
+<?php
+if(isset($this->sessPublisherInfo) && $this->sessPublisherInfo!=null)
+{
+?>
+<a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'index','action'=>'index'),'',true);?>">Publisher/Author</a>
+<?php
+}
+elseif(isset($this->sessCompanyInfo) && $this->sessCompanyInfo!=null)
+{
+?>
+<a href="<?php echo $this->url(array('module'=>'company','controller'=>'index','action'=>'index'),'',true);?>">Company Panel</a>
+<?php
+}
+else
+{
+?>
+<a href="<?php echo $this->url(array('module'=>'default','controller'=>'login','action'=>'index'),'',true);?>">Publisher/Author</a>
+<?php
+}
+?>
+<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/page/index/title/contact-us">Contact us</a>
+
+<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/faqs" <?php if($this->currentController=='faqs') echo$this->class_active;?>>FAQS</a>
+<br>
+&copy; Copyright <?php echo date("Y");?>. All Rights Reserved By Electronic Vendor Ltd.
+</footer>
+<!--Footer section-->
+</div>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+<?php
+
+class ErrorController extends Zend_Controller_Action
+{
+    public function init()
+    {
+      $storage = new Zend_Auth_Storage_Session('user_type');
+  		$data = $storage->read();
+  		if($data && $data!=null)
+  		{
+  			$this->sessUser=$data;
+  			$this->view->id =$this->sessUser->id;
+  			$this->view->sessUser=$this->sessUser;
+  			if($this->sessUser->usertype==1)
+  			{
+  				$this->view->contact_person =$this->sessUser->first_name;
+  			}
+  			if($this->sessUser->usertype==2)
+  			{
+  				$this->view->contact_person=$this->sessUser->contact_person;
+  			}
+  	   }
+    }
+    public function errorAction()
+    {
+        $errors = $this->_getParam('error_handler');
+        
+        switch ($errors->type) { 
+            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
+            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION:
+        
+                // 404 error -- controller or action not found
+                $this->getResponse()->setHttpResponseCode(404);
+                $this->view->message = 'Page not found';
+                break;
+            default:
+                // application error 
+                $this->getResponse()->setHttpResponseCode(500);
+                $this->view->message = 'Application error';
+                break;
+        }
+        
+        $this->view->exception = $errors->exception;
+        $this->view->request   = $errors->request;
+    }
+
+
+}
+

@@ -1,0 +1,126 @@
+
+<div class="user_dashboard">
+<?php include('leftnav.phtml');?>
+</div>
+<h3 style="text-align:center; padding-top:10px;">Profile Update</h3>
+<div class="welcome_user">
+<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+	<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+	<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+	<br  clear="all"/>
+	
+
+		<form id="form-add-user" method="post" onsubmit="return validate_user('form-add-user');">
+			<table width="100%" align="center">
+				<tr>
+					<td align="center" valign="top">
+					 
+							<table align="center">
+							 
+								<tr>
+									<td class="tdleftBold">First name<span class="required">*</span> : </td>
+									<td>
+										<input type="text" name="first_name" id="first_name" value="<?php if(isset($this->formData['first_name'])){echo $this->formData['first_name'];}?>"  class="req form-textfield"  message="Please enter first name"/>
+										<?php if(@array_key_exists('first_name',$this->formErrors)){echo '<div class="inline-error">'.$this->formErrors['first_name'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+								<td colspan="2">&nbsp;</td>
+								</tr>
+								
+								<tr>
+									<td class="tdleftBold">Last Name<span class="required">*</span> : </td>
+									<td>
+										<input type="text" name="last_name" id="last_name" value="<?php if(isset($this->formData['last_name'])){echo $this->formData['last_name'];}?>"  class="req form-textfield"  message="Please enter last name" />
+										<?php if(@array_key_exists('last_name',$this->formErrors)){echo '<div class="inline-error">'.$this->formErrors['last_name'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+								<td colspan="2">&nbsp;</td>
+								</tr>
+				
+								<tr>
+									<td class="tdleftBold">Email<span class="required">*</span> : </td>
+									<td>
+										<input type="text" name="user_email" id="user_email" disabled="disabled" value="<?php if(isset($this->formData['user_email'])){echo $this->formData['user_email'];}?>"  class="req validmail form-textfield" message="Please enter your email" invalidmessage="Please enter valid email address"/>
+										<?php if(@array_key_exists('user_email',$this->formErrors)){echo '<div class="inline-error">'.$this->formErrors['user_email'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+								<td colspan="2">&nbsp;</td>
+								</tr>
+				
+								 <tr>
+									<td class="tdleftBold">Phone No.<span class="required">*</span> : </td>
+									<td>
+										<input type="text" name="phone" id="phone" value="<?php echo $this->formData['phone'];?>" class="req number pass form-textfield" message="Please enter Phone number" invalidmessage="Please enter valid phone number" />
+										<?php if(array_key_exists('phone',$this->formErrors)){echo '<div class="inline-error">'.$formErrors['phone'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+								<td colspan="2">&nbsp;</td>
+								</tr>
+								 
+								
+								<tr>
+									<td class="tdleftBold">Country<span class="required">*</span> : </td>
+									<td>
+									
+										<?php
+										$modelCompany = new Company_Model_DbTable_Companies();
+										$countryList=$modelCompany->getCountryList();
+										$this->formData["country"]=!empty($this->formData["country"])?$this->formData["country"]:0;
+										?>
+										
+										<select name="country" id="country" class="req" message="Please select country">
+										<option value="">Select Country</option>
+										
+										<?php
+										for($ii=0;$ii<count($countryList);$ii++)
+										{
+										?>
+										<option value="<?php echo $countryList[$ii]['id']; ?>" <?php if($this->formData["country"]==$countryList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $countryList[$ii]['country']; ?></option>
+										<?php
+										}
+										?>		   
+										</select>
+										
+									    <?php if(@array_key_exists('country',$this->formErrors)){echo '<div class="inline-error">'.$this->formErrors['country'].'</div>';}?>
+
+									</td>
+								</tr>
+								<tr>
+								<td colspan="2">&nbsp;</td>
+								</tr>
+								
+								 
+								
+					<td>&nbsp;</td>
+					<td>
+					<input type="submit"  name="update_profile" id="update_profile" value="Update"  class="button-Save" />
+					</td>
+				</tr>
+							 </table>
+						 
+					</td>
+				</tr>
+			</table>
+		</form>
+
+</div>
+<script type="text/javascript">
+
+function validate_user(pFormId)
+{
+	
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+</script>

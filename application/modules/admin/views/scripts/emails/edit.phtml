@@ -1,0 +1,133 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'emails','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'emails','action'=>'index'),'',true);
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Emails Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+			<div class="action-header">
+				<span class="action-title">Edit Email Template</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>">Back</a></li>
+				</ul>
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			<br  clear="all"/>
+			
+<form id="form-edit-email" method="post" onsubmit="return validate_edit_package('form-edit-email');">
+
+<table class="table-form" cellpadding="0" cellspacing="0">
+
+<tr>
+<td width="20%" class="tdrightBold">Select Title<span class="required">*</span> : </td>
+<td>
+
+<?php
+$tempValue=0;
+?>						  
+<select name="template_name" id="template_name">
+	<option value="">Select Template</option>
+	<option value="User Registration" <?php if($formData['template_name']=='User Registration') { $tempValue++; ?> selected="selected" <?php } ?>>User Registration</option>
+	
+	<option value="Model Registration" <?php if($formData['template_name']=='Model Registration') { $tempValue++; ?> selected="selected" <?php } ?>>Model Registration</option>
+	
+	<option value="Request Booking User" <?php if($formData['template_name']=='Request Booking User') { $tempValue++; ?> selected="selected" <?php } ?>>Request Booking User</option>
+	
+	<option value="Request Booking Model" <?php if($formData['template_name']=='Request Booking Model') { $tempValue++; ?> selected="selected" <?php } ?>>Request Booking Model</option>
+	
+	<option value="Confirm Booking User" <?php if($formData['template_name']=='Confirm Booking User') { $tempValue++; ?> selected="selected" <?php } ?>>Confirm Booking User</option>
+	
+	<option value="Confirm Booking Model" <?php if($formData['template_name']=='Confirm Booking Model') { $tempValue++; ?> selected="selected" <?php } ?>>Confirm Booking Model</option>
+	
+	<option value="Payment" <?php if($formData['template_name']=='Payment') { $tempValue++; ?> selected="selected" <?php } ?>>Payment</option>
+	
+	<option value="Payout Request" <?php if($formData['template_name']=='Payout Request') { $tempValue++; ?> selected="selected" <?php } ?>>Payout Request</option>
+	
+	<option value="Payment Made" <?php if($formData['template_name']=='Payment Made') { $tempValue++; ?> selected="selected" <?php } ?>>Payment Made</option>	
+	
+</select>
+						   
+							<?php if(array_key_exists('template_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['template_name'].'</div>';}?>
+						</td>
+					</tr>
+					
+					
+					<tr>
+					<td width="20%" class="tdrightBold"> Or </td>
+					<td>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="20%" class="tdrightBold">New Title<span class="required">*</span> : </td>
+					<td>
+<input type="text" name="template_new" id="template_new" <?php if($tempValue=='0') { ?> value="<?php echo $formData['template_name']; ?>" <?php } ?>/>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="20%" class="tdrightBold">Email Body<span class="required">*</span> : </td>
+					<td>
+					<textarea name="template_description" id="template_description" class="form-textarea">
+					<?php if(isset($formData['template_description'])){echo $formData['template_description'];}?>
+					</textarea>
+					
+					<?php /*if(array_key_exists('template_description',$formErrors)){echo '<div class="inline-error">'.$formErrors['template_description'].'</div>';}*/?>
+					</td>
+				</tr>
+				
+				
+					<tr>
+						<td width="20%" class="tdrightBold">&nbsp;</td>
+						<td>
+							<input type="submit" value="Save" class="button-cancel"/>
+							<input type="button" value="Cancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';"/>
+						</td>
+					</tr>
+				  
+				 </table>
+			 </form>
+	</div>
+</div>
+
+<?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+function validate_edit_package(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>
+
+<?php /************JAVASCRIPT CODE**************/?>
+<script language="javascript" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/fckeditor/fckeditor.js"></script>
+<script type="text/javascript">
+$(function()
+{
+var oFCKeditor = new FCKeditor('template_description') ;
+oFCKeditor.BasePath="<?php echo $this->serverUrl().$this->baseUrl();?>/public/fckeditor/";
+oFCKeditor.Height =400;
+oFCKeditor.Width = 600;
+//oFCKeditor.ToolbarSet = 'Basic';
+oFCKeditor.ReplaceTextarea() ;
+});
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>

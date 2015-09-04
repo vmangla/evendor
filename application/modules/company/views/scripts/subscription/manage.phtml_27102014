@@ -1,0 +1,187 @@
+<?php
+$addsubscriptionUrl=$this->url(array('module'=>'company','controller'=>'subscription','action'=>'create'),'',true);
+
+$cancelUrl=$this->url(array('module'=>'company','controller'=>'subscription','action'=>'index'),'',true);
+
+$backUrl=$this->url(array('module'=>'company','controller'=>'subscription','action'=>'index'),'',true);
+
+$currUrl=$this->url();
+
+$searchAllUrl=$this->url(array('module'=>'company','controller'=>'subscription','action'=>'manage'),'',true);
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+if(isset($formData['tab_ajax']) && $formData['tab_ajax']=='dashboard')
+{
+$return_function="getDashboard('hide-2');";
+}
+elseif(isset($formData['tab_ajax']) && $formData['tab_ajax']=='mysetting')
+{
+$return_function="getSettingPanel('hide-2');";
+}
+else
+{
+	$return_function="goToPage('".$backUrl."','tab2','subscription');";
+}
+/*echo "<pre>";
+				print_r($this->MySubscriptionsList);
+				exit;*/
+?>
+<div id="panel">
+	<div class="panel-header"><h3>Manage Group Subscription</h3><!--<a href="<?php echo $this->url(array('module'=>'company','controller'=>'subscription','action'=>'create'),'',true);?>" title="Add New subscription User" onclick="return goToPage(this.href,'tab3','subscription');" class="addbook">Add subscription User</a>--></div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+<form name="form-search" id="form-search" method="post" onsubmit="return validate_common_form('form-search','<?php echo $currUrl;?>','tab2');">
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">Search</th>
+				</tr>				
+				 <tr>
+					<td width="100%" colspan="8">Select Type:
+					<select name="subscription_type" id="subscription_type">
+						<option value="">All</option>
+						<option value="0" <?php if(isset($_POST['subscription_type']) && $_POST['subscription_type']=='0') {?>selected<?php } ?>>Individual</option>
+						<option value="1" <?php if(isset($_POST['subscription_type']) && $_POST['subscription_type']=='1') {?>selected<?php } ?>>Subscribed</option>
+					</select>
+					Subscription Type:
+ 
+					<select name="subscription_name" id="subscription_name" style="width:225px;">
+						<option value="">All</option>
+						<option value="Weekly" <?php if(isset($_POST['subscription_name']) && $_POST['subscription_name']=='Weekly') {?>selected<?php } ?>>Weekly</option>
+						<option value="Monthly" <?php if(isset($_POST['subscription_name']) && $_POST['subscription_name']=='Monthly') {?>selected<?php } ?>>Monthly</option>
+						<option value="Quarterly" <?php if(isset($_POST['subscription_name']) && $_POST['subscription_name']=='Quarterly') {?>selected<?php } ?>>Quarterly</option>
+						<option value="Half Yearly" <?php if(isset($_POST['subscription_name']) && $_POST['subscription_name']=='Half Yearly') {?>selected<?php } ?>>Half Yearly</option>
+						<option value="Yearly" <?php if(isset($_POST['subscription_name']) && $_POST['subscription_name']=='Yearly') {?>selected<?php } ?>>Yearly</option>
+					</select>
+					<input type="submit" name="searchresult" id="searchresult" value="Search"  class="button-Add">
+					<input type="button" name="showall" value="Show All" class="button-Add" onclick="return goToPage('<?php echo $searchAllUrl;?>','tab2','book');" />
+					</td>
+				</tr>
+				</table>
+			 </form>
+			<!--<div class="action-header">
+				<span class="action-title">&nbsp;</span>
+				<ul class="horizonal-menu">
+					<li class="back"><!-- <a href="<?php echo $backUrl;?>" title onclick="return <?php echo $return_function;?>">Back</a> </li>
+				</ul>
+			</div>	-->
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br  clear="all"/>	<br  clear="all"/>
+			
+			<table class="table-list" cellpadding="0" cellspacing="0" width="100%">
+			
+			   <tr>
+				   <th width="5%" align="center">S.No</th>
+				   <th width="5%" align="center">Order Id</th>
+				   <th width="20%" align="center">Group Name</th>
+				   <th width="10%" align="center">Quantity</th>
+				   <th width="40%" align="center">Publication</th>
+				   <th width="40%" align="center">Subscription Type</th>
+				    
+			   </tr>
+			   
+			<?php 
+			$this->modelUserSubscription = new Model_DbTable_Usersubscription();
+			$this->modelBooks = new Publisher_Model_DbTable_Books();
+			
+			
+		 
+			  if(isset($this->MySubscriptionsList) && count($this->MySubscriptionsList)>0)
+			  {
+				$sNumber=1; 
+				foreach($this->MySubscriptionsList as $row)
+				{ 
+					$qnty='';
+					 
+					 
+			?>
+					<tr>
+					<td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					<td><?php echo $row['order_id'];?></td>
+					 
+					<td>
+					<?php
+					$fetchModel	= new Company_Model_DbTable_Groups();
+					$groupDetail = $fetchModel->getInfoByGroupId($row['group_id']);
+					?>
+					<?php echo $groupDetail['group_name'];?>
+					</td> 
+					<td>
+					<a href="javascript:void(0);" onclick='window.open ("http://miprojects2.com.php53-6.ord1-1.websitetestlink.com/projects/evendor/company/subscription/viewmembers/orderid/<?php echo $row['order_id'];?>/group_id/<?php echo $row['group_id'];?>",
+"mywindow","menubar=1,resizable=1,width=500,height=350,scrollbars=yes");' style="color:#428BCA;">
+					<?php echo $row['quantity'];?>
+					
+					</td>
+					<td>
+					<?php 
+					/*$itemDetail = $this->modelCompanySubscription->getProductInfo($row['publication_id']);
+					
+					if(!empty($itemDetail['parent_brand_id']))
+					{
+						$parentItemDetail = $this->modelCompanySubscription->getProductInfo($itemDetail['parent_brand_id']);
+						$modelCategory = new Publisher_Model_DbTable_Books();
+						//$categoryDetails=$modelCategory->getCategoryInfo($parentItemDetail['cat_id']);
+						$getBrandInfo=$modelCategory->getBrandInfo($parentItemDetail['title']);
+						$display_name=$getBrandInfo['brand'].' - '.$itemDetail['title'];
+					}
+					else
+					{
+						$getBrandInfo="";
+						$display_name=$itemDetail['title'];
+					}*/
+				
+				$product_details = $this->modelCompanySubscription->getProductInfo($row['bookid']);	
+				$getBrandInfo=$this->modelBooks->getBrandInfo($product_details['title']);
+				if(!empty($product_details) && is_numeric($product_details['title']))
+				{
+					$display_name=$getBrandInfo['brand'];
+				}
+				else
+				{
+					$display_name=$product_details['title'];
+				}
+				if(!empty($product_details['parent_brand_id']) && $product_details['cat_id']!='3')
+				{
+					$productInfo=$this->modelBooks->fetchRow('id="'.$product_details['parent_brand_id'].'"');
+					$getParentBrandInfo=$this->modelBooks->getBrandInfo($productInfo->title);
+					if(!empty($getParentBrandInfo))
+					{
+						//$titleBrand=$titleBrand.' ('.$getParentBrandInfo['brand'].')';
+						$display_name=$getParentBrandInfo['brand']." - ".$display_name;
+					}				
+				}
+					
+					echo stripslashes($display_name);
+					?>
+					</td>
+					<td><?php echo $row['subscription_name'];?></td>
+					  
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+				
+				if($this->totalCount>$this->pageSize)
+				{
+					global $tab,$tab_ajax; 
+					$tab=2;$tab_ajax='managesubscription';
+					
+					echo '<tr><td colspan="6">&nbsp;</td></tr>';
+					echo '<tr><td colspan="6"><div class="pagination">'.$this->paginationControl($this->MySubscriptionsList,'Sliding','pagination.phtml').'</div></td></tr>';
+				}
+				
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="8" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>	
+	</div>
+</div>
+

@@ -1,0 +1,98 @@
+<div class="user_dashboard">
+<?php include('leftnav.phtml');
+$modelBooks = new Publisher_Model_DbTable_Books();
+?>
+</div>
+
+<div class="welcome_user">
+<div class="credithistory" style="width:100%">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+	<td colspan="5" align="center"><h4>Transaction History</h4></td>
+</tr>
+<tr>
+	<td colspan="5" height="25"></td>
+</tr>
+<tr>
+	<td style="padding-bottom:8px;">
+		<strong>S.No.</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Order Id</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Transaction Id</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Payment Status</strong>
+	</td>
+	<!--<td style="padding-bottom:8px;">
+		<strong>View Xml</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Print</strong>
+	</td> -->
+	<td style="padding-bottom:8px;">
+		<strong>Purchase Date</strong>
+	</td>
+	<td>
+		<strong>Action</strong>
+	</td>
+</tr>
+<?php
+ /*echo "<pre>";
+ print_r($this->userdetails['first_name']." ".$this->userdetails['last_name']);
+ echo "</pre>";*/
+$j=1;
+foreach($this->creditdata as $row)
+{	
+	$trans_history_data = $modelBooks->getAllProductTransactionById($row['transaction_id']);
+?>
+<tr>
+	<td style="padding-bottom:8px;">
+		<?php echo $j;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<a href="<?php echo $this->url(array('module'=>'user','controller'=>'index','action'=>'view','orderid'=>$row['order_id']),'',true);?>"><?php echo $row['order_id'];?></a>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $row['transaction_id'];;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php
+		if($row['payment_status'] == '1')
+	    {
+		  echo "<strong>Completed</strong>";
+	    }
+	    elseif($row['payment_status'] == '2')
+	    {
+		  echo "<strong>Declined</strong>"." (".$trans_history_data[0]['responseDescription'],")";
+	    }
+	    elseif($row['payment_status'] == '0'){
+		 echo "<strong>Pending</strong>";
+	   }
+		?>
+	</td>
+	<!-- <td>
+		<a href="javascript:void(0);" onClick="window.open('<?php echo $this->serverUrl().$this->baseUrl();?>/user/index/viewxml/transid/<?php echo $row['transaction_id'];?>','name','height=700,width=500')" >View Xml</a>
+	</td>
+	<td>
+		<a href="javascript:void(0);" onClick="window.open('<?php echo $this->serverUrl().$this->baseUrl();?>/user/index/printtransaction/transid/<?php echo $row['transaction_id'];?>','name','height=700,width=500')" >Print</a>
+	</td> -->
+	<td>
+		<?php echo $row['add_date']; ?>
+	</td>
+	<td>
+		<a href="<?php echo $this->url(array('module'=>'user','controller'=>'index','action'=>'view','orderid'=>$row['order_id']),'',true);?>"><img alt="Edit" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/application_view_detail.png"/></a>
+	</td>
+</tr>
+
+<?php
+$j++;}
+?>
+
+</table> 
+</div>
+<!--Payment History-->
+</div>
+

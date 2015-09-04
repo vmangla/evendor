@@ -1,0 +1,58 @@
+<?php
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+
+<div id="login" class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize; text-decoration:none;">Electronic Vendor Ltd
+ :: Admin Login</h3></div>
+	<div class="login-content">
+	
+		<br clear="all"/>
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		<form name="form-login" id="form-login" action="" method="post" onsubmit="return validate_login('form-login');">
+		
+		<table style="margin:20px auto;">
+				<tr>
+					<td>Username<span class="required">*</span>	:</td>
+					<td><input type="text" name="user_name" id="user_name" value="<?php if(isset($formData['user_name'])){echo $formData['user_name'];}?>" class="req text-input user_name" message="Please enter your username"/> </td>
+				</tr>
+				<tr>
+					<td colspan="2">&nbsp;</td>
+				</tr>	
+				<tr>
+					<td>Password<span class="required">*</span>	:</td>
+					<td><input type="password" name="user_password" id="user_password" class="req text-input user_password" message="Please enter your password"/> </td>
+				</tr>
+				<tr>
+					<td colspan="2">&nbsp;</td>
+				</tr>	
+				<tr>
+					<td colspan="2" style="text-align:right;">
+						<a href="<?php echo $this->url(array('module'=>'admin','controller'=>'auth','action'=>'forgotpassword'),'',true);?>">Forgot Password?</a>
+						<input type="submit" value="Login" name="btnLogin" class="button"/>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+	
+<?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+function validate_login(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>	

@@ -1,0 +1,133 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'adminusers','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'adminusers','action'=>'index'),'',true);
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Sub-Admin Users Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+			<div class="action-header">
+				<span class="action-title">Sub-Admin Users</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>" title="Back">Back</a></li>
+				</ul>
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			<br  clear="all"/>
+			
+<form id="form-edit-adminuser" method="post" onsubmit="return validate_edit_package('form-edit-adminuser');">
+
+<table class="table-form" cellpadding="0" cellspacing="0">
+
+<tr>
+<td width="20%" class="tdrightBold">Select Module<span class="required">*</span> : </td>
+<td>
+
+<select name="modulename[]" id="modulename[]" multiple class="table-list" size="5" class="req form-selectfield"  message="Please select module" style="font-size:11px; width:45%;"> 
+	<?php
+	if(isset($this->modelModuleMenus) && $this->modelModuleMenus>0)
+	{
+	$userModulesArray = explode(",",$formData['modules']);
+		foreach($this->modelModuleMenus as $key=>$detailArray)
+		{
+		?>
+		<optgroup id="<?php echo $detailArray['id'];?>" label="<?php echo $detailArray['modulename'];?>">
+		<?php
+			if(!empty($detailArray['menu_ids']))
+			{
+				foreach($detailArray['menu_ids'] as $key=>$menuArray)
+				{
+					?>
+					<option value="<?php echo $detailArray['menu_ids'][$key];?>" <?php if(in_array($detailArray['menu_ids'][$key],$userModulesArray))echo"selected"; ?>><?php echo $detailArray['menu_names'][$key];?></option>
+					<?php
+				}
+			}
+		?>
+		</optgroup>	
+		<?php	
+		}
+	}
+	?>
+</select>
+
+</td>
+</tr>
+	            
+				  
+<tr>
+	<td width="20%" class="tdrightBold">First Name<span class="required">*</span> : </td>
+	<td>
+      <input type="text" name="firstname" id="firstname"  value="<?php echo $formData['first_name']; ?>" class="req form-textfield"  message="Please select first name"/>
+	</td>
+</tr>
+
+<tr>
+	<td width="20%" class="tdrightBold">Last Name<span class="required">*</span> : </td>
+	<td>
+      <input type="text" name="lastname" id="lastname"  value="<?php echo $formData['last_name']; ?>" class="req form-textfield" message="Please select last name"/>
+	</td>
+</tr>
+
+<tr>
+	<td width="20%" class="tdrightBold">Username<span class="required">*</span> : </td>
+	<td>
+      <input type="text" name="username" id="username"  value="<?php echo $formData['user_name']; ?>" class="req form-textfield" message="Please select username" />
+	</td>
+</tr>
+
+<tr>
+	<td width="20%" class="tdrightBold">Password: </td>
+	<td>
+     <!-- <input type="text" name="password" id="password"  value="<?php //echo $formData['user_password']; ?>" class="req form-textfield" message="Please select password"/>-->
+      
+          <input type="text" name="password" id="password" onBlur="if (this.value == '') {this.value = 'Please enter new password';}" onFocus="if(this.value == 'Please enter new password') {this.value = '';}" value="Please enter new password" class="pass form-textfield" message="Please enter new password" />
+	</td>
+</tr>
+
+<tr>
+	<td width="20%" class="tdrightBold">Email<span class="required">*</span> : </td>
+	<td>
+      <input type="text" name="email" id="email"  value="<?php echo $formData['user_email']; ?>" class="req validmail form-textfield" message="Please select email" invalidmessage="Please enter valid email" />
+	</td>
+</tr>
+				
+					<tr>
+						<td width="20%" class="tdrightBold">&nbsp;</td>
+						<td>
+							<input type="submit" value="Save" class="button-Add" title="Save"/>
+							<input type="button" value="Cancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';" title="Save" />
+						</td>
+					</tr>
+				  
+				 </table>
+			 </form>
+	</div>
+</div>
+
+<?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+function validate_edit_package(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>
+

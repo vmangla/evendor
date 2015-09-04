@@ -1,0 +1,26 @@
+<h3 style="text-align:center; padding-top:10px;">User Dashboard</h3>
+<div class="user_dashboard">
+<?php include('leftnav.phtml');?>
+</div>
+
+<div class="welcome_user">
+<h3>Welcome <?php echo stripslashes($this->sessUserInfo->first_name)." to evendor";?></h3>
+
+<div class="content-box-content">
+	<ul class="shortcut-buttons-set">
+		<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'user','controller'=>'index','action'=>'transactionhistory'),'',true);?>" title="transaction history" ><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/update_profile.png" alt="Update Profile"><br>Transaction History</span></a></li>
+		<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'user','controller'=>'index','action'=>'profilesettings'),'',true);?>" title="Profile setting"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/subscribers.png" alt="Profile setting"><br>Profile Setting</span></a>
+		</li>
+		<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'user','controller'=>'index','action'=>'changepwd'),'',true);?>" title="changepwd" ><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/advancedsettings.png" alt="Manage Subscriber"><br>Change Password</span></a>
+		</li>
+		<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'user','controller'=>'index','action'=>'grouppublication'),'',true);?>" title="Manage Subscriber" ><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/staffe.png" alt="Publisher History"><br>Group Publication</span></a>
+		</li>
+		<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'user','controller'=>'index','action'=>'devicetracking'),'',true);?>" title="devicetracking" ><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/company/images/traking_icon.png" alt="devicetracking"><br>Device Tracking</span></a>
+		</li>
+	</ul>
+</div>
+</div>

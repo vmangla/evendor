@@ -1,0 +1,128 @@
+<?php
+//$addMemberUrl=$this->url(array('module'=>'company','controller'=>'member','action'=>'create'),'',true);
+
+$addMemberUrl=$this->url(array('module'=>'company','controller'=>'member','action'=>'create'),'',true);
+
+$cancelUrl=$this->url(array('module'=>'company','controller'=>'','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'company','controller'=>'member','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+if(isset($formData['tab_ajax']) && $formData['tab_ajax']=='dashboard')
+{
+$return_function="getDashboard('hide-3');";
+}
+elseif(isset($formData['tab_ajax']) && $formData['tab_ajax']=='mysetting')
+{
+$return_function="getSettingPanel('hide-3');";
+}
+else
+{
+	$return_function="goToPage('".$backUrl."','tab3','member');";
+}
+$modelBooks = new Publisher_Model_DbTable_Books();
+$producturrency = new Admin_Model_DbTable_Countries();
+?>
+<div id="panel">
+	<div class="panel-header"><h3>Transaction History</h3><!--<a href="<?php echo $this->url(array('module'=>'company','controller'=>'Member','action'=>'create'),'',true);?>" title="Add New Member User" onclick="return goToPage(this.href,'tab3','Member');" class="addbook">Add Member User</a>--></div>
+	<div class="panel-content" style="width:100%">
+		<div class="panel-sub-content">
+			
+			<!--<div class="action-header">
+				<span class="action-title">&nbsp;</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>">Back</a></li>
+				</ul>
+			</div>-->	
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+	<br  clear="all"/>	
+	<br  clear="all"/>
+	<div class="" >Order Id : <?php echo $this->oderId;?></div><div align="right"><a href="<?php echo $this->url(array('module'=>'company','controller'=>'transactionhistory','action'=>'index'),'',true);?>" onclick="return goToPage(this.href,'tab6','transactionhistory');" >Back</a></div>
+	<br  clear="all"/>
+			<table class="table-list" cellpadding="0" cellspacing="0" width="100%">			
+			   <tr>
+				   <th width="5%" align="center">S.No</th>
+				   <th width="20%" align="center">Item</th>
+				   <th width="20%" align="center">Publisher Name</th>
+				   <th width="15%" align="center">Quantity</th>
+				   <th width="15%" align="center">Price</th>	
+					<th width="15%" align="center">Total</th>	
+				   <th width="5%" align="center">Payment Status</th>
+				   <th width="5%" align="center">Group Name</th>
+				   <th width="5%" align="center">Store Name</th>
+				   <th width="10%" align="center">Order Description</th>
+				   <th width="10%" align="center">Currency at transaction</th>
+			   </tr>
+			<?php 
+			// echo "<pre>";
+			 //print_r($this->MemberList);
+			 // exit;
+			 $this->modelGroup = new Company_Model_DbTable_Groups();
+			  if(isset($this->MemberList) && count($this->MemberList)>0)
+			  {
+				$sNumber=1;
+				foreach($this->MemberList as $row)
+				{
+					$publisherDet = $modelBooks->getInfoByPublicationId($row['bookid']);
+					$group_det=$this->modelGroup->fetchRow('id='.$row['group_id']);
+					$country_det=$modelBooks->getCountryName($row['store_id']);
+			?>
+					<tr>
+					<td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					<td><?php echo $row['book_name'];?></td> 
+					<td style="padding-bottom:8px;">
+						<?php echo $publisherDet['publisher'];?>
+					</td>
+					<td><?php echo $row['quantity'];?></td> 
+					<td><?php echo $producturrency->getCurrencyInfo($row['store_id']).$row['price'];?></td> 
+					<td><?php echo $producturrency->getCurrencyInfo($row['store_id']).$row['quantity']*$row['price'];?></td> 
+					<td><?php 
+							if($row['payment_status']=='1')
+							{
+								echo "Approved";
+							}
+							elseif($row['payment_status']=='2')
+							{
+							     echo "Declined";
+							}
+							else {
+								 echo "Pending";
+							}
+						?>
+					   </td>
+					   <td><?php echo $group_det['group_name'];?></td>
+					   <td><?php echo $country_det['country'];?></td>
+					   <td><?php echo $row['orderDescription'];?></td>
+					    <td><?php echo $row['currency'];?></td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+				
+				if($this->totalCount>$this->pageSize)
+				{
+					global $tab,$tab_ajax; 
+					$tab=3;$tab_ajax='transactionhistory';
+					
+					echo '<tr><td colspan="8">&nbsp;</td></tr>';
+					echo '<tr><td colspan="8"><div class="pagination">'.$this->paginationControl($this->MemberList,'Sliding','pagination.phtml').'</div></td></tr>';
+					
+					//echo '<tr><td colspan="8">&nbsp;</td></tr>';
+					//echo '<tr><td colspan="8"><div class="pagination">'.$this->paginationControl($this->MemberList,'Sliding','ajax_pagination.phtml').'</div></td></tr>';
+					
+				}
+				
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="8" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>	
+	</div>
+</div>
+

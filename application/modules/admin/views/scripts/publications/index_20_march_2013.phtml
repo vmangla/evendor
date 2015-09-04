@@ -1,0 +1,189 @@
+<?php
+$formData=(isset($this->formData))?$this->formData:array();
+?>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Publication Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<br style="clear: both;"/>
+			<div class="action-header">
+				<span class="action-title">Publication List</span>
+				<!--<ul class="horizonal-menu">
+					<li class="add"><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'add'),'',true);?>">Add Category</a></li>
+				</ul>-->
+			</div>
+			<br style="clear: both;"/>	
+			
+			<form id="form-search" method="post" onsubmit="return validate_search('form-search');">
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">Search Publications</th>
+				</tr>
+				
+				 <tr>
+					<td align="right" width="50%"><div align="right">Title / Brand: </div></td>
+					<td width="50%"><input type="text" name="searchword" id="searchword" value="<?php if(isset($formData["searchword"]) && !empty($formData["searchword"])) echo $formData["searchword"]; ?>"></td>
+				</tr>
+				
+				 <tr>
+					<td align="right" width="50%"><div align="right">Genre: </div></td>
+					<td width="50%">
+				<?php
+				$modelGenre = new Publisher_Model_DbTable_Genres();
+				$genreList=$modelGenre->getGenreList();
+				?>
+				<select name="booktype" id="booktype">
+				<option value="">Select Genre</option>
+				<?php
+				for($ii=0;$ii<count($genreList);$ii++)
+				{
+				?>
+				<option value="<?php echo $genreList[$ii]['id']; ?>" <?php if(isset($formData["booktype"]) && $formData["booktype"]==$genreList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $genreList[$ii]['genre']; ?></option>
+				<?php
+				}
+				?>	
+				</select>
+				
+				<!--<?php
+				$modelCategory = new Publisher_Model_DbTable_Books();
+				$categoryList=$modelCategory->getCategoryList();
+				$title_brand_url=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'gettitlebrand'),'',true);
+				?>
+				<select name="booktype" id="booktype">
+				<option value="">Select Type</option>
+				<?php
+				for($ii=0;$ii<count($categoryList);$ii++)
+				{
+				?>
+				<option value="<?php echo $categoryList[$ii]['id']; ?>" <?php if(isset($formData["booktype"]) && $formData["booktype"]==$categoryList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $categoryList[$ii]['category_name']; ?></option>
+				<?php
+				}
+				?>		   
+				</select>-->
+				</td>
+				</tr>
+				
+				<tr>
+					<td align="center" colspan="2">
+					<div align="center"><input type="submit" name="searchresult" id="searchresult" value="Search"  class="button-Add">
+					<input type="button" name="showall" value="Show All" class="button-Add" onclick="javascript:document.location.href='<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'index'),'',true);?>'" />
+					
+					</div>
+					
+					
+					</td>
+				</tr>
+				</table>
+			 </form>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			<br style="clear: both;"/>	
+			<table class="table-list" cellpadding="0" cellspacing="0">
+			   <tr>
+				   <th>SL.No</th><th>ID</th><th>Title / Brand</th><th>Genre</th><th>Author</th><th>Publish Time</th><th>Status</th><th style="width:80px;">Action</th>
+			   </tr>
+			<?php 
+			  if(isset($this->prodList) && count($this->prodList)>0)
+			  {
+				$sNumber=1;
+				foreach($this->prodList as $row)
+				{
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					   <td><?php echo $row->id;?></td> 
+					   <td>
+					   <?php
+					   $modelCategory = new Publisher_Model_DbTable_Books();
+					   $getBrandInfo=$modelCategory->getBrandInfo($row->title);
+					   if(!empty($getBrandInfo))
+					   {
+							$titleBrand=$getBrandInfo['brand'];
+					   }else
+					   {
+							$titleBrand=$row->title;
+					   }
+						if(!empty($row->parent_brand_id))
+						{
+						$productInfo=$this->modelPublications->fetchRow('id='.$row->parent_brand_id);
+						$getParentBrandInfo=$modelCategory->getBrandInfo($productInfo->title);
+							if(!empty($getParentBrandInfo))
+							{
+								$titleBrand=$titleBrand.' ('.$getParentBrandInfo['brand'].')';
+							}
+						}
+						
+					   echo $titleBrand;
+						?></td>
+					   <td>
+					   <?php
+					   //echo $row->product_type;
+					   $genreInfo=$this->modelGenre->getGenreInfo($row->product_type);
+					   echo $genreInfo['genre'];?></td>
+					   <td><?php $this->modelPublications=new Admin_Model_DbTable_Publications();
+					   $publisher_info_array=$this->modelPublications->getPublisherInfo($row->author_id);
+					   echo $publisher_info_array['first_name']."&nbsp;".$publisher_info_array['last_name'];?></td>	   
+					   <td><?php echo CommonFunctions::formatDate($row->publish_time); ?></td>
+					   <td>
+						<?php 
+							if($row->admin_approve=='1')
+							{
+							?>
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'inactive','id'=>$row->id),'',true);?>"><img alt="Active" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/active.png"/></a>
+							<?php  
+							}
+							else
+							{
+							?>
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'active','id'=>$row->id),'',true);?>"><img alt="Inactive" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/inactive.png"/></a>
+							<?php  
+							}
+							?>
+						<!--<input type="checkbox" <?php if($row->status==1){echo "CHECKED";}?> disabled="disabled">-->
+						
+					   </td>
+					   <td>
+							<!--<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'edit','id'=>$row->id),'',true);?>"><img alt="Edit" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/icon_edit.png"/></a>-->
+							
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'view','id'=>$row->id),'',true);?>"><img alt="View" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/application_view_detail.png"/></a>
+							
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'delete','id'=>$row->id),'',true);?>" onclick="return confirm('Are you sure to delete?');"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>
+					   </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+					if($this->totalCount>$this->pageSize)
+					{
+						echo '<tr><td colspan="9">&nbsp;</td></tr>';
+						echo '<tr><td colspan="9"><div class="pagination">'.$this->paginationControl($this->prodList,'Sliding','pagination.phtml').'</div></td></tr>';
+					}
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="9" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+function validate_search(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>

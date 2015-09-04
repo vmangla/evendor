@@ -1,0 +1,69 @@
+<?php 
+$cancelUrl=$this->url(array('module'=>'publisher','controller'=>'edition','action'=>'index'),'',true);
+$currUrl=$this->url();
+$backUrl=$this->url(array('module'=>'publisher','controller'=>'edition','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+<div id="panel">
+	<div class="panel-header"><h3>Update Edition</h3></div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+		
+		<div class="action-header">
+			<span class="action-title">&nbsp;</span>
+			<ul class="horizonal-menu">
+				<li class="back"><a href="<?php echo $backUrl;?>" title="Back" onclick="return goToPage(this.href,'tab7','edition');">Back</a></li>
+			</ul>
+		</div>
+		
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br  clear="all"/>
+	
+		<form id="form-add-edition" id="form-add-edition" method="post" onsubmit="return validate_common_form('form-add-edition','<?php echo $currUrl;?>','tab7');">
+			<table>
+			<tr>
+				<td class="tdleftBold">edition<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="edition" id="edition" value="<?php if(isset($formData['edition'])){echo $formData['edition'];}?>"  class="req form-textfield"  message="Please enter edition name"/>
+					<?php if(array_key_exists('edition',$formErrors)){echo '<div class="inline-error">'.$formErrors['edition'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Status<span class="required">*</span> : </td>
+				<td>
+					<input type="radio" name="status" id="status" value="1" <?php if(isset($formData['status']) && $formData['status']==1){echo "checked";}?> />Active <input type="radio" name="status" id="status" value="0" <?php if(isset($formData['status']) && $formData['status']==0){echo "checked";}?> />Inactive
+					<?php if(array_key_exists('status',$formErrors)){echo '<div class="inline-error">'.$formErrors['status'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			
+			<tr>
+				<td class="tdleftBold">&nbsp;</td>
+				<td>
+				<input type="hidden" name="edit_edition" value="Edit Edition">
+				<input type="submit" value="Update" title="Update" class="button-Save"/>
+				<input type="button" value="Cancel" title="Cancel"  name="btnCancel" class="button-cancel" onclick="return goToPage('<?php echo $cancelUrl;?>','tab7','edition');" />
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+		</table>
+	</form>
+	</div>
+</div>	
+</div>
+

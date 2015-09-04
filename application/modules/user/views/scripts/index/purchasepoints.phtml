@@ -1,0 +1,29 @@
+<?php
+$currUrl=$this->url();
+?>
+<h3 style="text-align:center; padding-top:10px;">Purchase Points (Points are equivalent to dollars{$})</h3>
+<div class="user_dashboard">
+<?php include('leftnav.phtml');?>
+</div>
+
+<div class="welcome_user">
+<div class="purchasepoints"><?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			<?php
+			  
+				for($p=0;$p<count($this->pointsdata);$p++)
+				{
+			?>
+			<div style="float:left; width:120px; text-align:center; border:#818181 solid 1px; height:120px; font-size:18px; line-height:32px; margin:0px 30px 30px 0px;">
+					<span style="display:block; font-size:22px; margin-top:30px;"><?php echo $this->pointsdata[$p]['points'];?> Points</span>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl()."/onlinenaira.php?points=".$this->pointsdata[$p]['points']."";?>">Buy Now</a>
+			</div>
+			
+			<?php } ?> 
+			 
+</div>
+</div>
+ 

@@ -1,0 +1,73 @@
+<div class="user_dashboard">
+<?php include('leftnav.phtml');?>
+</div>
+<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+<div class="welcome_user">
+<div class="credithistory" style="width:100%">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+	<td colspan="4" align="center"><h4>Device Tracking</h4></td>
+</tr>
+<tr>
+	<td colspan="4" height="25"></td>
+</tr>
+ <tr>
+   <th width="10%">SL.No</th>
+   <th width="30%">User Email</th>
+   <th width="20%">Device-ID</th>		  
+   <th width="10%">Action</th>
+</tr>
+<?php
+ /*echo "<pre>";
+ print_r($this->userdetails['first_name']." ".$this->userdetails['last_name']);
+ echo "</pre>";*/
+		$j=1;
+			  if(isset($this->dataRecord) && count($this->dataRecord)>0)
+			  {
+				$sNumber=1;
+				foreach($this->dataRecord as $row)
+				{
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					   <td><?php echo stripslashes($row['user_email']);?></td> 
+					   <td><?php echo stripslashes($row['device_id']);?></td>
+					   <td>
+							<a class="action-icon" href="javascript:void(0);"  onclick="confirmDelete('<?php echo $row['id'];?>');"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>
+							
+					   </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+					if($this->totalCount>$this->pageSize)
+					{
+						echo '<tr><td colspan="4">&nbsp;</td></tr>';
+						echo '<tr><td colspan="4"><div class="pagination">'.$this->paginationControl($this->dataRecord,'Sliding','pagination.phtml').'</div></td></tr>';
+					}
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="4" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+
+</table> 
+</div>
+<!--Payment History-->
+</div>
+<script type="text/javascript" >
+function confirmDelete(id)
+{	
+	//alert(navigator.userAgent);
+	var str = "Are you sure you want to delete?";
+	if(confirm(str))
+	{
+		var url = "<?php echo $this->serverUrl().$this->baseUrl()?>/user/index/deletedeviceid/id/"+id;
+		window.location.href=url;
+	}
+}
+
+</script>

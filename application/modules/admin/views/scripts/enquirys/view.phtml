@@ -1,0 +1,107 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'enquirys','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'enquirys','action'=>'index'),'',true);
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formDataUpdate=(isset($this->formDataUpdate))?$this->formDataUpdate:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Enquiry Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+			<div class="action-header">
+				<span class="action-title">Enquiry Details</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>" title="Back">Back</a></li>
+				</ul>
+			</div>
+		
+			<br  clear="all"/>
+			
+<table class="table-form" cellpadding="0" cellspacing="0">
+<tr>
+<td width="20%" class="tdrightBold">Name </td>
+<td><?php echo $formData['name']; ?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Email </td>
+<td><?php echo $formData['email']; ?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Phone </td>
+<td><?php echo $formData['phone']; ?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Suggestion: </td>
+<td><?php echo $formData['suggestion']; ?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Date: </td>
+<td><?php echo $formData['add_time']; ?></td>
+</tr>
+</table>
+
+<br style="clear: both;"/>
+<br style="clear: both;"/>	
+<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+<br style="clear: both;"/>	
+<br style="clear: both;"/>
+
+			<form id="form-reply" name="form-reply" method="post" onsubmit="return validate_reply_form('form-reply');">
+			<table class="form-list" border="0" cellpadding="0" cellspacing="0" width="100%">
+			   <tr>
+					<td valign="top" class="tdrightBold">Reply To<span class="required">*</span> :</td>
+					<td>
+					<input type="text" name="email" value="<?php if(isset($formDataUpdate['email'])){echo $formDataUpdate['email'];}elseif(isset($formData['email'])){echo $formData['email'];}?>" class="contactField req validmail" message="Please enter your email" message="Please enter your username" invalidmessage="Please enter valid email address" readonly="true">
+					<?php if(array_key_exists('email',$formErrors)){echo '<div class="inline-error">'.$formErrors['email'].'</div>';}?>
+					</td>
+			  </tr>
+			  <tr>
+			  <td>&nbsp;</td>
+			  <td>&nbsp;</td>
+			  </tr>
+			  <tr>
+					<td valign="top" class="tdrightBold">Message<span class="required">*</span> :</td>
+					<td>
+					   <textarea name="contact_message" class="contactTextarea req" message="Please enter your message" rows="10"><?php if(isset($formDataUpdate['contact_message']))echo $formDataUpdate['contact_message'];?></textarea>
+					<?php if(array_key_exists('contact_message',$formErrors)){echo '<div class="inline-error">'.$formErrors['contact_message'].'</div>';}?>
+					</td>
+			  </tr>
+			  <tr>
+			  <td>&nbsp;</td>
+			  <td>&nbsp;</td>
+			  </tr>
+			  <tr>
+				<td>
+				&nbsp;
+				</td>
+				<td>
+				<input type="submit" name="btnSubmit" value="Reply" class="button-Add"/>
+				</td>
+			   </tr>
+			    
+			</table>
+</form>
+<br style="clear: both;"/>			
+</div>
+
+<script type="text/javascript">
+	function validate_reply_form(pFormId)
+	{
+		if(pFormId)
+		{
+			if(!common_validation(pFormId))
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+</script>

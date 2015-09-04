@@ -1,0 +1,148 @@
+<?php 
+$cancelUrl=$this->url(array('module'=>'publisher','controller'=>'group','action'=>'index'),'',true);
+$currUrl=$this->url();
+$backUrl=$this->url(array('module'=>'publisher','controller'=>'group','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+<div id="panel">
+	<div class="panel-header">
+<h3>Update Group User </h3>
+</div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+		
+		<div class="action-header">
+			<span class="action-title">&nbsp;</span>
+			<ul class="horizonal-menu">
+				<li class="back"><a href="<?php echo $backUrl;?>" title="Back" onclick="return goToPage(this.href,'tab3','group');">Back</a></li>
+			</ul>
+		</div>
+		
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br  clear="all"/>
+	
+		<form id="form-edit-group-user" id="form-edit-group-user" method="post" onsubmit="return validate_common_form('form-edit-group-user','<?php echo $currUrl;?>','tab3');">
+			<table>
+			<tr>
+			<td class="tdleftBold">Group Type<span class="required">*</span> : </td>
+				<td>
+			    <select name="user_type" id="user_type" class="req" message="Please select a type">
+				   <option value="">Select</option>
+				   <option value="Pmanager" <?php if($formData["user_type"]=="Pmanager"){ ?> selected <?php } ?>>Publication Manager</option>
+				   <option value="Amanager"  <?php if($formData["user_type"]=="Amanager"){ ?> selected <?php } ?>>Account Manager</option>
+				</select>
+				<?php if(array_key_exists('user_type',$formErrors)){echo '<div class="inline-error">'.$formErrors['user_type'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">First name<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="first_name" id="first_name" value="<?php if(isset($formData['first_name'])){echo $formData['first_name'];}?>"  class="req form-textfield"  message="Please enter first name"/>
+					<?php if(array_key_exists('first_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['first_name'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Last Name<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="last_name" id="last_name" value="<?php if(isset($formData['last_name'])){echo $formData['last_name'];}?>"  class="req form-textfield"  message="Please enter last name" />
+					<?php if(array_key_exists('last_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['last_name'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Email<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="emailid" id="emailid" value="<?php if(isset($formData['emailid'])){echo $formData['emailid'];}?>"  class="req validmail form-textfield" message="Please enter group user's email" invalidmessage="Please enter valid email address"/>
+					<?php if(array_key_exists('emailid',$formErrors)){echo '<div class="inline-error">'.$formErrors['emailid'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Password: </td>
+				<td>
+					<input type="text" name="password" id="password" onBlur="if (this.value == '') {this.value = 'Please enter password';}" onFocus="if(this.value == 'Please enter new password') {this.value = '';}" value="Please enter new password" class="pass form-textfield" message="Please enter new password" />
+					<?php if(array_key_exists('password',$formErrors)){echo '<div class="inline-error">'.$formErrors['password'].'</div>';}?>
+				<!--	<input type="text" name="password" id="password" value="<?php if(isset($formData['password'])){echo $formData['password'];}?>" class="req pass form-textfield" message="Please enter password" />
+					<?php if(array_key_exists('password',$formErrors)){echo '<div class="inline-error">'.$formErrors['password'].'</div>';}?>  -->
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Phone : </td>
+				<td>
+					<input type="text" name="phone" id="phone" value="<?php if(isset($formData['phone'])){echo $formData['phone'];}?>"  class="number form-textfield"  invalidmessage="Please enter numeric value" />
+					<?php if(array_key_exists('phone',$formErrors)){echo '<div class="inline-error">'.$formErrors['phone'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<?php
+				$this->module_list = new Admin_Model_DbTable_Modules();
+				$all_modules = $this->module_list->fetchAll('id > 11');
+				/*echo "<pre>"; 
+				print_r($all_modules);
+				echo "</pre>";*/
+			?>
+			<tr>
+				<td class="tdleftBold">Assign Module<span class="required">*</span> : </td>
+				<td>
+					 <select name="module_active[]" id="module_active[]" multiple class="req" message="Please select assign module">
+					    <option value="">Select module</option>
+						<?php
+							$explode_module_active = @explode(",",$formData['module_active']);
+							for($i=0;$i<count($all_modules);$i++) 
+							{
+						?>
+							<option value="<?php echo $all_modules[$i]['id'];?>" <?php if(in_array($all_modules[$i]['id'],$explode_module_active)) {?> selected<?php } ?>><?php echo $all_modules[$i]['modulename']?></option>
+						<?php } ?>
+					 </select>
+				</td>
+			</tr>
+			
+			
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">&nbsp;</td>
+				<td>
+				<input type="hidden" name="edit_group" value="Edit Group">
+				<input type="submit" value="Update" title="Update" class="button-Save"/>
+				<input type="button" value="Cancel" title="Cancel"  name="btnCancel" class="button-cancel" onclick="return goToPage('<?php echo $cancelUrl;?>','tab3','group');" />
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+		</table>
+	</form>
+	</div>
+</div>	
+</div>
+

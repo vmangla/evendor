@@ -1,0 +1,595 @@
+<?php 
+$currUrl=$this->url();
+$backUrl=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'index'),'',true);
+$cancelUrl=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'index'),'',true);
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+//$createURL="http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+$ImageUploadURL =$this->url(array('module'=>'publisher','controller'=>'book','action'=>'uploadimage','id'=>$formData['id'],'tab_ajax'=>'book'),'',true);
+$FileUploadURL=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'uploadepubfile','id'=>$formData['id'],'tab_ajax'=>'book'),'',true);
+
+if(isset($formData['tab_ajax']) && $formData['tab_ajax']=='dashboard')
+{
+$return_function="getDashboard('hide-2');";
+}
+elseif(isset($formData['tab_ajax']) && $formData['tab_ajax']=='mysetting')
+{
+$return_function="getSettingPanel('hide-2');";
+}
+else
+{
+	$return_function="goToPage('".$backUrl."','tab2','book');";
+}
+
+?>
+
+<script> 
+
+function validationImg()
+{
+
+    var val= $("#ImageFile").val();
+	var fileSize = 0;
+	
+    // Validate image extension. 
+    switch(val.substring(val.lastIndexOf('.') + 1).toLowerCase())
+	{
+        case 'jpeg': case 'jpg': case 'png':
+		
+				// Validate image size. 
+				//for IE
+				if ($.browser.msie) 
+				{
+					//before making an object of ActiveXObject, 
+					//please make sure ActiveX is enabled in your IE browser
+					var objFSO = new ActiveXObject("Scripting.FileSystemObject"); 
+					var filePath = $("#ImageFile")[0].value;
+					var objFile = objFSO.getFile(filePath);
+					var fileSize = objFile.size; //size in kb
+					fileSize = fileSize / 1048576; //size in mb 
+					
+					if(fileSize>2)
+					{
+						$("#ImageFile").val('');
+						alert("File size should not exceed more than 2 MB");
+						return 0;
+					}
+				}
+				else 
+				{
+					//for FF, Safari, Opeara and Others
+					fileSize = $("#ImageFile")[0].files[0].size //size in kb
+					fileSize = fileSize / 1048576; //size in mb 
+					if(fileSize>2)
+					{
+						$("#ImageFile").val('');
+						alert("File size should not exceed more than 2 MB");
+						return 0;
+					}
+					
+				}
+		
+			return 1;
+            break;
+        default:
+            $("#ImageFile").val('');
+            // error message here
+            alert("Image not valid");
+			return 0;
+            break;
+    }
+
+}
+
+
+$("#ImageFile").change(function() { 
+		//elements
+		var progressbox 	= $('#progressbox');
+		var progressbar 	= $('#progressbar');
+		var statustxt 		= $('#statustxt');
+		var submitbutton 	= $("#SubmitButton");
+		var myform 			= $("#UploadForm");
+		var output 			= $("#output");
+		var completed 		= '0%';
+		
+		var resultmy=validationImg();
+						
+						if(resultmy==0)
+						{
+							return false;
+						}
+						else
+						{
+								$(myform).ajaxForm({
+								beforeSend: function() { //before sending form
+								submitbutton.attr('disabled', ''); // disable upload button
+								statustxt.empty();
+								progressbox.show(); //show progressbar
+								progressbar.width(completed); //initial value 0% of progressbar
+								statustxt.html(completed); //set status text
+								statustxt.css('color','#000'); //initial color of status text
+								},
+								uploadProgress: function(event, position, total, percentComplete) { //on progress
+								progressbar.width(percentComplete + '%') //update progressbar percent complete
+								statustxt.html(percentComplete + '%'); //update status text
+								if(percentComplete>50)
+								{
+								statustxt.css('color','#fff'); //change status text to white after 50%
+								}
+								},
+								complete: function(response) { // on complete
+								//output.html(response.responseText); //update element with received data
+								//alert(response.responseText);
+								myform.resetForm();  // reset form
+								submitbutton.removeAttr('disabled'); //enable submit button
+								progressbox.hide(); // hide progressbar
+								var location=response.responseText;
+								var imageinfo = location.split("~");
+								document.getElementById('image_name').value=imageinfo[0];
+								document.getElementById('image_name_thumb').value=imageinfo[1];
+								document.getElementById('filesize').value=imageinfo[2];
+								//goToPage(location,'tab2','book');
+								}
+								});
+						}
+		
+				
+        });      
+
+</script> 
+	
+	<!----------------------------------  Code For Epub File   -------------------------------->
+	<script> 
+	
+	
+function validationEpub()
+{
+
+    var val= $("#ImageEFile").val();
+	var fileSize = 0;
+	
+    // Validate image extension. 
+    switch(val.substring(val.lastIndexOf('.') + 1).toLowerCase())
+	{
+        case 'epub':
+		
+				// Validate image size. 
+				//for IE
+				
+		
+			return 1;
+            break;
+            case 'pdf':
+		
+				// Validate image size. 
+				//for IE
+				
+		
+			return 1;
+            break;
+        default:
+            $("#ImageEFile").val('');
+            // error message here
+            alert("File type not valid");
+			return 0;
+            break;
+    }
+
+}
+    $("#ImageEFile").change(function() { 
+		//elements
+		var progressboxe 	= $('#progressboxe');
+		var progressbare 	= $('#progressbare');
+		var statustxte 		= $('#statustxte');
+		var submitbuttone 	= $("#SubmitButton");
+		var myforme 		= $("#UploadEForm");
+		var outpute 		= $("#outpute");
+		var completede 		= '0%';
+		var resultmypub=validationEpub();
+						
+						if(resultmypub==0)
+						{
+							
+							return false;
+						}
+						else
+						{
+				$(myforme).ajaxForm({
+					beforeSend: function() { //brfore sending form
+						submitbuttone.attr('disabled', ''); // disable upload button
+						statustxte.empty();
+						progressboxe.show(); //show progressbar
+						progressbare.width(completede); //initial value 0% of progressbar
+						statustxte.html(completede); //set status text
+						statustxte.css('color','#000'); //initial color of status text
+					},
+					uploadProgress: function(event, position, total, percentComplete) { //on progress
+						progressbare.width(percentComplete + '%') //update progressbar percent complete
+						statustxte.html(percentComplete + '%'); //update status text
+						if(percentComplete>50)
+							{
+								statustxte.css('color','#fff'); //change status text to white after 50%
+							}
+						},
+					complete: function(responsee) { // on complete
+						//outpute.html(responsee.responseText); //update element with received data
+						//alert(responsee.responseText);
+						myforme.resetForm();  // reset form
+						submitbuttone.removeAttr('disabled'); //enable submit button
+						progressboxe.hide(); // hide progressbar
+						var location=responsee.responseText;
+						//alert(location);
+						var epubinfo = location.split("~");
+						document.getElementById('epub_file').value=epubinfo[0];
+						document.getElementById('epub_file_size').value=epubinfo[1];					
+						//goToPage(location,'tab2','book');
+					}
+			});
+			
+			}
+        }); 
+
+    </script> 
+
+
+
+
+<div id="panel">
+	<div class="panel-header"><h3>Create New Publication</h3></div>
+
+	<div class="panel-content">
+	<div class="panel-sub-content">
+
+	<div class="action-header">
+		<span class="action-title">&nbsp;</span>
+		<ul class="horizonal-menu">
+			<li class="back"><a href="<?php echo $backUrl;?>" title="Back" onclick="return <?php echo $return_function;?>">Back</a></li>
+		</ul>
+	</div>
+
+    
+		<form id="form-add-book" method="post" >
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+				<td colspan="2"><div align="center">&nbsp;
+				<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+				<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+				<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+				
+				</div></td>
+				</tr>
+							
+				<tr>
+				<td class="tdleftBold">Type<span class="required">*</span> : </td>
+				<td>
+				<?php
+				$modelCategory = new Publisher_Model_DbTable_Books();
+				$categoryList=$modelCategory->getCategoryList();
+				
+				if(isset($formData['title']))
+				{
+					$formData['title']=$formData['title'];
+				}
+				else
+				{
+					$formData['title']='';
+				}				
+				if(isset($formData['isbn_number']))
+				{
+					$formData['isbn_number']=$formData['isbn_number'];
+				}
+				else
+				{
+					$formData['isbn_number']='';
+				}
+				
+							
+				$title_brand_url=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'gettitlebrand','title_brand'=>$formData['title'],'isbn'=>$formData['isbn_number']),'',true);
+				?>
+				<select name="category" id="category" class="req"  message="Please select category" onchange="return get_title_brands('<?php echo $title_brand_url;?>',this.value);">
+				<option value="">Select Category</option>				
+				<?php
+				for($ii=0;$ii<count($categoryList);$ii++)
+				{
+				?>
+				<option value="<?php echo $categoryList[$ii]['id']; ?>" <?php if(isset($formData["category"]) && $formData["category"]==$categoryList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $categoryList[$ii]['category_name']; ?></option>
+				<?php
+				}
+				?>		   
+				</select>
+				<?php if(array_key_exists('category',$formErrors)){echo '<div class="inline-error">'.$formErrors['category'].'</div>';}?>
+				</td>
+				</tr>
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+				<td class="tdleftBold">Brand<span id="reqird" class="required">*</span> : </td>
+				<td>
+				 <span id="title_brand"><input type="text" name="title" id="title" value="<?php if(isset($formData['title'])){echo $formData['title'];}?>"  message="Please enter title"/>
+				</span>			
+				<?php if(array_key_exists('title',$formErrors)){echo '<div class="inline-error">'.$formErrors['title'].'</div>';}?>
+				</td>
+				</tr>
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				<tr id="title_text" style="display:none;">
+				<td class="tdleftBold">Title: </td>
+				<td>
+				 <span><input type="text" name="title_txt" id="title_txt" value=""/></span>				
+				</td>
+				</tr>
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+				<td class="tdleftBold" width="50%">Genre<span class="required">*</span> : </td>
+				<td>
+				<?php
+				$modelGenre = new Publisher_Model_DbTable_Genres();
+				$genreList=$modelGenre->getGenreList();
+				?>
+				<select name="book_genre" id="book_genre" class="req"  message="Please select book genre">
+				<option value="">Select</option>
+				<?php
+				for($ii=0;$ii<count($genreList);$ii++)
+				{
+				?>
+				<option value="<?php echo $genreList[$ii]['id']; ?>" <?php if(isset($formData["book_genre"]) && $formData["book_genre"]==$genreList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $genreList[$ii]['genre']; ?></option>
+				<?php
+				}
+				?>	
+				</select>
+			    <?php if(array_key_exists('book_genre',$formErrors)){echo '<div class="inline-error">'.$formErrors['book_genre'].'</div>';}?>
+				</td>
+				</tr>
+				
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+				<td class="tdleftBold">Publisher<span class="required">*</span> : </td>
+				<td>
+				<?php
+				$modelProfile = new Publisher_Model_DbTable_Publishers();
+				$parentPublisherId = !empty($this->sessPublisherInfo->parent_id)?$this->sessPublisherInfo->parent_id:$this->sessPublisherInfo->id;
+				$profileInfo=$modelProfile->getInfoByPublisherId($parentPublisherId);
+				?>
+				<input type="hidden" name="publisher" id="publisher" value="<?php if(isset($profileInfo['publisher'])){echo $profileInfo['publisher'];}?>" />
+				<?php if(isset($profileInfo['publisher'])){echo $profileInfo['publisher'];}?>
+				<?php if(array_key_exists('publisher',$formErrors)){echo '<div class="inline-error">'.$formErrors['publisher'].'</div>';}?>
+				<br /><br />
+				</td>
+				</tr>
+										
+				<tr id="author_row">
+				<td class="tdleftBold"><div id="author_label" <?php //echo $author_style;?>></div></td>
+				<td>
+				<div id="author_dropdown" <?php //echo $author_style;?>>
+				</div>			
+				<?php if(array_key_exists('author',$formErrors)){echo '<div class="inline-error">'.$formErrors['author'].'</div>';}?>
+				<br />
+				</td>
+				</tr>
+				
+				<tr id="isbn_row">
+				<td class="tdleftBold"><div id="isbn_label">
+				<?php if(isset($formData['isbn_number']) && !empty($formData['isbn_number'])){
+				echo'ISBN Number<span class="required">*</span> : ';}?></div></td>
+				<td>
+				<div id="isbn_field">
+				<?php if(isset($formData['isbn_number']) && !empty($formData['isbn_number']))
+				{
+				?>
+				<input type="text" name="isbn_number" id="isbn_number" value="<?php if(isset($formData['isbn_number'])){echo $formData['isbn_number'];}?>"  class="req isbn"  message="Please enter isbn number 3" invalidmessage="Please enter a valid ISBN number format." maxlength="13" />
+				<?php
+				}?></div>
+				<?php if(array_key_exists('isbn_number',$formErrors)){echo '<div class="inline-error">'.$formErrors['isbn_number'].'</div><br />';}elseif(array_key_exists('isbn_number',$formErrors)){echo '<div class="inline-error">'.$formErrors['isbn_number'].'</div><br />';}?>
+				</td>
+				</tr>
+									
+				<tr id="page_row">
+				<td class="tdleftBold"><div id="page_label" <?php //echo $author_style;?>>
+				<?php
+				if(isset($formData['total_pages'])){
+				echo'Total Pages<span class="required">*</span> : ';}?></div></td>
+				<td>
+				<div id="page_field" <?php //echo $author_style;?>>
+				<?php if(isset($formData['total_pages'])){
+				?>
+				<input type="text" name="total_pages" id="total_pages" value="<?php echo $formData['total_pages'];?>"  class="req number"  message="Please enter total pages" invalidmessage="Please enter numeric value" maxlength="4" />
+				<?php
+				}?></div>
+				<?php if(array_key_exists('total_pages',$formErrors)){echo '<div class="inline-error">'.$formErrors['total_pages'].'</div>';}?>
+				</td>
+				</tr>
+					
+				<tr>
+				<td class="tdleftBold">Description<span class="required">*</span> : </td>
+				<td>
+	    <textarea name="description" id="description" class="req" message="Please enter description" rows="3" cols="5"><?php if(isset($formData['description'])){echo $formData['description'];} ?></textarea>
+				<?php if(array_key_exists('description',$formErrors)){echo '<div class="inline-error">'.$formErrors['description'].'</div>';}?>
+				</td>
+				</tr>
+	
+				<tr>
+				<td><input type="hidden" name="productid" id="productid" value="<?php echo $formData['id']; ?>" />
+					<input type="hidden" name="createbook" value="Add Book">
+					<input type="hidden" name="image_name" id="image_name" value="" />
+					<input type="hidden" name="image_name_thumb" id="image_name_thumb" value="" />
+					<input type="hidden" name="filesize" id="filesize" value="" />
+					<input type="hidden" name="epub_file" id="epub_file" value="" />
+					<input type="hidden" name="epub_file_size" id="epub_file_size" value="" />
+					
+				</td>
+				<td>&nbsp;</td>
+				</tr>
+				
+				</table>
+		</form>
+		<table >
+			
+				<!-- <tr>
+				<td align="left" valign="top" width="50%">&nbsp;</td>
+    <td align="right" valign="top" width="50%">
+	    
+		<form action="<?php echo $ImageUploadURL; ?>" enctype="multipart/form-data" id="UploadForm" name="UploadForm" method="post">
+			<fieldset class="dashboard_fieldset">
+			<legend>Image</legend>
+			<table width="99%" class="table-list publisher" border="0" cellspacing="0" cellpadding="0">
+			
+			<?php
+			$modelImage = new Publisher_Model_DbTable_BookImages();
+			$imageList=$modelImage->getImageList($formData['id']);
+				
+			if(count($imageList)>0)
+			{
+			?>
+			<tr>
+			<td align="left" valign="top" class="tdleftBold">Book Image:</td>
+			<td align="left" valign="top">
+			<?php	
+				for($ii=0;$ii<count($imageList);$ii++)
+				{
+				
+				echo "&nbsp;<img src='".$this->serverUrl().$this->baseUrl()."/".USER_UPLOAD_DIR.$imageList[$ii]['image_name_thumb']."' height='50' width='50'>";
+				
+				echo "<a class='action-icon' href=".$this->url(array('module'=>'publisher','controller'=>'book','action'=>'deleteimage','id'=>$imageList[$ii]['id'],'viewid'=>$formData['id']),'',true)." onclick=\"return deleteAction(this.href,'tab2','book');\" title='Delete'>";
+				
+				echo "<img src='".$this->serverUrl().$this->baseUrl()."/public/css/publisher/images/trash.gif' height='10' width='10'>";
+				
+				echo  "</a>&nbsp;";
+				
+				}
+			?>
+			</td>
+			</tr>
+			<?php
+			}
+			else
+			{
+			?>
+			<tr>
+			<td class="tdleftBold">Upload Image<span class="required">*</span> : </td>
+			<td align="left" valign="top">
+                <input type="file" name="ImageFile" id="ImageFile"/>
+			</td>
+			</tr>
+			<tr>
+			<td align="left" colspan="2">
+               Image Dimensions (Minimum Width: 300 and Minimum Height: 300)
+			</td>
+			</tr>
+			<tr>
+			<td align="left" valign="top">&nbsp;</td>
+			<td align="left" valign="top">
+			<div id="progressbox"><div id="progressbar"></div ><div id="statustxt">0%</div ></div>
+			<div id="output"></div>
+			</td>
+			</tr>
+			<tr>
+			<td align="left" valign="top"></td>
+			<td align="left" valign="top"><input type="submit" name="uploadimage" id="uploadimage" value="Upload Image" class="button-Save"/></td>
+			</tr>
+			<?php
+			}
+			?>
+			</table>
+		</fieldset>
+		</form>
+		
+		<form action="<?php echo $FileUploadURL; ?>" enctype="multipart/form-data" id="UploadEForm" name="UploadEForm" method="post">
+		<fieldset class="dashboard_fieldset">
+			<legend>Publication</legend>
+			<table width="99%" class="table-list publisher" border="0" cellspacing="0" cellpadding="0">
+			
+			<?php
+			if($formData['file_name']=="" && $formData['file_size']=="")
+			{
+			?>
+			
+			<tr>
+			<td class="tdleftBold">Upload EPUB/PDF File<span class="required">*</span> : </td>
+			<td align="left" valign="top">
+                    <input type="file" name="ImageEFile" id="ImageEFile"/>
+			</td>
+			</tr>
+			<tr>
+			<td align="left" valign="top">&nbsp;</td>
+			<td align="left" valign="top">			
+			<div id="progressboxe"><div id="progressbare"></div ><div id="statustxte">0%</div ></div>
+			<div id="outpute"></div>
+			</td>
+			</tr>
+			<tr>
+			<td align="left" valign="top"></td>
+			<td align="left" valign="top"><input type="submit" name="uploadeimage" id="uploadeimage" value="Upload EPub" class="button-Save"/></td>
+			</tr>
+			<?php
+			}
+			else
+			{
+			?>
+			<tr>
+			<td align="left" valign="top" class="tdleftBold">Epub File:</td>
+			<td align="left" valign="top">
+			<?php
+			echo "File Size: ".$formData['file_size']."&nbsp;";
+							
+			echo "&nbsp;<a href=".$this->url(array('module'=>'publisher','controller'=>'book','action'=>'downloadpubfile','id'=>$formData['id'],'tab_ajax'=>'book'),'',true)." title='Download File'>";
+			echo "<img src='".$this->serverUrl().$this->baseUrl()."/public/css/publisher/images/epub.png' height='50' width='50'>";
+			echo "</a>&nbsp;";
+							
+			echo "<a class='action-icon' href=".$this->url(array('module'=>'publisher','controller'=>'book','action'=>'deleteepubfile','id'=>$formData['id'],'viewid'=>$formData['id']),'',true)." onclick='return deleteepubfile(this.href);' title='delete'>";
+			echo "<img src='".$this->serverUrl().$this->baseUrl()."/public/css/publisher/images/trash.gif' height='10' width='10'>";
+			echo  "</a>&nbsp;";
+				
+			?>
+			</td>
+			</tr>
+			
+			<?php
+			}
+			?>
+			</table>
+		</fieldset>
+		</form>
+		
+	</td>
+	
+
+</tr> -->
+	<tr>
+					<td colspan="2">
+						<div style="text-align:center;">							
+							<input type="button" name="createbook" id="createbook" value="Add Publication" class="button-Save" onclick="return validate_common_form('form-add-book','<?php echo $currUrl;?>','tab2');" />
+							<input type="button" value="Cancel" name="btnCancel" title="Cancel" class="button-cancel" onclick="return <?php echo $return_function;?>" />
+						</div>
+						
+					</td>
+				</tr>
+			
+		</table>
+		
+	</div>
+</div>
+</div>
+
+<?php if(isset($formData["category"]))
+{
+?>
+<script type="text/javascript">
+get_title_brands('<?php echo $title_brand_url;?>','<?php echo $formData["category"];?>');
+</script>
+<?php
+}
+?>

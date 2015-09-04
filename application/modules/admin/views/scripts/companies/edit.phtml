@@ -1,0 +1,49 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'companies','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'companies','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+<div id="panel">
+	<div class="panel-header">Employers Management</div>
+	<div class="panel-content">
+	
+		<div class="panel-sub-content">
+			<div class="action-header">
+				<span class="action-title">Edit Employer</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>">Back</a></li>
+				</ul>
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			
+			<form id="form-edit-company" method="post" onsubmit="return validate_edit_company('form-edit-company');">
+					
+				<table class="table-form" cellpadding="0" cellspacing="0">
+					
+				  
+				 </table>
+			 </form>
+	</div>
+</div>
+
+<?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+function validate_edit_company(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>

@@ -1,0 +1,129 @@
+<h3 style="text-align:center; padding-top:10px;">Credit & Payment History&nbsp;&nbsp;&nbsp;&nbsp;Total Credits : <?php echo "$".$this->totalcredits;?>&nbsp;&nbsp;&nbsp;&nbsp;Remaining Credits : <?php echo "$".number_format($this->remainingcredits,2);?></h3>
+
+
+<div style="float:left; width:48%; margin-top:14px; border-right:1px solid #ccc; margin-right:2px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+	<td colspan="5" align="center"><h4>Credit History</h4></td>
+</tr>
+<tr>
+	<td colspan="5" height="25"></td>
+</tr>
+<tr>
+	<td style="padding-bottom:8px;">
+		<strong>S.No.</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Name</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Book Name</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Book Price</strong>
+	</td>
+	<td>
+	</td>
+</tr>
+<?php
+ /*echo "<pre>";
+ print_r($this->userdetails['first_name']." ".$this->userdetails['last_name']);
+ echo "</pre>";*/
+$j=1;
+for($i=0;$i<count($this->creditdata);$i++)
+{	
+?>
+<tr>
+	<td style="padding-bottom:8px;">
+		<?php echo $j;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $this->userdetails['first_name']." ".$this->userdetails['last_name'];?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $this->creditdata[$i]['book_name'];;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo "$".$this->creditdata[$i]['price'];;?>
+	</td>
+	<td>
+	</td>
+</tr>
+
+<?php
+$j++;}
+?>
+
+</table> 
+</div>
+
+<!--Payment History-->
+
+<div style="float:left; width:48%; margin-top:14px; margin-left:10px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+	<td colspan="5" align="center"><h4>Payment History</h4></td>
+</tr>
+<tr>
+	<td colspan="5" height="25"></td>
+</tr>
+<tr>
+	<td style="padding-bottom:8px;">
+		<strong>S.No.</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Name</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Amount</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Transaction ID</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Purchase Date</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Status</strong>
+	</td>
+	<td>
+	</td>
+</tr>
+<?php
+ /*echo "<pre>";
+ print_r($this->userdetails['first_name']." ".$this->userdetails['last_name']);
+ echo "</pre>";*/
+$k=1;
+for($p=0;$p<count($this->paymentdata);$p++)
+{	
+?>
+<tr>
+	<td style="padding-bottom:8px;">
+		<?php echo $k;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $this->userdetails['first_name']." ".$this->userdetails['last_name'];?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo "$".$this->paymentdata[$p]['amount'];;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $this->paymentdata[$p]['transaction_id'];;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $this->paymentdata[$p]['purchase_date'];;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $this->paymentdata[$p]['status'];;?>
+	</td>
+	<td>
+	</td>
+</tr>
+
+<?php
+$k++;}
+?>
+
+</table> 
+</div>
+

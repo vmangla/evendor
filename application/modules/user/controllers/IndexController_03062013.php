@@ -1,0 +1,199 @@
+<?php
+class User_IndexController extends Zend_Controller_Action
+{
+	protected $_flashMessenger=null;
+	var $sessUserInfo=null;
+	
+	var $modelUsers=null;
+	
+	var $modelBooks=null;
+	var $modelAuthor=null;
+	
+
+	public function init()
+    {
+		$this->_flashMessenger =$this->_helper->getHelper('FlashMessenger');
+		
+		$storage = new Zend_Auth_Storage_Session('account_type');
+        $data = $storage->read();
+	 
+        if(!$data)
+		{
+            $this->_redirect('user/auth/');
+        }
+		
+		$this->modelUsers = new User_Model_DbTable_Users();
+		
+		$this->modelBooks 	= new Publisher_Model_DbTable_Books();
+		$this->modelAuthor 	= new Publisher_Model_DbTable_Author();
+		
+		
+		$this->modelPublisher = new Publisher_Model_DbTable_Publishers();
+		$this->modelCompany = new Company_Model_DbTable_Companies();
+		$this->modelGroup = new Model_DbTable_Users();
+		
+		
+		$this->sessUserInfo=$this->modelCompany->getInfoByCompanyId($data->id);
+		$this->view->sessUserInfo =$this->sessUserInfo; 
+    }
+	
+	public function indexAction()
+	{
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		
+	 
+		 
+	}
+	
+	public function profilesettingsAction()
+	{
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		$formData=array();
+		$formErrors=array();
+		
+		$UserInfo=$this->modelCompany->fetchRow('id='.$this->sessUserInfo->id);
+		
+		$formData=$UserInfo->toArray();
+	 
+		if($this->getRequest()->isPost())
+		{
+			$formData=$this->getRequest()->getPost();
+		 
+			if(!empty($formData['update_profile']) && $formData['update_profile']=='Update')
+			{
+			 
+				if(!(isset($formData['first_name'])) || trim($formData['first_name'])=="")
+				{
+					$formErrors['first_name']="Please enter first name";
+				}
+				if(!(isset($formData['last_name'])) || trim($formData['last_name'])=="")
+				{
+					$formErrors['last_name']="Please enter last name";
+				}
+			 
+				if(!(isset($formData['country'])) || trim($formData['country'])=="")
+				{
+					$formErrors['country']="Please enter country";
+				}
+				if(!(isset($formData['user_email'])) || trim($formData['user_email'])=="")
+				{
+					$formErrors['user_email']="Please enter email address";
+				}
+				if(!(CommonFunctions::isValidEmail($formData['user_email'])))
+				{
+					if(!(array_key_exists('user_email',$formErrors)))
+					{
+						$formErrors['user_email']="Please enter valid email";
+					}	
+				}
+			 
+				if($this->modelPublisher->isExist('emailid="'.$formData['user_email'].'"') || $this->modelUsers->isExist('emailid="'.$formData['user_email'].'"') || $this->modelCompany->isExist('user_email="'.$formData['user_email'].'" and id!="'.$this->sessUserInfo->id.'"'))
+				{
+					if(!(array_key_exists('user_email',$formErrors)))
+					{
+						$formErrors['user_email']="Email already exist";
+					}
+				}
+				 
+				if(count($formErrors)==0)
+				{
+					$userData=array( 
+										'first_name'=>$formData['first_name'],
+										'last_name'=>$formData['last_name'],
+										'user_email'=>$formData['user_email'],
+										'user_name'=>$formData['user_email'],
+										'country'=>$formData['country'],
+										'updated_date'=>date("Y-m-d H:i:s"),
+										);
+					 
+					
+					$result=$this->modelCompany->update($userData,'id='.$this->sessUserInfo->id);
+					
+					$this->_flashMessenger->addMessage('<div class="div-success">Profile updated successfully</div>');
+					$this->_redirect('user/index/profilesettings/');
+				}
+				 
+			}
+			else
+			{
+				$userInfo=$this->modelUsers->fetchRow('id='.$this->sessUserInfo->id);
+				
+				$formData=$userInfo->toArray();
+				 
+				//print_r($formData);exit;
+			}
+		}
+		
+		$this->view->formData=$formData;
+		 
+		$this->view->formErrors=$formErrors;
+		
+	}
+	
+	
+	public function changepwdAction()
+	{
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		 
+		$formData=array();
+		$formErrors=array();
+		
+		$userInfo=$this->modelCompany->fetchRow('id='.$this->sessUserInfo->id);
+		
+		if($this->getRequest()->isPost())
+		{
+			$formData=$this->getRequest()->getPost();
+			if(!empty($formData['change_password']) && $formData['change_password']=='Update Password')
+			{
+			/*echo "<pre>";
+			print_r($formData);
+			echo "<pre>";
+			exit;*/
+				if(!(isset($formData['password'])) || trim($formData['password'])=="")
+				{
+					$formErrors['password']='Please enter your current password';
+				}
+				if(!(isset($formData['new_password'])) || trim($formData['new_password'])=="")
+				{
+					$formErrors['new_password']='Please enter your new password';
+				}
+				if(!(isset($formData['conf_new_password'])) || trim($formData['conf_new_password'])=="")
+				{
+					$formErrors['conf_new_password']='Confirm password does not match';
+				}
+				if($formData['password']!=$userInfo->user_password)
+				{
+					$formErrors['password']='Invalid current password';
+				}
+				if($formData['new_password']!=$formData['conf_new_password'])
+				{
+					$formErrors['conf_new_password']='Confirm password does not match';
+				}
+				
+				if(count($formErrors)==0)
+				{
+					$updateData['user_password']=$formData['new_password'];
+					$result=$this->modelCompany->update($updateData,'id='.$this->sessUserInfo->id);
+					
+					$this->_flashMessenger->addMessage('<div class="div-success">Password changed successfully</div>');
+					$this->_redirect('user/index/changepwd/');
+				}
+				else
+				{
+					$this->view->errorMessage='<div class="div-error">Please enter required field properly.</div>';
+				}
+			}
+		}
+		$this->view->formData=$formData;
+		$this->view->formErrors=$formErrors;
+	}
+	
+	public function purchasepointsAction()
+	{
+		$points = new Admin_Model_DbTable_Points();
+		$points_data = $points->fetchAll('status="1"','sort_order asc');
+		$this->view->pointsdata = $points_data; 
+	}
+	
+}
+

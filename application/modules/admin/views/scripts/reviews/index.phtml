@@ -1,0 +1,116 @@
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Review Management</h3></div>
+	<div class="content-box-content">
+		
+		<div>
+		
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br style="clear: both;"/>	
+			<table class="table-list" cellpadding="0" cellspacing="0" width="100%">
+			
+			   <tr>
+					<th width="5%">S.No</th>
+					<th width="15%">Publication Id</th>
+					<th width="15%">Publication</th>
+					<th width="20%">Name/Email Id</th>
+					<th width="15%">Rating</th>
+					<th width="10%">Date</th>
+					<th width="7%">Status</th>
+					<th width="7%">Action</th>
+			   </tr>
+			   
+			<?php 
+			  $this->modelBooks = new Publisher_Model_DbTable_Books();
+			  if(isset($this->reviewList) && count($this->reviewList)>0)
+			  {
+				$sNumber=1;
+				
+				foreach($this->reviewList as $row)
+				{
+					 $product_details = $this->modelBooks->fetchRow("id='".$row['productid']."'");
+					 $getBrandInfo=$this->modelBooks->getBrandInfo($product_details['title']);
+						if(!empty($getBrandInfo) && is_numeric($this->$product_details['title']))
+						{
+							$titleBrand=$getBrandInfo['brand'];
+						}
+						else
+						{
+							$titleBrand=$product_details['title'];
+						}
+						if(!empty($product_details['parent_brand_id']) && $product_details['cat_id']!='3')
+						{
+							$productInfo=$this->modelBooks->fetchRow('id="'.$product_details['parent_brand_id'].'"');
+							$getParentBrandInfo=$this->modelBooks->getBrandInfo($productInfo->title);
+							if(!empty($getParentBrandInfo))
+							{
+								//$titleBrand=$titleBrand.' ('.$getParentBrandInfo['brand'].')';
+								$titleBrand=$getParentBrandInfo['brand']." - ".$titleBrand;
+							}				
+						}
+					 
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					   <td><?php echo $row->id;?></td>
+					   <td><?php echo $titleBrand ;?></td> 
+					   <td><?php echo $row->name ;?><BR><?php echo $row->email;?></td>
+					   <td>
+						<?php
+						for($ii=0; $ii<$row->rating; $ii++)
+						{
+						?>
+						<img alt="Inactive" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/star.png"/>
+						<?php
+						}
+						?>
+					   </td> 
+					   <td><?php echo $row->add_time;?></td>
+					   <td>
+					   
+					        <?php 
+							if($row->status=='1')
+							{
+							?>
+							<a class="action-icon" title="Active" href="<?php echo $this->url(array('module'=>'admin','controller'=>'reviews','action'=>'inactive','id'=>$row->id),'',true);?>"><img alt="Active" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/active.png"/></a>
+							<?php  
+							}
+							else
+							{
+							?>
+							<a class="action-icon" title="Inactive" href="<?php echo $this->url(array('module'=>'admin','controller'=>'reviews','action'=>'active','id'=>$row->id),'',true);?>"><img alt="Inactive" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/inactive.png"/></a>
+							<?php  
+							}
+							?>
+					   
+					   </td>
+					   <td>
+					        <a class="action-icon" title="View" href="<?php echo $this->url(array('module'=>'admin','controller'=>'reviews','action'=>'view','id'=>$row->id),'',true);?>"><img alt="View" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/application_view_detail.png"/></a>
+							
+							<!--<a class="action-icon" title="Delete" href="<?php echo $this->url(array('module'=>'admin','controller'=>'reviews','action'=>'delete','id'=>$row->id),'',true);?>" onclick="return confirm('Are you sure to delete?');"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>-->
+							
+					   </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+				
+				if($this->totalCount>$this->pageSize)
+				{
+					echo '<tr><td colspan="8">&nbsp;</td></tr>';
+					echo '<tr><td colspan="8"><div class="pagination">'.$this->paginationControl($this->reviewList,'Sliding','pagination.phtml').'</div></td></tr>';
+				}
+				
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="8" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>
+
+	</div>
+</div>

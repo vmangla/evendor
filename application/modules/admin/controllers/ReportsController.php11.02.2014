@@ -1,0 +1,355 @@
+<?php
+class Admin_ReportsController extends Zend_Controller_Action
+{
+	protected $_flashMessenger=null;
+	var $sessAdminInfo=null;
+	var $modelAdmiUsers=null;
+	var $modelModuleMenus=null;
+		
+	var $modelCompany=null;
+	var $modelPublisher=null;
+	var $modelBooks=null;
+	var $modelAuthor=null;
+	
+		
+    public function init()
+    {
+		/*creating flashMessanger object to display message*/
+		$this->_flashMessenger =$this->_helper->getHelper('FlashMessenger');	
+		
+		/* check for admin login*/
+		$storage = new Zend_Auth_Storage_Session('admin_type');
+        $data = $storage->read();
+        
+		if($data)
+		{
+		$this->modelAdmiUsers = new Admin_Model_DbTable_AdminUsers();
+		$this->sessAdminInfo=$this->modelAdmiUsers->fetchRow("id=".$data->id);
+		}
+		
+		if(!$this->sessAdminInfo)
+		{
+            $this->_redirect('admin/auth/');
+        }
+		
+		$this->sessAdminInfo->modules=explode(",",$this->sessAdminInfo->modules);
+		$this->view->sessAdminInfo =$this->sessAdminInfo;
+		
+		$this->modelModuleMenus = new Admin_Model_DbTable_ModulesMenus();
+		$this->view->modelModuleMenus = $this->modelModuleMenus->getModuleMenusList();
+				
+		$this->modelCompany=new Company_Model_DbTable_Subscriptions();
+		$this->modelPublisher = new Publisher_Model_DbTable_Publishers();
+		$this->modelBooks 	= new Publisher_Model_DbTable_Books();
+		$this->modelAuthor 	= new Publisher_Model_DbTable_Author();
+		
+		$this->view->modelCompany=$this->modelCompany;
+					
+		/************* To Set The active section and links *******************/
+		$controller=$this->_getParam('controller');
+		 $action=$this->_getParam('action');
+		$this->view->currentController=$controller;
+		$this->view->currentAction=$action;
+		/************* To Set The active section and links *******************/
+		$moduleAccessRow=$this->modelModuleMenus->fetchRow("controller='$controller' AND action LIKE '%".$action."%'");
+		
+		$currentModuleId=$moduleAccessRow['id'];
+	
+		if(!in_array($currentModuleId,$this->sessAdminInfo->modules))
+		{
+			//$this->_flashMessenger->addMessage('<div class="div-error">"'.$moduleAccessRow['menu_name'].'"   module not accessable to you</div>');
+			//$this->_redirect('admin/');
+		}
+		
+	}
+    
+	public function indexAction()
+    {
+    	
+		if($this->getRequest()->isPost())
+		{
+			$formData=$this->getRequest()->getPost();
+			if($formData['category']!='' && $formData['product_id']!='')
+			{
+				$productData = $this->modelBooks->getAllProductWithCategoryReport($formData['category'],$formData['product_id']);
+			}
+	 	}	
+		else {
+			$productData = $this->modelBooks->getAllProductReport();
+		}	
+		
+		$this->view->prodList = $productData;
+		
+		$page=$this->_getParam('page',1);
+	    $paginator = Zend_Paginator::factory($productData);
+	    $paginator->setItemCountPerPage(10);
+	    $paginator->setCurrentPageNumber($page);
+		
+		$this->view->totalCount=count($productData);
+		$this->view->pageSize=10;
+		$this->view->page=$page;
+		$this->view->prodList=$paginator;
+		
+		$this->view->formData=$formData;
+		
+		
+
+		
+ 		/*************** Group Informations ********************/
+		/*$groupList=$this->modelPublisher->getGroupList();
+		$this->view->totalGroupCount=count($groupList);
+		
+		$publicationManagersList=$this->modelPublisher->getPublicationManagersList();
+		$this->view->totalPublicationManagersCount=count($publicationManagersList);
+		
+		$accountManagersList=$this->modelPublisher->getAccountManagersList();
+		$this->view->totalAccountManagersCount=count($accountManagersList);
+		$authorList=$this->modelAuthor->getAuthorList();
+		$this->view->totalAuthorCount=count($authorList);
+		
+		$activeAuthorsList=$this->modelAuthor->getActiveAuthorList();	
+		$this->view->totalActiveAuthorCount=count($activeAuthorsList);
+		
+		$publisherList=$this->modelCompany->getPublisherList();
+		$this->view->totalPublisherCount=count($publisherList);
+		
+		$customerList=$this->modelCompany->getCustomerList();
+		$this->view->totalPublisherCount=count($customerList);*/
+		
+	}
+	public function exportreportxlsAction()
+	{
+		$category = $this->_request->getParam('category');
+		$productid = $this->_request->getParam('productid');
+		$frmdate = $this->_request->getParam('frmdate');
+		$todate = $this->_request->getParam('todate');
+		$modelCategory = new Publisher_Model_DbTable_Books();
+		if($category!='' && $productid!='')
+		{
+			$sql='SELECT *,count(pc.bookid) as total_count from  pclive_products as p inner join pclive_credit_history as pc on p.id=pc.bookid where p.id="'.$productid.'" and p.cat_id="'.$category.'" group by pc.bookid';
+		}
+		else {
+			$sql='SELECT *,count(pc.bookid) as total_count from pclive_products as p inner join pclive_credit_history as pc on p.id=pc.bookid group by pc.bookid';
+		}
+			
+			$separator=","; // separate column in csv				
+			//$sql = "select first_name,last_name,user_name,country,user_email,phone from pclive_companies $where ";		
+			//$request_list=$this->modelconnections->fetchAll("intro_id='".$_SESSION['Zend_Auth']['storage']->user_id."' and conn_linkedin_id!=''");
+			$request_list = $this->modelBooks->getAdapter()->fetchAll($sql);
+			if(count($request_list)>0)
+			{
+				$csv_output="";				
+				//$csv_output.="First Name".$separator."Last Name".$separator."User Name".$separator."Country".$separator."Email".$separator."Phone\n";
+				$content='<table class="table-list" cellpadding="0" cellspacing="0" width="100%">
+				<tr>	
+				   <th>Title / Brand</th>
+				   <th>Publisher</th>
+				   <th>Total Downloads</th>
+				   <th>Total Purchase</th>
+				   <th>Last Download</th>
+				</tr>';
+				foreach($request_list as $req)
+				{
+					//$req['country'];		
+					//$countryName = $this->modelUsers->getCountryInfo($req['country']); 
+					
+					$getBrandInfo=$modelCategory->getBrandInfo($req['title']);
+					if(!empty($getBrandInfo))
+					{
+						$titleBrand=$getBrandInfo['brand'];
+					}else{
+						$titleBrand=$req['title'];
+					}
+					if(!empty($row->parent_brand_id))
+					{
+						$productInfo=$this->modelPublications->fetchRow('id='.$req['parent_brand_id']);
+						$getParentBrandInfo=$modelCategory->getBrandInfo($productInfo->title);
+						if(!empty($getParentBrandInfo))
+						{
+							$titleBrand=$titleBrand.' ('.$getParentBrandInfo['brand'].')';
+						}
+					}						
+					$title =  stripslashes($titleBrand);
+					   
+					   $publiseherDetails = $this->modelPublisher->getInfoByPublisherId($req['publisher_id']);
+					   $publisherName = $publiseherDetails['first_name']." ".$publiseherDetails['last_name'];	
+					   $totalDownLoad = $req['total_count'];
+					   $totalPurchase = $req['total_count'];
+					 $content.='<tr>
+					 			<td>'. $title.'</td>
+				 				<td>'.$publisherName.'</td>
+				  				<td>'.$totalDownLoad.'</td>
+				  				<td>'.$totalPurchase.'</td>
+				  				<td>'.$req['add_date'].'</td>
+					   		</tr>';
+									
+					//$csv_output .= str_replace(",","",$req['first_name']).$separator.str_replace(",","",$req['last_name']).$separator.str_replace(",","",$req['user_name']).$separator.str_replace(",","",$countryName['country']).$separator.str_replace(",","",$req['user_email']).$separator.str_replace(",","",$req['phone'])."\n";
+				}
+			}
+			else {
+				$content.='<tr><td colspan="8" class="list-not-found">Data Not Found</td></tr>';
+			}
+			$content.='</table>';
+			$file = "report";
+			$filename = $file."_".time().".xls";			
+			$test=$content;
+			header("Content-type: application/vnd.ms-excel");
+			header("Content-Disposition: attachment; filename=$filename");
+			echo $test;
+			exit;
+	}
+	public function membersAction()
+    {
+ 		/*************** Group Informations ********************/
+		$groupList=$this->modelPublisher->getGroupList();
+		$this->view->totalGroupCount=count($groupList);
+		
+		$publicationManagersList=$this->modelPublisher->getPublicationManagersList();
+		$this->view->totalPublicationManagersCount=count($publicationManagersList);
+		
+		$accountManagersList=$this->modelPublisher->getAccountManagersList();
+		$this->view->totalAccountManagersCount=count($accountManagersList);
+		
+		/*************** Group Informations Ends Here ******************/
+		
+		/*************** Author Informations ********************/
+		$authorList=$this->modelAuthor->getAuthorList();
+		$this->view->totalAuthorCount=count($authorList);
+		
+		$activeAuthorsList=$this->modelAuthor->getActiveAuthorList();	
+		$this->view->totalActiveAuthorCount=count($activeAuthorsList);
+		
+		$publisherList=$this->modelCompany->getPublisherList();
+		$this->view->totalPublisherCount=count($publisherList);
+		
+		$customerList=$this->modelCompany->getCustomerList();
+		$this->view->totalCustomerCount=count($customerList);
+		
+	}
+	
+	public function revenueAction()
+    {
+ 		$this->view->messages = $this->_flashMessenger->getMessages();
+		$formData=$this->getRequest()->getPost();
+		$formErrors=array();
+
+		$publisherList=$this->modelCompany->getPublisherList();
+		
+		$prodList=$this->modelCompany->getProdListByParentPublisherId(0);
+		
+		$priceModel = new Publisher_Model_DbTable_BookPrices();
+		//print_R($prodList);
+		$total_sales=0;
+		foreach($prodList as $row)
+		{
+			$priceInfo = $priceModel->getPriceByStoreId($row['product_id'],$row['store_id']);
+			$total_sales+=$priceInfo['price'];
+		}
+				
+		if(isset($formData['publisher_id']) && trim($formData['publisher_id'])!="")
+		{
+			$prodList=$this->modelCompany->getProdListByParentPublisherId($formData['publisher_id']);
+		}
+				
+		$page=$this->_getParam('page',1);
+	    $paginator = Zend_Paginator::factory($prodList);
+	    $paginator->setItemCountPerPage(ADMIN_PAGING_SIZE);
+	    $paginator->setCurrentPageNumber($page);
+		
+		$this->view->totalCount=count($prodList);
+		$this->view->pageSize=ADMIN_PAGING_SIZE;
+		$this->view->page=$page;
+		$this->view->prodList=$paginator;
+		
+		
+		$this->view->formData=$formData;
+		$this->view->formErrors=$formErrors;
+		$this->view->publisherList=$publisherList;
+		$this->view->totalSales=$total_sales;
+		
+	}
+	
+	public function subscriptionsAction()
+    {
+ 		$this->view->messages = $this->_flashMessenger->getMessages();
+		$formData=$this->getRequest()->getPost();
+		$formErrors=array();		
+		
+		if(isset($formData['category']) && (trim($formData['category'])!="" && isset($formData['product_id']) && trim($formData['product_id'])!=""))
+		{
+			$prodList=$this->modelCompany->getReportEBookIssues($formData['category'],$formData['product_id']);
+		}
+		else
+		{
+			$formData['category']=0;$formData['product_id']=0;
+			$prodList=$this->modelCompany->getReportEBookIssues($formData['category'],$formData['product_id']);
+		}
+		
+		$page=$this->_getParam('page',1);
+	    $paginator = Zend_Paginator::factory($prodList);
+	    $paginator->setItemCountPerPage(ADMIN_PAGING_SIZE);
+	    $paginator->setCurrentPageNumber($page);
+		
+		$this->view->totalCount=count($prodList);
+		$this->view->pageSize=ADMIN_PAGING_SIZE;
+		$this->view->page=$page;
+		$this->view->prodList=$paginator;
+		
+		
+		$this->view->formData=$formData;
+		$this->view->formErrors=$formErrors;
+		
+	}
+	
+	public function getbookissuesAction()
+    {		
+		if($this->getRequest()->isPost())
+		{
+	    	$post_data=$this->getRequest()->getPost();
+			
+			if(isset($post_data['cat_id']) && !empty($post_data['cat_id']))
+			{
+				$cat_obj = new Publisher_Model_DbTable_Books();
+				$cat_info=$cat_obj->getCategoryInfo($post_data['cat_id']);
+				
+				$product_id=isset($post_data['product_id'])?$post_data['product_id']:0;
+				
+				$product_dropdown=$this->modelCompany->getProdListByParentCatId($post_data['cat_id'],$cat_info['category_name'],$product_id);
+				
+				echo $product_dropdown;
+				exit;
+			}
+		}
+		else
+		{
+			exit;
+		}
+	}
+	
+	public function getpublisherbookissuesAction()
+    {		
+		if($this->getRequest()->isPost())
+		{
+	    	$post_data=$this->getRequest()->getPost();
+			
+			if(isset($post_data['cat_id']) && !empty($post_data['cat_id']))
+			{
+				$cat_obj = new Publisher_Model_DbTable_Books();
+				$cat_info=$cat_obj->getCategoryInfo($post_data['cat_id']);
+				
+				$product_id=isset($post_data['product_id'])?$post_data['product_id']:0;
+				
+				$product_dropdown=$this->modelCompany->getProdListByParentCatId($post_data['cat_id'],$cat_info['category_name'],$product_id);
+				
+				echo $product_dropdown;
+				exit;
+			}
+		}
+		else
+		{
+			exit;
+		}
+	}
+	
+}
+

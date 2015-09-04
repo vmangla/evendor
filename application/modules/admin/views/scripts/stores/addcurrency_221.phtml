@@ -1,0 +1,78 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'stores','action'=>'listcurrency'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'stores','action'=>'listcurrency'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+$currency_value = array("USD"=>"&#36","Naira"=>"&#8358");
+?>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Currencies</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<div class="action-header">
+				<span class="action-title">Edit Currency</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>" title="Back">Back</a></li>
+				</ul>
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			
+			<form id="form-edit-country" method="post" onsubmit="return validate_edit_country('form-edit-country');">
+				
+				<table class="table-form" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="20%" class="tdrightBold">Currency<span class="required">*</span> : </td>
+						<td>
+							<select name="currency_name" id="currency_name" >
+								<option value="" ></option>
+							<?php
+							foreach($currency_value as $key=>$value)
+							{
+							?>
+								<option value="<?php echo $key."~~".$value;?>" ><?php echo $key;?></option>
+							
+							<?php
+							}
+							?>
+							</select>
+							
+						<!--	<input type="text" name="currency_name" id="currency_name" value="<?php if(isset($formData['currency_name'])){echo $formData['currency_name'];}?>" class="req form-textfield"  message="Please enter currency"  invalidmessage="Please enter valid currency" />
+							<?php if(array_key_exists('currency_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['currency_name'].'</div>';}?>
+						-->
+						</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">&nbsp;</td>
+						<td>
+							<input type="submit" value="Add" class="button-Add" title="Add" />
+							<input type="button" value="Cancel" name="btnCancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';" title="Cancel" />
+						</td>
+					</tr>
+				 </table>
+			</form>
+	</div>
+</div>
+
+<?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+
+function validate_edit_country(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>

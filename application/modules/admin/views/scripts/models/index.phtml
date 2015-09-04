@@ -1,0 +1,85 @@
+<div id="panel">
+	<div class="panel-header">Model Management</div>
+	<div class="panel-content">
+		
+		<div class="panel-sub-content">
+		
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br style="clear: both;"/>	
+			<table class="table-list" cellpadding="0" cellspacing="0" width="100%">
+			
+			   <tr>
+				   <th width="5%">S.No</th>
+				   <th width="15%">Name</th>
+				   <th width="30%">Email Id</th>
+				   <th width="10%">Phone</th>
+				   <th width="10%">Join Date</th>
+				   <th width="5%">Status</th>
+				   <th width="5%">Action</th>
+			   </tr>
+			   
+			<?php 
+			  
+			  if(isset($this->userList) && count($this->userList)>0)
+			  {
+				$sNumber=1;
+				foreach($this->userList as $row)
+				{
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					   <td><?php echo $row->first_name." ".$row->last_name;?></td> 
+					   <td><?php echo $row->emailid;?></td>
+					   <td><?php echo $row->phone;?></td> 
+					   <td><?php echo $row->add_time;?></td>
+					   <td>
+							<?php 
+							if($row->profile_status=='1')
+							{
+							?>
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'models','action'=>'inactive','id'=>$row->id),'',true);?>"><img alt="Active" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/active.png"/></a>
+							<?php  
+							}
+							else
+							{
+							?>
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'models','action'=>'active','id'=>$row->id),'',true);?>"><img alt="Inactive" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/inactive.png"/></a>
+							<?php  
+							}
+							?>
+						
+					   </td>
+					   <td>
+					   
+						<!--	<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'users','action'=>'edit','id'=>$row->id),'',true);?>"><img alt="Edit" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/icon_edit.png"/></a>-->
+						
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'models','action'=>'view','id'=>$row->id),'',true);?>"><img alt="View" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/application_view_detail.png"/></a>
+							
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'models','action'=>'delete','id'=>$row->id),'',true);?>" onclick="return confirm('Are you sure to delete?');"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>
+							
+					   </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+				
+				if($this->totalCount>$this->pageSize)
+				{
+					echo '<tr><td colspan="8">&nbsp;</td></tr>';
+					echo '<tr><td colspan="8"><div class="pagination">'.$this->paginationControl($this->userList,'Sliding','pagination.phtml').'</div></td></tr>';
+				}
+				
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="8" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>
+
+	</div>
+</div>

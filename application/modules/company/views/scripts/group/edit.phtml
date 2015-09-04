@@ -1,0 +1,58 @@
+<?php 
+$cancelUrl=$this->url(array('module'=>'company','controller'=>'group','action'=>'index'),'',true);
+$currUrl=$this->url();
+$backUrl=$this->url(array('module'=>'company','controller'=>'group','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+<div id="panel">
+	<div class="panel-header"><h3>Update Group</h3></div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+		
+		<div class="action-header">
+			<span class="action-title">&nbsp;</span>
+			<ul class="horizonal-menu">
+				<li class="back"><a href="<?php echo $backUrl;?>" title="Back" onclick="return goToPage(this.href,'tab5','group');">Back</a></li>
+			</ul>
+		</div>
+		
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br  clear="all"/>
+	
+		<form id="form-edit-group" id="form-edit-group" method="post" onsubmit="return validate_common_form('form-edit-group','<?php echo $currUrl;?>','tab5');">
+			<table>
+			<tr>
+				<td class="tdleftBold">Group name<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="group_name" id="group_name" value="<?php if(isset($formData['group_name'])){echo $formData['group_name'];}?>"  class="req form-textfield"  message="Please enter group name"/>
+					<?php if(array_key_exists('group_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['group_name'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			
+			<tr>
+				<td class="tdleftBold">&nbsp;</td>
+				<td>
+				<input type="hidden" name="edit_group" value="Edit Group">
+				<input type="submit" value="Update" title="Update" class="button-Save"/>
+				<input type="button" value="Cancel" title="Cancel"  name="btnCancel" class="button-cancel" onclick="return goToPage('<?php echo $cancelUrl;?>','tab5','group');" />
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+		</table>
+	</form>
+	</div>
+</div>	
+</div>
+

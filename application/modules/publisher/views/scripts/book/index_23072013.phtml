@@ -1,0 +1,231 @@
+<?php
+$currUrl=$this->url();
+$addUrl=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'create'),'',true);
+$bookList=(isset($this->bookList))?$this->bookList:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+$formData=(isset($this->formData))?$this->formData:array();
+
+$searchAllUrl=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'index'),'',true);
+?>
+
+<div id="panel">
+	<div class="panel-header">
+	    <h3>My Publications</h3>
+	    <a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'book','action'=>'create'),'',true);?>" onclick="return goToPage(this.href,'tab2','book');" title="Add New Publication" class="addbook">Add Publication</a>
+	</div>
+	
+	<div class="panel-content" id="addbook">
+		<div class="panel-sub-content" >
+		
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br  clear="all"/>
+			<form name="form-search" id="form-search" method="post" onsubmit="return validate_common_form('form-search','<?php echo $currUrl;?>','tab2');">
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">Search Publications</th>
+				</tr>
+				
+				 <tr>
+					<td width="100%" colspan="8">Title / Brand:<input type="text" name="searchword" id="searchword" value="<?php if(isset($formData["searchword"]) && !empty($formData["searchword"])) echo $formData["searchword"]; ?>" style="width:225px;"> Genre:
+					<?php
+					$modelGenre = new Publisher_Model_DbTable_Genres();
+					$genreList=$modelGenre->getGenreList();
+					?>
+					<select name="booktype" id="booktype" style="width:225px;">
+					<option value="">Select Genre</option>
+					<?php
+					for($ii=0;$ii<count($genreList);$ii++)
+					{
+					?>
+					<option value="<?php echo $genreList[$ii]['id']; ?>" <?php if(isset($formData["booktype"]) && $formData["booktype"]==$genreList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $genreList[$ii]['genre']; ?></option>
+					<?php
+					}
+					?>	
+					</select>
+					<input type="submit" name="searchresult" id="searchresult" value="Search"  class="button-Add">
+					<input type="button" name="showall" value="Show All" class="button-Add" onclick="return goToPage('<?php echo $searchAllUrl;?>','tab2','book');" />
+					</td>
+				</tr>
+				</table>
+			 </form>
+			 <br  clear="all"/>
+			 <br  clear="all"/>
+			<table class="table-list" cellpadding="0" cellspacing="0" width="100%">
+			
+			   <tr>
+				   <th width="5%" align="center">S.No</th>
+				   <th width="15%" align="center">Title / Brand</th>
+				   <th width="15%" align="center">Genre</th>
+				   <th width="15%" align="center">Author / Publisher</th>
+				   <th width="15%" align="center">Type</th>
+				   <th width="15%" align="center">Publish Date</th>
+				   <?php
+				   if(strtolower(trim($this->sessPublisherInfo->user_type))==strtolower(trim('publisher')))
+				   {
+				   ?>
+				   <th width="5%" align="center">Status</th>
+				   <?php
+				   }
+				   ?>
+				   <th width="10%" align="center">Action</th>
+			   </tr>
+			   
+			<?php 
+			  
+			   
+			  if(isset($this->bookList) && count($this->bookList)>0)
+			  {
+			    
+				$sNumber=1;
+				foreach($this->bookList as $row)
+				{
+			?>
+					<tr>
+					<td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					<td>
+					<?php
+					$modelCategory = new Publisher_Model_DbTable_Books();
+					$categoryDetails=$modelCategory->getCategoryInfo($row['cat_id']);
+					$getBrandInfo=$modelCategory->getBrandInfo($row['title']);
+					
+					if(!empty($categoryDetails) && !empty($getBrandInfo))
+					{
+					?>
+						<a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'issues','action'=>'index','parentid'=>$row['id']),'',true);?>" title="View And Manage Issues" onclick="return goToPage(this.href,'tab2','issues');">
+						<?php
+						echo stripslashes($getBrandInfo['brand']);?></a>
+					<?php
+					}
+					else
+					{
+						?>
+						<a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'book','action'=>'view','id'=>$row['id']),'',true);?>" title="View And Edit Additional Information" onclick="return goToPage(this.href,'tab2','book');"><?php echo stripslashes($row['title']);?></a>
+						<?php
+					}
+					?>
+					</td> 
+					
+					<td>
+					<?php 
+					
+					$modelGenre = new Publisher_Model_DbTable_Genres();
+					$genreDetails=$modelGenre->getGenreInfo($row['product_type']);
+					echo $genreDetails['genre'];
+					?></td>
+					<td>
+					<?php
+					if((strtolower(trim($categoryDetails['category_name']))==strtolower(trim('Newspaper')) || strtolower(trim($categoryDetails['category_name']))==strtolower(trim('Newspapers')) || strtolower(trim($categoryDetails['category_name']))==strtolower(trim('Magazine')) || strtolower(trim($categoryDetails['category_name']))==strtolower(trim('Magazines'))) && $row['title']>0)
+					{
+						echo $row['publisher'];
+					}
+					else
+					{
+						$modelAuthor = new Publisher_Model_DbTable_Books();
+						$authorDetails=$modelAuthor->getAuthorInfo($row['author_id']);
+					    echo $authorDetails['first_name']." ".$authorDetails['last_name'];
+					}	
+					?>
+					</td>
+				    <td>
+					<?php
+					echo $categoryDetails['category_name'];
+					?>
+					</td> 
+				    <td><?php echo $row['publish_time'];?></td>
+					   <?php
+					   if(strtolower(trim($this->sessPublisherInfo->user_type))==strtolower(trim('publisher')))
+					   {
+					   ?>
+					   <td>
+							<?php 
+							if($row['status']=='1')
+							{
+							?>
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'book','action'=>'inactive','id'=>$row['id']),'',true);?>" title="Deactivate Publication" onclick="return inactive(this.href,'tab2','book');"><img alt="Active" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/active.png"/></a>	
+							<?php  
+							}
+							else
+							{
+							?>
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'book','action'=>'active','id'=>$row['id']),'',true);?>" title="Activate Publication" onclick="return active(this.href,'tab2','book');"><img alt="Inactive" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/inactive.png"/></a>
+						    <?php	
+							}
+							?>
+						
+					   </td>
+					   <?php
+					   }
+					   ?>
+					   <td>
+					   <?php
+					   if(strtolower(trim($this->sessPublisherInfo->user_type))==strtolower(trim('publisher')))
+					   {
+					   ?>
+						   <a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'book','action'=>'edit','id'=>$row['id']),'',true);?>" title="Edit Publication" onclick="return goToPage(this.href,'tab2','book');"><img alt="Edit" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/icon_edit.png"/></a>
+						<?php
+						}
+						?>
+							<?php
+							if(!empty($categoryDetails) && !empty($getBrandInfo))
+							{
+								?>
+								<a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'issues','action'=>'index','parentid'=>$row['id']),'',true);?>" title="View And Manage Issues" onclick="return goToPage(this.href,'tab2','book');"><img alt="View" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/application_view_detail.png"/></a>
+								<?php
+							}
+							else
+							{
+								?>
+								<a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'book','action'=>'view','id'=>$row['id']),'',true);?>" title="View And Edit Additional Information" onclick="return goToPage(this.href,'tab2','book');"><img alt="View" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/application_view_detail.png"/></a>
+								<?php
+							}
+							?>
+							
+							<?php
+							if(strtolower(trim($this->sessPublisherInfo->user_type))==strtolower(trim('publisher')))
+							{
+								$modelIssue = new Publisher_Model_DbTable_Issues();
+								$issueList=$modelIssue->getList($this->parentPublisherId,$row['id']);
+								
+								if(count($issueList)>0)
+								{
+								//echo count($issueList);
+								?>
+								<a class="action-icon" href="javascript:void(0);" title="Delete Publication" onclick="javascript:alert('Delete all it\'s issues first!'); return false;"><img alt="Inactive" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>
+								<?php
+								}
+								else
+								{
+								?>
+								<a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'book','action'=>'delete','id'=>$row['id']),'',true);?>" title="Delete Publication" onclick="return deleteAction(this.href,'tab2','book');"><img alt="Inactive" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>
+								<?php
+								}
+							}
+							?>
+							
+					   </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+				
+				if($this->totalCount>$this->pageSize)
+				{
+					global $tab,$tab_ajax;
+					$tab=2; $tab_ajax='book';
+					echo '<tr><td colspan="8">&nbsp;</td></tr>';
+					echo '<tr><td colspan="8"><div class="pagination">'.$this->paginationControl($this->bookList,'Sliding','pagination.phtml').'</div></td></tr>';
+				}
+				
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="8" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>	
+	</div>
+</div>

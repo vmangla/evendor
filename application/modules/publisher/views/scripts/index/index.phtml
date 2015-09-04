@@ -1,0 +1,409 @@
+<?php
+//$dataModules=explode(",",$_SESSION['publisher_type']['storage']->modules);
+$dataModules=explode(",","0,1,2,3,4,5,6,7");
+
+$explode_module_active = explode(",",$_SESSION['publisher_type']['storage']->module_active);
+
+$publisher_modules=explode(",","12,13,14,15,16");
+
+$dashboardUrl=$this->url(array('module'=>'publisher','controller'=>'dashboard','action'=>'index'),'',true);
+
+$bookUrl=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'index'),'',true);
+$groupUrl=$this->url(array('module'=>'publisher','controller'=>'group','action'=>'index'),'',true);
+$authorUrl=$this->url(array('module'=>'publisher','controller'=>'author','action'=>'index'),'',true);
+$brandUrl=$this->url(array('module'=>'publisher','controller'=>'brand','action'=>'index'),'',true);
+$editionUrl=$this->url(array('module'=>'publisher','controller'=>'edition','action'=>'index'),'',true);
+$reportUrl=$this->url(array('module'=>'publisher','controller'=>'report','action'=>'index'),'',true);
+$freereportUrl = $this->url(array('module'=>'publisher','controller'=>'report','action'=>'freereport'),'',true);
+//echo "session publisher type : - ";
+//print_r($_SESSION['publisher_type']['storage']->user_type);
+//print_r($_SESSION['publisher_type']['storage']);
+
+?>
+
+<!-- Start Content Box -->
+<div class="content-box">
+	
+	<div class="content-box-header">
+	
+		<h3>Dashboard</h3>
+			<ul class="content-box-tabs">
+			
+			<li id="t1"><a href="#tab1" class="default-tab" title="Dashboard" onclick="return goToPage('<?php echo $dashboardUrl;?>','tab1','dashboard');">Dashboard</a></li>
+			
+			<!--<li id="t1"><a href="#tab1" class="default-tab" title="Dashboard" onclick="return getDashboard('hide-1');">Dashboard</a></li>-->
+			<?php
+				if($_SESSION['publisher_type']['storage']->user_type!='Pmanager' && $_SESSION['publisher_type']['storage']->user_type!='Amanager')
+				{
+			?>
+			<li id="t2"><a href="#tab2" title="My Books" onclick="return goToPage('<?php echo $bookUrl;?>','tab2','book');">My Publications</a></li>
+			
+			<li id="t3"><a href="#tab3" title="My Groups" onclick="return goToPage('<?php echo $groupUrl;?>','tab3','group');">My Groups</a></li>
+			
+			<li id="t5"><a href="#tab5" title="Authors" onclick="return goToPage('<?php echo $authorUrl;?>','tab5','author');">Authors</a></li>
+			
+			<li id="t6"><a href="#tab6" title="Brands" onclick="return goToPage('<?php echo $brandUrl;?>','tab6','brand');">My Brands</a></li>
+			
+			<li id="t7"><a href="#tab7" title="Editions" onclick="return goToPage('<?php echo $editionUrl;?>','tab7','edition');">My Editions</a></li>
+						
+			<li id="t4"><a href="#tab4" onclick="return getSettingPanel();">My Settings</a></li>
+			<li id="t9"><a href="#tab9" title="Reports" onclick="return goToPage('<?php echo $reportUrl;?>','tab9','reports');">My Reports</a></li>
+			<li id="t10"><a href="#tab10" title="Reports" onclick="return goToPage('<?php echo $freereportUrl;?>','tab10','freereports');">Free Reports</a></li>
+			
+			<?php } 
+			else if($_SESSION['publisher_type']['storage']->user_type=='Pmanager' ||  $_SESSION['publisher_type']['storage']->user_type=='Amanager') {
+				if(in_array("12",$explode_module_active))
+				{
+			?>
+			<li id="t2"><a href="#tab2" title="My Books" onclick="return goToPage('<?php echo $bookUrl;?>','tab2','book');">My Publications</a></li>
+			<?php } 
+			if(in_array("13",$explode_module_active))
+				{
+			?>
+			 
+			<li id="t5"><a href="#tab5" title="Authors" onclick="return goToPage('<?php echo $authorUrl;?>','tab5','author');">Authors</a></li>
+			<?php } 
+			if(in_array("14",$explode_module_active))
+				{
+			?>
+			<li id="t6"><a href="#tab6" title="Brands" onclick="return goToPage('<?php echo $brandUrl;?>','tab6','brand');">My Brands</a></li>
+			<?php } 
+			if(in_array("15",$explode_module_active))
+				{
+			?>
+			<li id="t7"><a href="#tab7" title="Editions" onclick="return goToPage('<?php echo $editionUrl;?>','tab7','edition');">My Editions</a></li>
+			<?php } 
+			if(in_array("16",$explode_module_active))
+				{
+			?>			
+			<li id="t4"><a href="#tab4" onclick="return getSettingPanel();">My Settings</a></li>
+			<?php } 
+			if(in_array("17",$explode_module_active))
+				{
+			?>
+			<li id="t2"><a href="#" title="">My Reports</a></li>
+			<?php } 
+		  } ?>
+			
+			
+			<!--<li id="t4"><a href="#tab4" title="Password Setting" onclick="return goToPage('<?php echo $this->url(array('module'=>'publisher','controller'=>'profile','action'=>'changepassword'),'',true);?>','tab4','dashboard');">My Settings</a></li>-->
+			
+			</ul>
+	<div class="clear"></div>
+	</div>
+	<!-- End .content-box-header -->
+	
+	<div class="content-box-content">
+		
+		<div class="tab-content default-tab" id="tab1">
+		
+			<table width="100%">
+			<tr>
+			<td width="50%" valign="top">
+			<strong>Welcome to 
+			<?php
+			if($_SESSION['publisher_type']['storage']->user_type=='Pmanager')
+				{
+					echo "Publication Manager Panel";
+				}
+			else if($_SESSION['publisher_type']['storage']->user_type=='Amanager')	
+			{
+				echo "Account Manager Panel";
+			}
+			else
+			{
+				echo "Publisher panel";
+			}
+			?>
+			</strong><BR /><BR />
+			<ul class="shortcut-buttons-set">
+			
+			<?php
+				if($_SESSION['publisher_type']['storage']->user_type!='Pmanager' &&   $_SESSION['publisher_type']['storage']->user_type!='Amanager')
+				{
+					//if(in_array("0", $dataModules)) 
+					//{
+			?>
+			<!--<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'profile','action'=>'index'),'',true);?>" title="My Profile" onclick="return goToPage(this.href,'tab4','dashboard');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/images/staffe.png" alt="My Profile"><br>My Profile</span></a></li>-->
+			<?php 
+			//} 
+			?>
+			
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?>
+			<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'profile','action'=>'updateprofile'),'',true);?>" title="Update Profile" onclick="return goToPage(this.href,'tab4','dashboard');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/images/update_profile.png" alt="Update Profile"><br>Update Profile</span></a></li>
+			<?php
+			}
+			?>
+						
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?> 					
+			<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'book','action'=>'index'),'',true);?>" title="My Publications" onclick="return goToPage('<?php echo $bookUrl;?>','tab2','book');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/images/books.png" alt="icon"><br>Publications</span></a>
+			</li>
+			<?php 
+			} 
+			?>
+			
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?> 					
+			<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'group','action'=>'index'),'',true);?>" title="My Groups" onclick="return goToPage('<?php echo $groupUrl;?>','tab3','group');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/images/userconfig.png" alt="icon"><br>Groups</span></a>
+			</li>
+			<?php 
+			} 
+			?>
+			
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?> 					
+			<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'author','action'=>'index'),'',true);?>" title="Authors" onclick="return goToPage(this.href,'tab5','author');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/images/authors.png" alt="icon"><br>Authors</span></a>
+			</li>
+			<?php 
+			} 
+			?>
+			
+			<?php if(in_array("0", $dataModules)) 
+			{
+			?>
+			<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'profile','action'=>'changepassword'),'',true);?>" title="Password Setting" onclick="return goToPage(this.href,'tab4','dashboard');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/images/advancedsettings.png" alt="Settings" ><br>Settings</span></a></li>
+			<?php 
+			} }
+			?>
+			
+			<?php
+				if($_SESSION['publisher_type']['storage']->user_type=='Pmanager' ||   $_SESSION['publisher_type']['storage']->user_type=='Amanager')
+				{
+					 
+			?>
+			<!--<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'profile','action'=>'index'),'',true);?>" title="My Profile" onclick="return goToPage(this.href,'tab4','dashboard');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/images/staffe.png" alt="My Profile"><br>My Profile</span></a></li>-->
+		 	 
+			<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'profile','action'=>'updateprofile'),'',true);?>" title="Update Profile" onclick="return goToPage(this.href,'tab4','dashboard');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/images/update_profile.png" alt="Update Profile"><br>Update Profile</span></a></li>
+			 
+						
+			<?php 	if(in_array("12",$explode_module_active)) 
+			{
+			?> 					
+			<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'book','action'=>'index'),'',true);?>" title="My Publications" onclick="return goToPage('<?php echo $bookUrl;?>','tab2','book');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/images/books.png" alt="icon"><br>Publications</span></a>
+			</li>
+			<?php 
+			} 
+			?>
+			
+			 
+			
+			<?php if(in_array("13",$explode_module_active)) 
+			{
+			?> 					
+			<li>
+			<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'author','action'=>'index'),'',true);?>" title="Authors" onclick="return goToPage(this.href,'tab5','author');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/images/authors.png" alt="icon"><br>Authors</span></a>
+			</li>
+			<?php 
+			} 
+			?>
+			
+			 
+			<li><a class="shortcut-button" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'profile','action'=>'changepassword'),'',true);?>" title="Password Setting" onclick="return goToPage(this.href,'tab4','dashboard');"><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/images/advancedsettings.png" alt="Settings" ><br>Settings</span></a></li>
+			<?php
+				if(in_array("17",$explode_module_active)) 
+				{
+			?>
+			
+			<li><a class="shortcut-button" href="#" title="Password Setting" onclick=""><span><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/images/advancedsettings.png" alt="Reports" ><br>Reports</span></a></li>
+			<?php } ?>
+			
+			
+			
+			<?php 
+			  }
+			?>
+			 
+			</ul>
+			</td>
+			
+			<td width="50%" align="right">
+			<strong>Instant Information</strong><BR /><BR />
+			<fieldset class="dashboard_fieldset">
+				<legend>< <a href="javascript:void(0);" title="My Publications" onclick="return goToPage('<?php echo $bookUrl;?>','tab2','book');">Publications</a> ></legend>
+					<ul class="publisher-statistics">
+					<li><strong>Total Books :</strong> <?php echo $this->totalBookCount;?></li>
+					<li><strong>Total Magazines:</strong> <?php echo $this->totalMagazineCount;?></li>
+					<li><strong>Total Newspapers:</strong> <?php echo $this->totalNewspaperCount;?></li>
+					<li><strong>Total Brands:</strong> <?php echo $this->totalBrandCount;?></li>
+					</ul>
+			</fieldset>
+			<br  clear="all"/>
+			
+			<fieldset class="dashboard_fieldset">
+				<legend>< <a href="javascript:void(0);" title="My Publications" onclick="return goToPage('<?php echo $bookUrl;?>','tab2','book');">Approval Queue</a> ></legend>
+					<ul class="publisher-statistics">
+					<li><strong>Books :</strong> <?php echo $this->totalApprovedBookCount;?></li>
+					<li><strong>Magazines:</strong> <?php echo $this->totalApprovedMagazineCount;?></li>
+					<li><strong>Newspapers:</strong> <?php echo $this->totalApprovedNewspaperCount;?></li>
+					</ul>
+			</fieldset>
+			<br  clear="all"/>
+			<?php
+				if($_SESSION['publisher_type']['storage']->user_type!='Pmanager' &&    $_SESSION['publisher_type']['storage']->user_type!='Amanager')
+				{
+					 
+			?>
+			<fieldset class="dashboard_fieldset">
+				<legend>< <a href="javascript:void(0);" title="My Groups" onclick="return goToPage('<?php echo $groupUrl;?>','tab3','group');">Groups</a> ></legend>
+					<ul class="publisher-statistics">
+					<li><strong>Publication Managers :</strong> <?php echo $this->totalPublicationManagersCount;?></li>
+					<li><strong>Account Managers :</strong> <?php echo $this->totalAccountManagersCount;?></li>
+					</ul>
+			</fieldset>
+			<?php } ?>
+			<br  clear="all"/>
+			
+			<fieldset class="dashboard_fieldset">
+				<legend>< <a href="javascript:void(0);" title="Authors" onclick="return goToPage('<?php echo $authorUrl;?>','tab5','author');">Authors</a> ></legend>
+					<ul class="publisher-statistics">
+					<li><strong>Total Authors :</strong> <?php echo $this->totalAuthorCount;?></li>
+					<li><strong>Total Active Authors :</strong> <?php echo $this->totalActiveAuthorCount;?></li>
+					</ul>
+			</fieldset>
+			<br  clear="all"/>
+
+			</td>
+			</tr>
+			
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			
+			<tr>
+			<td colspan="2">
+			<fieldset class="dashboard_fieldset">
+				<legend>< Quick Links ></legend>
+			<ul class="shortcut-links-set">
+			<?php
+				if($_SESSION['publisher_type']['storage']->user_type!='Pmanager' &&   $_SESSION['publisher_type']['storage']->user_type!='Amanager')
+				{
+			?>
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'book','action'=>'create'),'',true);?>" title="Add New Publication" onclick="return goToPage(this.href,'tab2','dashboard');"><span>Add Publication</span></a>
+			</li>
+			
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'group','action'=>'create'),'',true);?>" title="Add New Group User" onclick="return goToPage(this.href,'tab3','dashboard');"><span>Add Group</span></a>
+			</li>
+			
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'author','action'=>'add'),'',true);?>" title="Add New Author" onclick="return goToPage(this.href,'tab5','dashboard');"><span>Add Author</span></a>
+			</li>
+			
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'brand','action'=>'add'),'',true);?>" title="Add New Brand" onclick="return goToPage(this.href,'tab6','dashboard');"><span>Add Brand</span></a>
+			</li>
+			
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'edition','action'=>'add'),'',true);?>" title="Add New Edition" onclick="return goToPage(this.href,'tab7','dashboard');"><span>Add Edition</span></a>
+			</li>
+			<?php } ?>
+			
+			<?php
+				if($_SESSION['publisher_type']['storage']->user_type=='Pmanager' ||   $_SESSION['publisher_type']['storage']->user_type=='Amanager')
+				{
+					 if(in_array("12",$explode_module_active)) 
+					 {
+			?>
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'book','action'=>'create'),'',true);?>" title="Add New Publication" onclick="return goToPage(this.href,'tab2','dashboard');"><span>Add Publication</span></a>
+			</li>
+			<?php }    if(in_array("13",$explode_module_active)) 
+			{
+			?>
+			
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'author','action'=>'add'),'',true);?>" title="Add New Author" onclick="return goToPage(this.href,'tab5','dashboard');"><span>Add Author</span></a>
+			</li>
+			<?php }  if(in_array("14",$explode_module_active)) 
+			{
+			?>
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'brand','action'=>'add'),'',true);?>" title="Add New Brand" onclick="return goToPage(this.href,'tab6','dashboard');"><span>Add Brand</span></a>
+			</li>
+			<?php }  if(in_array("15",$explode_module_active)) 
+			{
+			?>
+			<li>
+			<a class="shortcut-link" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'edition','action'=>'add'),'',true);?>" title="Add New Edition" onclick="return goToPage(this.href,'tab7','dashboard');"><span>Add Edition</span></a>
+			</li>
+			<?php } 
+			
+				if(in_array("17",$explode_module_active)) 
+				{
+			?>
+			
+			<li>
+			<a class="shortcut-link" href="#" title="Reports Management" onclick=""><span>Report Management</span></a>
+			</li>
+			<?php } 
+			} ?>
+			</ul>
+			</fieldset>
+			</td>
+			</tr>
+			</table>
+			
+		
+		</div><!-- End #tab1 -->
+		
+		
+		<div class="tab-content" id="tab2">
+			<li><a href="#">My Recent Books</a></li>
+			<BR><strong>Content will come soon..</strong><BR><BR>
+						
+		</div><!-- End #tab2 -->
+		
+		<div class="tab-content" id="tab3">
+			<li><a href="#">My Recent Groups</a></li>
+			<BR><strong>Content will come soon..</strong><BR><BR>
+						
+		</div><!-- End #tab3 -->
+		
+        <div class="tab-content" id="tab4">
+			Setting Panel:<br />
+			Content will come soon..
+		</div><!-- End #tab4 -->
+		
+		<div class="tab-content" id="tab5">
+			<li><a href="#">My Recent Authors</a></li>
+			<BR><strong>Content will come soon..</strong><BR><BR>
+						
+		</div><!-- End #tab5 -->
+		
+		<div class="tab-content" id="tab6">
+			<li><a href="#">My Recent Brands</a></li>
+			<BR><strong>Content will come soon..</strong><BR><BR>
+		</div><!-- End #tab6 -->
+		
+		<div class="tab-content" id="tab7">
+			<li><a href="#">My Recent Editions</a></li>
+			<BR><strong>Content will come soon..</strong><BR><BR>
+		</div><!-- End #tab7 -->
+			
+			<div class="tab-content" id="tab9">
+			<li><a href="#">My Recent Reports</a></li>
+			<BR><strong>Content will come soon..</strong><BR><BR>
+						
+		</div>	
+				<div class="tab-content" id="tab10">
+			<li><a href="#">My Recent Reports</a></li>
+			<BR><strong>Content will come soon..</strong><BR><BR>
+						
+		</div>		
+	</div>
+	<!-- End .content-box-content -->
+
+</div> <!-- End .content-box -->
+

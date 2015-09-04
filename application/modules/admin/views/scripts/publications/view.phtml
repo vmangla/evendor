@@ -1,0 +1,342 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'publications','action'=>'index'),'',true);
+
+if(isset($this->ParentPublicationInfo['id']) && !empty($this->ParentPublicationInfo['id']))
+{
+	$backUrl=$this->url(array('module'=>'admin','controller'=>'publications','action'=>'issues','parentid'=>$this->ParentPublicationInfo['id']),'',true);
+}
+else
+{
+	$backUrl=$this->url(array('module'=>'admin','controller'=>'publications','action'=>'index'),'',true);
+}	
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Publication Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+			<div class="action-header">
+				<span class="action-title">
+				<?php
+				if(isset($this->ParentPublicationInfo['id']) && !empty($this->ParentPublicationInfo['id']))
+				{
+				?>
+				Publication Details >> <?php echo $this->ParentBrandInfo['brand'];?> >> <?php echo $formData['title']; ?> >> View Issue Details
+				<?php
+				}
+				else
+				{
+					?>
+					Publication Details
+					<?php
+				}
+				?>
+				</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>" title="Back">Back</a></li>
+				</ul>
+			</div>
+		
+			<br  clear="all"/>
+	<form name="frm_details" id="frm_details" method="post">
+<table class="table-list" cellpadding="0" cellspacing="0">
+<tr>
+<th colspan="2">Basic Information :</th>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Name</td>
+<td><?php echo $formData['title']; ?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Type</td>
+<td>
+<?php
+$genreInfo=$this->modelGenre->getGenreInfo($formData['product_type']);
+echo $genreInfo['genre'];
+?>
+</td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Category</td>
+<td><?php
+$category = new Admin_Model_DbTable_Publications();
+$categoryDetails=$category->getCategoryInfo($formData['cat_id']);
+echo $categoryDetails['category_name'];
+?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Author</td>
+<td><?php $author=new Admin_Model_DbTable_Publications();
+	$publisher_info_array=$author->getPublisherInfo($formData['author_id']);
+	echo $publisher_info_array['first_name']."&nbsp;".$publisher_info_array['last_name'];?>
+</td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">ISBN Number</td>
+<td><?php echo $formData['isbn_number']; ?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Description</td>
+<td><?php echo $formData['description']; ?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Total Pages</td>
+<td><?php echo $formData['total_pages']; ?></td>
+</tr>
+
+<tr>
+<td width="20%" class="tdrightBold">Publish Time</td>
+<td><?php echo $formData['publish_time']; ?></td>
+</tr>
+
+<tr>
+<td width="20%" class="tdrightBold">User Status</td>
+<td>
+
+<?php
+if($formData['status']==1)
+{
+?>
+<img src='<?php echo $this->serverUrl().$this->baseUrl(); ?>/public/css/publisher/images/icon_active.png' height='12' width='12' alt="Approve" title="Approve">
+<?php
+}
+else
+{
+?>
+<img src='<?php echo $this->serverUrl().$this->baseUrl(); ?>/public/css/publisher/images/icon_deleted.png' height='12' width='12' alt="Reject" title="Reject">
+<?php
+}
+?>
+
+</td>
+</tr>
+
+<tr>
+<td width="20%" class="tdrightBold">Admin Status</td>
+<td>
+
+<?php
+if($formData['admin_approve']==1)
+{
+?>
+<img src='<?php echo $this->serverUrl().$this->baseUrl(); ?>/public/css/publisher/images/icon_active.png' height='12' width='12' alt="Approve" title="Approve">
+<?php
+}
+else
+{
+?>
+<img src='<?php echo $this->serverUrl().$this->baseUrl(); ?>/public/css/publisher/images/icon_deleted.png' height='12' width='12' alt="Reject" title="Reject">
+<?php
+}
+?>
+
+</td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Set as featured</td>
+<td> 
+<input type='radio' name='featured' id='featured' value='1' <?php if($formData['is_featured']=='1') { ?>checked<?php } ?> > Yes
+ 
+ <input type='radio' name='featured' id='featured' value='0' <?php if($formData['is_featured']=='0') { ?>checked<?php } ?> >
+ No
+</td>
+</tr>
+
+<tr>
+<td width="20%" class="tdrightBold">Status</td>
+<td> 
+<input type='radio' name='status' id='status' value='1' <?php if($formData['admin_approve']=='1') { ?>checked<?php } ?> > Yes
+ 
+ <input type='radio' name='status' id='status' value='0' <?php if($formData['admin_approve']=='0') { ?>checked<?php } ?> > No
+</td>
+</tr>
+<tr>
+<td colspan="2" align="center"><input type="submit" name="submit_status" id="submit_status" value="Save"  class="button-Add"></td>
+</tr>
+
+
+</table>
+</form>
+<br  clear="all"/>
+
+<form id="form-send-email" method="post" onsubmit="return validate_search('form-send-email');">
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">Send Mail To Publisher :</th>
+				</tr>
+				
+				 <tr>
+					<td align="right" width="20%" valign="top" class="tdrightBold"><div align="right">Message: </div></td>
+					<td width="80%"><textarea name="searchword" id="searchword" col="8" rows="5" class="req form-textarea"  message="Please enter your messsge"></textarea></td>
+				</tr>
+				
+				<tr>
+					<td align="center" colspan="2">
+					<div align="center"><input type="submit" name="sendemail" id="sendemail" value="Send Mail"  class="button-Add">
+					</div>
+					</td>
+				</tr>
+				</table>
+	    </form>
+
+<br  clear="all"/>			 
+
+<table class="table-list" cellpadding="0" cellspacing="0">
+<tr>
+	<th colspan="2">Images :</th>
+</tr>
+<tr>
+	<td align="left" valign="top">
+	<?php
+	$modelImage = new Admin_Model_DbTable_ProductImages();
+	$imageList=$modelImage->getImageList($formData['id']);
+	
+	if(count($imageList)>0)
+	{	
+		for($ii=0;$ii<count($imageList);$ii++)
+		{
+		echo "&nbsp;<img src=".$this->serverUrl().$this->baseUrl()."/".USER_UPLOAD_DIR.$imageList[$ii]['image_name_thumb']." height='50' width='50'>";
+		
+		echo "<a class='action-icon' href=".$this->url(array('module'=>'admin','controller'=>'publications','action'=>'deleteimage','id'=>$imageList[$ii]['id']),'',true)." onclick=\"confirm('Are you sure you want to delete this image?');\">";
+		
+		echo "<img src='".$this->serverUrl().$this->baseUrl()."/public/css/publisher/images/trash.gif' height='10' width='10'>";
+		echo  "</a>&nbsp;";
+		
+		}
+	}
+	else
+	{
+	echo "No Image Found";
+	}
+	
+	?>
+
+	</td>
+</tr>
+</table>
+
+<br  clear="all"/>
+
+<table class="table-list" cellpadding="0" cellspacing="0">
+<tr>
+	<th colspan="2">Epub File Information :</th>
+</tr>
+			
+	<?php
+	if($formData['file_name']=="" && $formData['file_size']=="")
+	{
+	?>
+	<tr>
+	<td align="left" valign="top">No contents Found</td>
+	</tr>
+	<?php
+	}
+	else
+	{
+	?>
+	<tr>
+	<td align="left" valign="top">
+	<?php
+	
+		echo "<span style=\"bottom:25px; position:relative;\">File Size: ".$formData['file_size']."&nbsp;</span>";
+			
+		echo "&nbsp;<a href=".$this->url(array('module'=>'admin','controller'=>'publications','action'=>'downloadpubfile','id'=>$formData['id']),'',true).">";
+		echo "<img src='".$this->serverUrl().$this->baseUrl()."/public/css/publisher/images/stock_task.png' height='50' width='50'>";
+		echo "</a>&nbsp;";
+				
+		 
+		
+		echo "<a class='action-icon' href=".$this->url(array('module'=>'admin','controller'=>'products','action'=>'deleteepubfile','id'=>$formData['id']),'',true)." onclick=\"confirm('Are you sure you want to delete this epub file?');\">";
+		
+		
+		echo "<img src='".$this->serverUrl().$this->baseUrl()."/public/css/publisher/images/trash.gif' height='10' width='10'>";
+		echo  "</a>&nbsp;";
+		
+		?>
+
+	</td>
+	</tr>
+	
+	<?php
+	}
+	?>
+</table>
+
+<br  clear="all"/>
+<table width="100%" class="table-list" border="0" cellspacing="0" cellpadding="0">
+<tr>
+	<th colspan="5">Pricing :</th>
+</tr>
+<tr>
+<td width="25%"><div align="left"><strong>Country</strong></div></td>
+<td width="25%"><div align="left"><strong>Language</strong></div></td>
+<td width="12%"><div align="left"><strong>Price</strong></div></td>
+<td width="13%"><strong>Group Price</strong></td>
+<td width="25%"><div align="left"><strong>Action</strong></div></td>
+</tr>
+
+<?php
+	$modelPrice    = new Admin_Model_DbTable_ProductPrices();
+	$priceList     = $modelPrice->getPriceList($formData['id']);
+	
+for($jj=0;$jj<count($priceList);$jj++)
+{	
+?>
+<tr>
+<td>
+    <div align="left">
+	   <?php
+			$modelCountry    = new Admin_Model_DbTable_Publications();
+			$countryRecord   = $modelCountry->getCountryName($priceList[$jj]['country_id']);
+			echo $countryRecord['country'];
+	   ?>
+    </div></td>
+<td>
+   <div align="left">
+    <?php
+			$modelLanguage    = new Admin_Model_DbTable_Publications();
+			$languageRecord   = $modelLanguage->getLanguageName($priceList[$jj]['language_id']);
+			echo $languageRecord['language_name'];
+			
+	?>
+    </div></td>
+<td><div align="left"><?php echo $priceList[$jj]['price']; ?></div></td>
+<td><?php echo $priceList[$jj]['group_price']; ?></td>
+<td>
+   <div align="left">
+    <?php
+			echo "<a class='action-icon' href=".$this->url(array('module'=>'admin','controller'=>'products','action'=>'deleteprice','id'=>$priceList[$jj]['id']),'',true).">";
+			echo "<img src='".$this->serverUrl().$this->baseUrl()."/public/css/publisher/images/trash.gif' height='10' width='10'>";
+			echo  "</a>&nbsp;";
+	?>
+    </div></td>
+</tr>
+<?php
+}
+?>
+</table>
+
+</div>
+
+
+<script type="text/javascript">
+
+function validate_search(pFormId)
+{
+	
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+</script>
+

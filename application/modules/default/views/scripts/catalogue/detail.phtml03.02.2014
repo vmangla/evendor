@@ -1,0 +1,866 @@
+<?php
+$modelUser = new Model_DbTable_Users();
+$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+$publisher_data = $storage_publisher->read();
+if(count($publisher_data)>0)
+{
+	$user_id_comment = $publisher_data->id;	
+	$user_type = "4";
+}
+
+$storage_company = new Zend_Auth_Storage_Session('company_type');
+$company_data = $storage_company->read();
+if(count($company_data)>0)
+{
+	$user_id_comment = $company_data->id;	
+	$user_type = "1";
+}
+
+$storage_user = new Zend_Auth_Storage_Session('account_type');
+$data_user = $storage_user->read();
+if(count($data_user)>0)
+{
+	$user_id_comment = $data_user->id;	
+	$user_type = "2";
+}
+
+/*echo "<pre>";
+print_r($this->storePublicationDetail);*/
+
+//$storage_storeinfo= new Zend_Session_Namespace('storeInfo');
+
+$producturrency = new Admin_Model_DbTable_Countries();
+
+
+if(isset($this->storePublicationDetail) && !empty($this->storePublicationDetail) && count($this->storePublicationDetail)>0)
+{
+$modelAuthor = new Publisher_Model_DbTable_Publishers();
+$modelLanguage = new Admin_Model_DbTable_Languages();
+$modelImage = new Publisher_Model_DbTable_BookImages();
+$modelStore = new Admin_Model_DbTable_Countries();
+$productPrice = new Publisher_Model_DbTable_BookPrices();
+
+$productPriceInfo = $productPrice->getPriceByStoreId($this->storePublicationDetail[0]['product_id'],$this->storePublicationDetail[0]['country_id']);
+
+
+$publisherInfo = $modelAuthor->getInfoByPublisherId($this->storePublicationDetail[0]['publisher_id']);
+
+$authorInfo = $modelAuthor->getInfoByPublisherId($this->storePublicationDetail[0]['author_id']);
+$imageInfo = $modelImage->getImageInfoByProductId($this->storePublicationDetail[0]['product_id']);
+$langDetail=$modelLanguage->fetchRow('id="'.$this->storePublicationDetail[0]['language_id'].'"');
+$storeDetail=$modelStore->fetchRow('id="'.$this->storePublicationDetail[0]['country_id'].'"');
+
+$getBrandInfo=$this->modelBooks->getBrandInfo($this->storePublicationDetail[0]['title']);
+if(!empty($getBrandInfo) && is_numeric($this->storePublicationDetail[0]['title']))
+{
+	$titleBrand=$getBrandInfo['brand'];
+}else
+{
+	$titleBrand=$this->storePublicationDetail[0]['title'];
+}
+
+if(!empty($this->storePublicationDetail[0]['parent_brand_id']))
+{
+$productInfo=$this->modelBooks->fetchRow('id="'.$this->storePublicationDetail[0]['parent_brand_id'].'"');
+$getParentBrandInfo=$this->modelBooks->getBrandInfo($productInfo->title);
+	if(!empty($getParentBrandInfo))
+	{
+		$titleBrand=$titleBrand.' ('.$getParentBrandInfo['brand'].')';
+	}
+//$all=getPublicationIdsByCategoryName();	
+}
+ 
+
+?>
+<!--left sidebar -->
+<aside class="left_listing">
+	<?php
+	if(is_file(USER_UPLOAD_DIR.$imageInfo['image_name']))
+	{
+	?>
+		<img src="<?php echo $this->serverUrl().$this->baseUrl()."/".USER_UPLOAD_DIR.$imageInfo['image_name'];?>" alt="<?php echo $titleBrand;?>">
+	<?php
+	}
+	else
+	{
+	?>
+		<img src="<?php echo $this->serverUrl().$this->baseUrl()."/public/css/default/images/big_noimage.jpg";?>" alt="<?php echo $titleBrand;?>">
+	<?php	
+	}
+	?>	
+</aside>
+<!--left sidebar -->
+
+<!--Right sidebar -->
+<aside class="right_listing"> 
+	<div class="product_detail">
+		<?php
+		/*echo"<pre>";
+		print_r($this->storePublicationDetail);
+		echo"</pre>";
+		*/
+		?>
+		<h3><?php echo stripslashes($titleBrand); //echo $this->storePublicationDetail[0]['title'];?></h3>
+		<span>
+		<?php 
+		//if($this->storePublicationDetail[0]['cat_id']=='1' || $this->storePublicationDetail[0]['cat_id']=='2')
+	//	{
+			 
+			//echo "by <em>".stripslashes($this->storePublicationDetail[0]['publisher']);
+		//}
+		 
+		if($authorInfo['first_name']!='')
+		{
+		 
+			echo "by <em>".stripslashes($authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name']);
+		}
+		?>
+		</em></span>
+		<!--	<img alt=""  src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/social_icon.jpg';?>">-->
+		
+			<!-- AddThis Button BEGIN -->
+			<div class="addthis_toolbox addthis_default_style ">
+			<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+			<a class="addthis_button_tweet"></a>
+			<a class="addthis_counter addthis_pill_style"></a>
+			</div>
+			<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=xa-5195fc0567519c32"></script>
+			<!-- AddThis Button END -->
+		</p>
+		
+		<p><?php echo stripslashes($this->storePublicationDetail[0]['description']); ?></p>
+		
+		<div class="magazine_avialbel">
+			<p>This magazine is available for:</p>
+			<img  alt=""  src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/anroid_img.jpg';?>"> <img  alt=""  src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/ipad_img.jpg';?>">
+			<p>
+				<div class="row">
+					<?php
+					if($langDetail['language_name']!='')
+					{
+					?>
+					<label>Language</label>
+					<span>: <?php echo $langDetail['language_name'];?></span>
+					<?php
+					}
+					?>
+				</div>
+				
+				<div class="row">
+					<?php
+					if($storeDetail['country']!='')
+					{
+					?>					
+					<label>Country</label>
+					<span>: <?php echo $storeDetail['country'];?></span>
+					<?php
+					}
+					?>
+				</div>
+				<div class="row">
+					<?php
+					if($publisherInfo['first_name']!='')
+					{
+					?>
+					<label>Publisher</label>
+					<span>: 
+					<?php //echo $this->publisherInfo[0]['publisher'];?>
+					<?php echo $publisherInfo['first_name'].'&nbsp;'.$publisherInfo['last_name'];?>
+					</span>
+					<?php
+					}
+					?>
+				</div>
+			</p>
+		</div>
+	
+	
+	</div>
+
+</aside>
+
+
+<!--Right sidebar -->
+
+
+<aside class="left_panel">
+		<ul class="tabing">
+			<?php
+			if(!empty($this->backIssuesList) && count($this->backIssuesList)>0)
+			{
+			?>
+				<li id="link_backissues" class="active"><a href="javascript:void(0);">Back Issues</a> <Span>&nbsp;</span></li>
+			<?php
+			}
+			?>
+			<li id="link_publication" <?php if(empty($this->backIssuesList)){?>class="active"<?php } ?>><a href="javascript:void(0);">Publication Detail</a> <Span>&nbsp;</span></li>
+			<!--li id="link_evendor"><a href="javascript:void(0);">About eVendor</a> <Span>&nbsp;</span></li-->
+			<li id="link_review"><a href="javascript:void(0);">Reviews</a> <Span>&nbsp;</span></li>
+			<?php
+			if($user_id_comment!='')
+			{
+			?>
+				<li id="link_comment"><a href="javascript:void(0);">Rate this Publication</a> <Span>&nbsp;</span></li>
+			<?php
+			}
+			?>
+		</ul>
+		
+		<!-- //Tab 1 -->
+		<?php
+		if(!empty($this->backIssuesList) && count($this->backIssuesList)>0)
+		{
+		?>
+		<div id="conetnt2_backissues" class="tabContentsarea">
+		<div class="box">
+		
+		<?php
+		if(count($this->backIssuesList)>4)
+		{
+		?>
+		<div class=" jcarousel-skin-tango">
+		<div class="jcarousel-container jcarousel-container-horizontal">
+			<div class="jcarousel-clip jcarousel-clip-horizontal">
+				<ul id="mycarouse2" class="jcarousel-list jcarousel-list-horizontal">
+					<?php
+					foreach($this->backIssuesList as $backIssueArray)
+					{
+						if(isset($this->currentIssueId) && $this->currentIssueId==$backIssueArray['product_id'])
+						{ continue;}
+						$authorInfo = $modelAuthor->getInfoByPublisherId($backIssueArray['publisher_id']);
+						$imageInfo = $modelImage->getImageInfoByProductId($backIssueArray['product_id']);
+					?>
+						<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal">
+						<div class="slides marg">
+						<div class="book">
+						<?php
+						if(is_file(USER_UPLOAD_DIR.'thumb1_'.$imageInfo['image_name']))
+						{
+						?>
+						<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$backIssueArray['product_id']."/store/".$this->storeId."/lang/".$backIssueArray['language_id'];?>">
+						<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb1_'.$imageInfo['image_name'];?>" alt="<?php echo $backIssueArray['title'];?>">
+						</a>
+						<?php
+						}
+						else
+						{
+						?>
+						<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/noimage.jpg';?>" alt="">
+						<?php
+						}
+						?>
+						</div>
+							<div class="info">
+								<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$backIssueArray['product_id']."/store/".$this->storeId."/lang/".$backIssueArray['language_id'];?>" style="text-decoration:none; color:#000000;"><?php echo $backIssueArray['title'];?></a><br>
+								<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+							</div>
+						</div>
+						</li>
+						<?php
+					}
+					?>
+				</ul>
+			 </div>
+		</div>
+	  </div>
+	  <?php
+	  }
+	  else
+	  {
+		?>
+		<ul class="no-slide">
+		<?php
+			foreach($this->backIssuesList as $backIssueArray)
+			{
+				if(isset($this->currentIssueId) && $this->currentIssueId==$backIssueArray['product_id'])
+				{ continue;}
+			$authorInfo = $modelAuthor->getInfoByPublisherId($backIssueArray['publisher_id']);
+			$imageInfo = $modelImage->getImageInfoByProductId($backIssueArray['product_id']);
+			?>
+				<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal">
+				<div class="slides marg">
+				<div class="book">
+				<?php
+				if(is_file(USER_UPLOAD_DIR.'thumb1_'.$imageInfo['image_name']))
+				{
+				?>
+				<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$backIssueArray['product_id']."/store/".$this->storeId."/lang/".$backIssueArray['language_id'];?>">
+				<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb1_'.$imageInfo['image_name'];?>" alt="<?php echo $backIssueArray['title'];?>">
+				</a>
+				<?php
+				}
+				else
+				{
+				?>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/noimage.jpg';?>" alt="">
+				<?php
+				}
+				?>
+				</div>
+					<div class="info">
+						<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$backIssueArray['product_id']."/store/".$this->storeId."/lang/".$backIssueArray['language_id'];?>" style="text-decoration:none; color:#000000;"><?php echo $backIssueArray['title'];?></a><br>
+						<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+					</div>
+				</div>
+				</li>
+				<?php
+			}
+			?>
+		</ul>
+		<?php
+	  }
+	  ?>
+	  
+	  </div>
+	 <!-- <div class="view_all">
+	  <a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/index/backissue/".$backIssueArray['parent_brand_id']."/store/".$this->storeId."/lang/".$backIssueArray['language_id'];?>" style="text-decoration:none; color:#000000;">View all</a>
+	  </div>-->
+	  </div>
+	  <?php
+	  }
+	  ?>
+		
+		<div id="conetnt2_publication" class="tabContentsarea" <?php if(!empty($this->backIssuesList)){?>style="display:none;"<?php } ?>>
+			<div class="box">
+				<div><span>Published by:</span> <?php echo stripslashes($this->PublisherInfo['publisher']);?></div>
+				<div><span>ISBN:</span><?php echo $this->publicationInfo['isbn_number'];?> </div>
+				<div><span>Filesize:</span><?php echo $this->publicationInfo['file_size'];?></div>
+			</div>
+			
+			<div class="box">
+				<div><span>Publish Date:</span><?php echo $this->publicationInfo['publish_time'];?> </div>
+				<div><span>Number of Print Pages:</span> <?php echo $this->publicationInfo['total_pages'];?> </div>
+				<div><span>Format:</span> EPUB</div>
+			</div>
+			
+			<!--<div class="view_all">
+			 <a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/index/allebooks/".$this->publicationInfo['parent_brand_id']."/store/".$this->storePublicationDetail[0]['country_id']."/lang/".$this->storePublicationDetail[0]['language_id'];?>" style="text-decoration:none; color:#000000;">View all</a>
+			</div>-->
+			
+		</div>
+		<?php
+		if($user_id_comment!='')
+		{
+		?>
+		<div id="conetnt2_comment" class="tabContentsarea" style="display:none;">
+			<div>
+				<span id = "rate_msg" ></span>
+				<span>Rating</sapn>
+				<?php
+				
+						$rating = $modelUser->getRattingProduct($this->currentIssueId);
+							$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+							$publisher_data = $storage_publisher->read();
+							if(count($publisher_data)>0)
+							{
+								$user_id_comment = $publisher_data->id;	
+								$user_type = "4";
+							}
+							$storage_company = new Zend_Auth_Storage_Session('company_type');
+							$company_data = $storage_company->read();
+							if(count($company_data)>0)
+							{
+								$user_id_comment = $company_data->id;	
+								$user_type = "1";
+							}
+		
+							$storage_user = new Zend_Auth_Storage_Session('account_type');
+							$data_user = $storage_user->read();
+							if(count($data_user)>0)
+							{
+								$user_id_comment = $data_user->id;	
+								$user_type = "2";
+							}
+							$product_id = $this->currentIssueId; 
+							$rating_val = $rating;
+							$rating_image = "";
+							if($user_id_comment!='')
+							{
+							//echo $rating_val;
+							$rating_image="<div class='wid60 high15 mar0A clear'>
+							<div class='fl wid55 high15'><div class='ratingblock'>
+							<div id='unit_long13451'><ul id='unit_ul13451' class='unit-rating' style='width:75px;'>";
+							$width = 15*$rating_val;
+							$rating_image.="<li class='current-rating' style='width:".$width."px;'></li>";
+							for($i=1;$i<=5;$i++)
+							{
+								$rating_image.="<li style='width:13px;' ><a href='javascript:void(0);' onclick=getrating('".$product_id."','".$user_id_comment."','".$user_type."','".$i."'); title='1 out of 5' class='r".$i."-unit rater full' rel='nofollow'></a></li>";
+							}
+							$rating_image.="</ul> </div></div>&nbsp;</div></div>";
+							
+							}
+							else {
+							$rating_image="<div class='wid60 high15 mar0A clear'>
+							<div class='fl wid55 high15'><div class='ratingblock'>
+							<div id='unit_long13451'><ul id='unit_ul13451' class='unit-rating' style='width:75px;'>";
+							$width = 15*$rating_val;
+							$rating_image.="<li class='current-rating' style='width:".$width."px;'></li>";
+							for($i=1;$i<=5;$i++)
+							{
+								$rating_image.="<li style='width:13px;' ></li>";
+							}
+							$rating_image.="</ul> </div></div>&nbsp;</div></div>";
+							}
+					echo $rating_image;
+				?>
+				
+				</div>	
+			<div class="box">
+				<div id="write_comment">Write comment</div>
+				<div id="err_product_comment" style="display:none;"></div>
+				<div><textarea name="product_comment" id="product_comment" ></textarea></div>
+				<input type="hidden" name="product_id" id="product_id" value="<?php echo $this->currentIssueId;?>" />
+				<input type="hidden" name="user_id" id="user_id" value="<?php echo $user_id_comment;?>" />
+				<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+				<div><input type="button" name="comment_post" id="comment_post" name="product_comment" value="Post Comment" onclick="getComment();" ></div>
+			</div>	
+				
+		</div>
+		<?php
+		}
+		?>
+		
+		<!-- //Tab 2 -->
+		<!--<div id="conetnt2_evendor" class="tabContentsarea" style="display:none;">
+			<div class="box">
+				<div><span>Published by:</span><?php //echo $this->PublisherInfo['publisher'];?></div>
+				<div><span>ISBN:</span> <?php //echo $this->publicationInfo[''];?></div>
+
+			</div>
+			
+			<div class="box">
+				<div><span>Publish Date:</span> February 18, 2013</div>
+				<div><span>Number of Print Pages:</span> N/A</div>
+
+			</div>
+			
+			<div class="view_all"><a href="#">View all</a></div>
+		</div>-->
+		
+		<!-- //Tab 3 -->
+		<div id="conetnt2_review" class="tabContentsarea" style="display:none;">
+			<div class="box">
+			<?php
+			$reviewsData = $this->reviewsData;
+			for($i=0;$i<count($reviewsData);$i++)
+			{
+				if($reviewsData[$i]['user_type'] == 4)
+				{
+					$username = $modelAuthor->getInfoByPublisherId($reviewsData[$i]['userid']);
+					//echo "<pre>";
+					//print_r($username);
+					$username = $username['first_name']." ".$username['last_name'];
+					
+				}
+				else {
+					$username = $modelUser->fetchRow("id ='".$reviewsData[$i]['userid']."'");
+					//echo "<pre>";
+					//print_r($username);
+					$username = $username['first_name']." ".$username['last_name'];
+				}
+				
+			?>
+				<div><span><?php echo $reviewsData[$i]['comments']?></span><br/>By:<?php echo $username;?></div>
+			<?php
+			}
+			?>
+			</div>
+			<!-- <div class="box">
+				<div><span>Published by:</span><?php echo stripslashes($this->PublisherInfo['publisher']);?></div>
+
+			</div>
+			
+			<div class="box">
+				<div><span>Publish Date:</span><?php echo $this->publicationInfo['publish_time'];?> <?php //print_r($this->PublisherInfo);?></div>
+			</div>
+		-->
+			<!--<div class="view_all"><a href="#">View all</a></div>-->
+		</div>
+
+
+	<!--Slider3 -->
+<section class="left_slider">
+<?php
+/*
+echo "<pre>";
+print_r($this->similarPublicationList);
+exit;
+*/
+if(!empty($this->similarPublicationList) && count($this->similarPublicationList)>0)
+{
+	foreach($this->similarPublicationList as $cat_name=>$publicationArray)
+	{
+		if(!empty($publicationArray) && count($publicationArray)>0)
+		{
+		?>
+		<h1><?php echo 'Other '.stripslashes($cat_name);?></h1>
+		<?php
+			if(count($publicationArray)>4)
+			{
+				//echo "<pre>";
+				//print_r($publicationArray);
+			?>
+			<div class=" jcarousel-skin-tango">
+			<div class="jcarousel-container jcarousel-container-horizontal">
+			<div class="jcarousel-clip jcarousel-clip-horizontal">
+			
+			<ul id="mycarouse3" class="jcarousel-list jcarousel-list-horizontal">
+			<?php
+				//echo "<pre>";
+				//print_r($publicationArray);
+				foreach($publicationArray as $key=>$record)
+				{
+					//$record['product_id']."<br>";			
+				$authorInfo = $modelAuthor->getInfoByPublisherId($record['author_id']);
+				$imageInfo = $modelImage->getImageInfoByProductId($record['id']);
+				$getBrandInfo=$this->modelBooks->getBrandInfo($record['title']);
+				$productPriceDetails=$productPrice->fetchRow($record['product_id']);
+				$productPriceDetails = $productPrice->getPriceByStoreId($record['product_id'],$this->storePublicationDetail[0]['country_id']);
+				//echo "<pre>";
+				//print_r($productPriceDetails);
+				if(!empty($getBrandInfo))
+				{
+					$titleBrand=$getBrandInfo['brand'];
+				}else
+				{
+					$titleBrand=$record['title'];
+				}
+				?>
+				<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal">
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$record['id']."/store/".$this->storeId."/lang/".$record['language_id'];?>">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $record['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$record['id']."/store/".$this->storeId."/lang/".$record['language_id'];?>">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="">
+					</a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+							<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$record['product_id']."/store/".$this->storeId."/lang/".$record['language_id'];?>"><?php echo stripslashes($titleBrand); ?></a>
+							<?php
+							if($authorInfo['first_name']!='')
+							{
+							?>
+							<span class="by">
+							<?php  echo "by <i>".stripslashes($authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name']);?></i>
+							</span>
+							<?php
+							}
+							?>
+							<?php if(strtolower(trim($cat_name))=='ebook' || strtolower(trim($cat_name))=='ebooks')
+							{
+							?>
+							<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceDetails['country_id'])." ".$productPriceDetails['price'];?></p>
+							<?php
+							$rating = $modelUser->getRattingProduct($record['id']);
+							$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+							$publisher_data = $storage_publisher->read();
+							if(count($publisher_data)>0)
+							{
+								$user_id_comment = $publisher_data->id;	
+								$user_type = "4";
+							}
+							$storage_company = new Zend_Auth_Storage_Session('company_type');
+							$company_data = $storage_company->read();
+							if(count($company_data)>0)
+							{
+								$user_id_comment = $company_data->id;	
+								$user_type = "1";
+							}
+		
+							$storage_user = new Zend_Auth_Storage_Session('account_type');
+							$data_user = $storage_user->read();
+							if(count($data_user)>0)
+							{
+								$user_id_comment = $data_user->id;	
+								$user_type = "2";
+							}
+							$product_id = $record['id']; 
+							$rating_val = $rating;
+							$rating_image = "";
+						
+								$rating_image="<div class='wid60 high15 mar0A clear'>
+								<div class='fl wid55 high15'><div class='ratingblock'>
+								<div id='unit_long13451'><ul id='unit_ul13451' class='unit-rating' style='width:75px;'>";
+								$width = 15*$rating_val;
+								$rating_image.="<li class='current-rating' style='width:".$width."px;'></li>";
+								for($i=1;$i<=5;$i++)
+								{
+									$rating_image.="<li style='width:13px;' ><a href='javascript:void(0);' onclick=getratingOther('".$product_id."','".$user_id_comment."','".$user_type."','".$i."'); title='1 out of 5' class='r".$i."-unit rater full' rel='nofollow'></a></li>";
+								}
+								$rating_image.="</ul> </div></div>&nbsp;</div></div>";
+							
+					//echo "<p id='pr_".$product_id."'>".$rating_image."</p>";
+							?>
+							<p>
+							<div id="pr_<?php echo $product_id?>"><?php echo $rating_image?></div>
+							<div id="msg_<?php echo $product_id?>" style="display:none;"></div>
+							</p>
+							<?php
+							}
+							?>
+						</div>
+					</div>
+				</li>
+				<?php
+				}
+			?>
+			</ul>
+			</div>
+			</div>
+			</div>
+			<?php
+			}
+			else
+			{
+			?>
+				<ul class="no-slide">
+				<?php
+					
+				foreach($publicationArray as $key=>$record)
+				{
+					
+					$authorInfo = $modelAuthor->getInfoByPublisherId($record['author_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($record['id']);
+					$getBrandInfo=$this->modelBooks->getBrandInfo($record['title']);
+					$productPriceDetails=$productPrice->fetchRow($record['id']);
+					$productPriceDetails = $productPrice->getPriceByStoreId($record['product_id'],$this->storePublicationDetail[0]['country_id']);
+					if(!empty($getBrandInfo))
+					{
+						$titleBrand=$getBrandInfo['brand'];
+					}else
+					{
+						$titleBrand=$record['title'];
+					}
+					?>
+					<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal">
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$record['id']."/store/".$this->storeId."/lang/".$record['language_id'];?>">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $record['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$record['id']."/store/".$this->storeId."/lang/".$record['language_id'];?>">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="">             </a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+							<a href="<?php echo $this->serverUrl().$this->baseUrl()."/catalogue/detail/id/".$record['product_id']."/store/".$this->storeId."/lang/".$record['language_id'];?>"><?php echo $titleBrand; ?></a><br>
+							<?php
+							if($authorInfo['first_name']!='')
+							{
+							?>
+							<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+							<?php
+							}
+							?>
+							<?php if(strtolower(trim($cat_name))=='ebook' || strtolower(trim($cat_name))=='ebooks')
+							{
+							?>
+							<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceDetails['country_id'])." ".$productPriceDetails['price'];?></p>
+							<p><!-- RATING <img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/star.png';?>" alt=""> <img src="images/star.png" alt=""> <img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/star.png';?>" alt=""> <img src="images/star.png" alt=""> <img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/star.png';?>" alt="">	
+
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/comments_icon.png';?>"  alt=""> 12</span>
+							</p>-->
+							<?php
+							}
+							?>
+						</div>
+					</div>
+				</li>
+					<?php
+				}
+				?>
+				</ul>
+				<?php
+			}
+		}
+	}
+?>		
+<!--<div class="bottom"><a href="#">View all Newspapers</a></div>-->
+<?php
+}
+?>
+</section>
+<!--Slider3 -->
+</aside>
+<?php
+}
+?>
+
+<aside class="right_panel">
+<?php
+if(isset($this->storePublicationDetail) && !empty($this->storePublicationDetail) && count($this->storePublicationDetail)>0)
+{
+?>
+<ul class="book_price">
+	<h2><span>Buy this book for</span>
+		<?php
+		if(count($company_data)>0 && count($company_data)!=0)
+		{
+		?>
+		<?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".$productPriceInfo['group_price'];?>
+		<?php 
+		}
+		else
+		{
+		?>
+		<?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".$productPriceInfo['price'];?>
+		<?php
+		}
+		?>
+    </h2>
+  
+  <p>Note: You can purchase this publication via downloading App for iPad or Android tablet.</p>
+</ul>
+<?php
+}
+?>
+
+<h5>Best Selling Books</h5>
+<ul class="book">
+<?php
+$modelAuthor = new Publisher_Model_DbTable_Publishers();
+$modelImage = new Publisher_Model_DbTable_BookImages();
+if(count($this->bestSellBookList)>0)
+{
+	$bestBookList = $this->bestSellBookList;
+	if(count($this->bestSellBookList)>9)
+	{
+		$listCount =9;
+	}
+	else {
+		$listCount = count($this->bestSellBookList);
+	}
+	for($i=0;$i<$listCount;$i++)
+	{
+		$imageInfo = $modelImage->getImageInfoByProductId($bestBookList[$i]['id']);
+?>
+<li>
+		<?php
+		if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+		{
+		?>
+		<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $bestBookList[$i]['id'];?>/store/<?php echo $bestBookList[$i]['country_id'];?>/lang/<?php echo $bestBookList[$i]['language_id'];?>/">
+		<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $bestBookList[$i]['title'];?>">
+		</a>
+		<?php
+		}
+		else
+		{
+		?>
+		<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $bestBookList[$i]['id'];?>/store/<?php echo $bestBookList[$i]['country_id'];?>/lang/<?php echo $bestBookList[$i]['language_id'];?>/">
+		<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo$magazineIssuesArray['title'];?>">
+		</a>
+		<?php
+		}
+		?>
+	</li>
+<?php
+	}
+}
+?>
+<!--<ul class="book">
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/img1.gif';?>" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/img2.gif';?>" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/img1.gif';?>" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/img1.gif';?>" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/img1.gif';?>" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/img1.gif';?>" alt=""></a></li>
+</ul> -->
+</ul>
+</aside>
+<script type="text/javascript">
+	function getComment()
+	{
+		var message = document.getElementById("product_comment").value;
+		var product_id = document.getElementById("product_id").value;
+		var user_id = document.getElementById("user_id").value;
+		var user_type = document.getElementById("user_type").value;
+		if(message=='')
+		{
+			err="<font color='red'>Please enter comment.</font>";			
+			document.getElementById("product_comment").focus();
+			document.getElementById("product_comment").style.borderColor="#FF0000";
+			$("#err_product_comment").html(err);
+			$("#err_product_comment").show();
+			$("#err_product_comment").fadeOut(5000);
+			return false;
+		}
+		else
+		{
+			
+			document.getElementById("product_comment").style.borderColor="";
+			$("#err_product_comment").html();
+			$.post("<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/insertusercomment/",{"message":message,"product_id":product_id,"user_id":user_id,"user_type":user_type},function(data){
+				if(data=='success')
+				{			
+					$("#err_product_comment").html("<font color='green'>Comment has post successfully.</font>");
+					$("#err_product_comment").show();
+					$("#err_product_comment").fadeOut(5000);
+					document.getElementById("product_comment").value='';				
+				}
+			});			
+		}
+	}
+function getrating(pr_id,usr_id,usr_type,val)
+{
+	if(usr_id!='')
+	{
+		$.post("<?php echo $this->serverUrl().$this->baseUrl();?>/index/insertratingproduct/",{"user_id":usr_id,"user_type":usr_type,"product_id":pr_id,"val":val},function(data){
+			$("#rate_msg").html("<font color='green'>"+data+"</font>");
+			//$("#rate_"+pr_id).hide();
+			$("#rate_msg").show();
+			//$("#msg_"+pr_id).fadeOut(5000);
+			$("#rate_msg").show();
+		});
+	}
+	else
+	{
+		$("#rate_msg").html("<font color='red'>Please login.</font>");
+		$("#rate_msg").show();
+	}
+
+}
+function getratingOther(pr_id,usr_id,usr_type,val)
+{
+	if(usr_id!='')
+	{
+		$.post("<?php echo $this->serverUrl().$this->baseUrl();?>/index/insertratingproduct/",{"user_id":usr_id,"user_type":usr_type,"product_id":pr_id,"val":val},function(data){
+			$("#pr_"+pr_id).hide();
+			$("#msg_"+pr_id).html("<font color='green'>"+data+"</font>");
+			$("#msg_"+pr_id).show();
+			//$("#pr_"+pr_id).fadeOut(5000);
+			
+		});
+	}
+	else
+	{
+		$("#msg_"+pr_id).html("<font color='red'>Please login.</font>");
+			$("#msg_"+pr_id).html(data);
+	}
+}
+</script>

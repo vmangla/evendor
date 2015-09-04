@@ -1,0 +1,52 @@
+<div id="panel">
+	<div class="panel-header">Jobs Posted</div>
+	<div class="panel-content">
+		
+		<div class="panel-sub-content">
+
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			<br style="clear: both;"/>	
+			<table class="table-list" cellpadding="0" cellspacing="0">
+			   <tr>
+				   <th>SL.No</th><th>ID</th><th>Job Title</th><th>Company Name</th><th>Date Registered</th><th style="width:80px;">Action</th>
+			   </tr>
+			<?php 
+			  if(isset($this->jobList) && count($this->jobList)>0)
+			  {
+				$sNumber=1;
+				foreach($this->jobList as $row)
+				{
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					   <td><?php echo $row->id;?></td>
+						<td><?php echo $row->job_title;?></td>				
+					   <td><?php echo $row->company_name;?></td>
+					   <td><?php echo CommonFunctions::formatDate($row->added_date);?></td>
+					   <td>&nbsp;</td>
+					   <td>&nbsp;</td>
+					   <td>
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'jobs','action'=>'delete','id'=>$row->id),'',true);?>" onclick="return confirm('Are you sure to delete?');"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/icon_delete.png"/></a>
+					   </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+					if($this->totalCount>$this->pageSize)
+					{
+						echo '<tr><td colspan="9">&nbsp;</td></tr>';
+						echo '<tr><td colspan="9"><div class="pagination">'.$this->paginationControl($this->jobList,'Sliding','pagination.phtml').'</div></td></tr>';
+					}
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="9" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>
+
+	</div>
+</div>

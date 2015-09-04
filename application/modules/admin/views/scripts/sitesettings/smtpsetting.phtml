@@ -1,0 +1,81 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'sitesettings','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'sitesettings','action'=>'index'),'',true);
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">SMTP Setting</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+			<div class="action-header">
+				<span class="action-title">Edit SMTP Setting</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>">Back</a></li>
+				</ul>
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			<br  clear="all"/>
+			
+			<form id="form-smtp-constant" method="post" onsubmit="return validate_smtp_constant('form-smtp-constant');">
+			<table class="table-form" cellpadding="0" cellspacing="0">
+			<?php
+			if(isset($this->smtpConstantList) && count($this->smtpConstantList)>0)
+			{
+				foreach($this->smtpConstantList as $row)
+				{
+				?>
+				<tr>
+				<td width="20%" class="tdrightBold"><?php echo $row->constant_label;?><span class="required">*</span> : </td>
+				<td>
+				   <input type="text" name="constant_value[<?php echo $row->site_constant;?>]" id="constant_value" value="<?php if(isset($formData['constant_value'][$row->site_constant])){echo$formData['constant_value'][$row->site_constant];}else{ echo $row->constant_value;}?>" class="req" message="Please enter value" />
+				   <?php
+				   if(array_key_exists('constant_value',$formErrors))
+				   {
+						if(isset($formErrors['constant_value'][$row->site_constant]))
+						{
+						echo '<div class="inline-error">'.$formErrors['constant_value'][$row->site_constant].'</div>';
+						}
+				    }
+				   ?>
+				</td>
+				</tr>
+				<?php
+				}
+			}
+				?>
+				
+				<tr>
+					<td width="20%" class="tdrightBold">&nbsp;</td>
+					<td>
+						<input type="submit" value="Update" class="button-Add"/>
+						<input type="button" value="Cancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';"/>
+					</td>
+				</tr>
+			  
+			 </table>
+		 </form>
+	</div>
+</div>
+<?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+function validate_smtp_constant(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>

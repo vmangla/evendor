@@ -1,0 +1,80 @@
+<?php echo $this->doctype() ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<?php echo $this->headTitle('Electronic Vendor Ltd :: User')?>
+<?php echo $this->headMeta()?>
+<?php echo $this->headLink()?>
+<?php echo $this->headStyle()?>
+<?php echo $this->headScript()?>
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/user/invalid.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/user/reset.css" media="screen" rel="stylesheet" type="text/css"/>
+
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/user/style.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/user/jquery-v1.7.1.js"></script>
+
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/user/company_styles.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/user/simpla.jquery.configuration.js"></script>
+
+
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/user/common_validation.js"></script>
+
+
+<?php
+include_once("public/js/user/common_ajax_functions.php");
+?>
+
+</head>
+
+<body>
+<div id="body-wrapper">
+
+<div>
+	<div id="company_headerinner">
+	<?php
+	if(isset($this->sessUserInfo) && $this->sessUserInfo!=null)
+	{
+	?>
+	<ul class="horizonal-menu" style="margin-right:20px;margin-top:5px;">
+		<li class="userhi">Hi, <?php echo ucfirst($this->sessUserInfo->first_name);?></li>
+		<li class="logout"><a href="<?php echo $this->url(array('module'=>'user','controller'=>'auth','action'=>'logout'),'',true);?>">Logout</a></li>
+	</ul>
+	<?php
+	}
+	?>
+	
+	<div class="logo"><a href="<?php echo $this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);?>"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/logo.png" alt=""></a> <span style="text-decoration:none; color:white;">:: User Panel</span></div>
+	
+</div>
+	
+<?php
+//$dataModules=explode(",",$_SESSION['company_type']['storage']->modules);
+$dataModules=explode(",","0,1,2,3,4,5,6,7");
+
+//$pageURL .= 'http://'.$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+$pageURL = 'http://'.$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+$parameter =explode("/",$pageURL);
+
+?>
+<div>
+<div id="tab-content">
+<?php echo $this->layout()->content;?>
+</div>
+</div>
+	
+</div>
+
+<div id="company_footer">
+		<div class="company_footer_info"> 
+		&copy; Copyright <?php echo date("Y");?>. All Rights Reserved By Electronic Vendor Ltd.
+		</div> 
+	</div>
+	
+</div>
+</body>
+</html>

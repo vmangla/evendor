@@ -1,0 +1,173 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+<div id="content">
+
+	<div class="div-register">
+		<form id="form-add-user" method="post" onsubmit="return validate_user('form-add-user');">
+			<table width="99%">
+				<tr>
+					<td width="50%" style="vertical-align:top;">
+					<h1>SignUp - Step-1</h1>
+					<?php
+					$objFBConnect=new FBConnect('','',SITE_URL.'/user/register',SITE_URL.'/user/auth/logout');
+					$objFBConnect->call();
+					if($objFBConnect->_fbUser)
+					{
+						//echo '<a href="'.$objFBConnect->_fbLogoutUrl.'">Logout with Facebook</a>';
+						//echo "<pre>";
+						//print_r($objFBConnect->_fbUserProfile);
+						//echo "</pre>";
+						$fbInfo=$objFBConnect->_fbUserProfile;
+						if($fbInfo && $fbInfo!=null)
+						{
+							$modelCandidates = new User_Model_DbTable_Candidates();
+							$modelCandidateProfiles = new User_Model_DbTable_CandidateProfiles();
+							if($modelCandidates->isExist('user_email="'.$fbInfo['email'].'"'))
+							{
+								$userInfo=$modelCandidates->fetchRow('user_email="'.$fbInfo['email'].'"');
+								$storage = new Zend_Auth_Storage_Session('user_type');
+								$storage->write($userInfo);
+								$redirector = Zend_Controller_Action_HelperBroker::getStaticHelper('redirector'); 
+								$redirector->gotoUrl('user/'); 
+							}
+							else
+							{
+								//======inserting data to the candidate table===============
+								$activationCode=CommonFunctions::generateGUID();
+								$activationStartTime=strtotime(date('Y-m-d H:i:s'));
+								$activationExpireTime=strtotime(date('Y-m-d H:i:s',strtotime("+1 days")));
+							
+								$candidateData=array('user_name'=>$fbInfo['username'],
+												'user_email'=>$fbInfo['email'],
+												'user_password'=>$activationCode,
+												'added_date'=>date("Y-m-d H:i:s"),
+												'updated_date'=>date("Y-m-d H:i:s"),
+												'status'=>1);
+								$lastId=$modelCandidates->insert($candidateData);
+								if($lastId)
+								{
+									$profileData=array('user_id'=>$lastId,
+									'first_name'=>$fbInfo['first_name'],
+									'last_name'=>$fbInfo['last_name'],
+									'date_of_birth'=>CommonFunctions::formatDate($fbInfo['birthday'],'Y-m-d'),
+									'agree'=>1,
+									'added_date'=>date("Y-m-d H:i:s"),
+									'updated_date'=>date("Y-m-d H:i:s")
+									);
+									$modelCandidateProfiles->insert($profileData);
+									
+									$userInfo=$modelCandidates->fetchRow('user_email="'.$fbInfo['email'].'"');
+									$storage = new Zend_Auth_Storage_Session('user_type');
+									$storage->write($userInfo);
+									$redirector = Zend_Controller_Action_HelperBroker::getStaticHelper('redirector'); 
+									$redirector->gotoUrl('user/'); 
+								}	
+							}
+						}
+					}
+					else
+					{
+						echo '<a href="'.$objFBConnect->_fbLoginUrl.'">Sign Up with Facebook</a>';
+					}
+					?>
+					
+					<td>
+						<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+						<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+						<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+						
+							<table>
+								<tr>
+									<td class="tdleftBold">First Name<span class="required">*</span> : </td>
+									<td>
+										<input type="text" name="first_name" id="first_name" value="<?php if(isset($formData['first_name'])){echo $formData['first_name'];}?>"  class="req form-textfield"  message="Please enter your first name"/>
+										<?php if(array_key_exists('first_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['first_name'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Last Name<span class="required">*</span> : </td>
+									<td>
+										<input type="text" name="last_name" id="last_name" value="<?php if(isset($formData['last_name'])){echo $formData['last_name'];}?>"  class="req form-textfield"  message="Please enter your last name"/>
+										<?php if(array_key_exists('last_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['last_name'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">User Name<span class="required">*</span> : </td>
+									<td>
+										<input type="text" name="user_name" id="user_name" value="<?php if(isset($formData['user_name'])){echo $formData['user_name'];}?>" class="req special form-textfield" message="Please enter user name"  invalidmessage="Please enter valid user name"/>
+										<?php if(array_key_exists('user_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['user_name'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Email Address<span class="required">*</span> : </td>
+									<td>
+										<input type="text" name="user_email" id="user_email" value="<?php if(isset($formData['user_email'])){echo $formData['user_email'];}?>"  class="req validmail form-textfield"  message="Please enter email address"  invalidmessage="Please enter valid email address"/>
+										<?php if(array_key_exists('user_email',$formErrors)){echo '<div class="inline-error">'.$formErrors['user_email'].'</div>';}?>
+									</td>
+									
+								</tr>
+								<tr>
+									<td class="tdleftBold">Password<span class="required">*</span> : </td>
+									<td>
+										<input type="password" name="user_password" id="user_password" value="<?php if(isset($formData['user_password'])){echo $formData['user_password'];}?>"  class="req pass form-textfield"  message="Please enter password"  invalidmessage="Please enter valid password"/>
+										<?php if(array_key_exists('user_password',$formErrors)){echo '<div class="inline-error">'.$formErrors['user_password'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Verify Password<span class="required">*</span> : </td>
+									<td>
+										<input type="password" name="verify_user_password" id="verify_user_password" value="<?php if(isset($formData['verify_user_password'])){echo $formData['verify_user_password'];}?>"  class="req pass form-textfield"  message="Please enter verify password"/>
+										<?php if(array_key_exists('verify_user_password',$formErrors)){echo '<div class="inline-error">'.$formErrors['verify_user_password'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold" colspan="2">
+										<input type="checkbox" name="agree" id="agree" class="req" message="Please check agree" <?php if(isset($formData['agree'])){echo 'checked="checked"';}?>/>I agree to the <a href="#">Terms and Conditions</a>
+										<?php if(array_key_exists('agree',$formErrors)){echo '<div class="inline-error">'.$formErrors['agree'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold" colspan="2"><input type="checkbox" name="signup_newsletter" id="signup_newsletter"/>I would like to be signed up to the SHIFTe newsletter.</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold" colspan="2"><input type="checkbox" name="notify_jobs" id="notify_jobs"/>Please notify me of employees who match the jobs I post.</td>
+								</tr>
+								
+							 </table>
+						 
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div style="width:99%;border:1px solid #000000;text-align:right;">
+							<input type="submit" value="Next>>" class="button-save"/>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	
+ <?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+
+function validate_user(pFormId)
+{
+	
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>
+</div>
+

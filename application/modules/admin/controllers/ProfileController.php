@@ -1,0 +1,115 @@
+<?php
+class Admin_ProfileController extends Zend_Controller_Action
+{
+	protected $_flashMessenger=null;
+	var $sessAdminInfo=null;
+	var $modelAdmiUsers=null;
+	var $modelModuleMenus=null;
+		
+	var $modelAdminUsers=null;
+	
+    public function init()
+    {
+		/*creating flashMessanger object to display message*/
+		$this->_flashMessenger =$this->_helper->getHelper('FlashMessenger');	
+		
+		/* check for admin login*/
+		$storage = new Zend_Auth_Storage_Session('admin_type');
+        $data = $storage->read();
+        if($data)
+		{
+		$this->modelAdminUsers = new Admin_Model_DbTable_AdminUsers();
+		$this->sessAdminInfo=$this->modelAdminUsers->fetchRow("id=".$data->id);
+		}
+		
+		if(!$this->sessAdminInfo)
+		{
+            $this->_redirect('admin/auth/');
+        }
+		
+		$this->sessAdminInfo->modules=explode(",",$this->sessAdminInfo->modules);
+		$this->view->sessAdminInfo =$this->sessAdminInfo;
+		
+		$this->modelModuleMenus = new Admin_Model_DbTable_ModulesMenus();
+		$this->view->modelModuleMenus = $this->modelModuleMenus->getModuleMenusList();
+
+		//===creating model object======	
+		//$this->modelAdminUsers=new Admin_Model_DbTable_AdminUsers();
+		//==============================
+		
+		/************* To Set The active section and links *******************/
+		$controller=$this->_getParam('controller');
+		$action=$this->_getParam('action');
+		$this->view->currentController=$controller;
+		$this->view->currentAction=$action;
+		/************* To Set The active section and links *******************/
+		$moduleAccessRow=$this->modelModuleMenus->fetchRow("controller='$controller' AND action LIKE '%".$action."%'");
+		
+		$currentModuleId=!empty($moduleAccessRow['id'])?$moduleAccessRow['id']:0;
+		if(!in_array($currentModuleId,$this->sessAdminInfo->modules))
+		{
+			$this->_flashMessenger->addMessage('<div class="div-error">"'.$moduleAccessRow['menu_name'].'" module not accessable to you</div>');
+			$this->_redirect('admin/');
+		}
+    }
+    public function indexAction()
+    {
+ 		$this->view->messages = $this->_flashMessenger->getMessages();
+		$adminInfo=$this->modelAdminUsers->fetchRow("id=".$this->sessAdminInfo->id);
+		$this->view->profileInfo=$adminInfo;
+	}
+	public function changepasswordAction()
+	{
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		$formData=array();
+		$formErrors=array();
+		
+		$adminInfo=$this->modelAdminUsers->fetchRow("id='".$this->sessAdminInfo->id."'");
+		//$formData=$adminInfo->toArray();
+		//print_r($formData);exit;
+		if($this->getRequest()->isPost())
+		{
+			$formData=$this->getRequest()->getPost();
+			/*echo "<pre>";
+			print_r($formData);
+			echo "<pre>";
+			exit;*/
+			if(!(isset($formData['user_password'])) || trim($formData['user_password'])=="")
+			{
+				$formErrors['user_password']='Please enter your current password';
+			}
+			if(!(isset($formData['new_password'])) || trim($formData['new_password'])=="")
+			{
+				$formErrors['new_password']='Please enter your new password';
+			}
+			if(!(isset($formData['conf_new_password'])) || trim($formData['conf_new_password'])=="")
+			{
+				$formErrors['conf_new_password']='Confirm password does not match';
+			}
+			if(md5($formData['user_password'])!=$adminInfo->user_password)
+			{
+				$formErrors['user_password']='Invalid current password';
+			}
+			if($formData['new_password']!=$formData['conf_new_password'])
+			{
+				$formErrors['conf_new_password']='Confirm password does not match';
+			}
+			
+			if(count($formErrors)==0)
+			{
+				$updateData['user_password']=md5($formData['new_password']);
+				$result=$this->modelAdminUsers->update($updateData,"id='".$this->sessAdmin->id."'");
+				
+				$this->_flashMessenger->addMessage('<div class="div-success">Password changed successfully</div>');
+				$this->_redirect('admin/profile/');
+			}
+			else
+			{
+				$this->view->errorMessage='<div class="div-error">Please enter required field properly.</div>';
+			}
+		}
+		$this->view->formData=$formData;
+		$this->view->formErrors=$formErrors;
+	}
+}
+

@@ -1,0 +1,84 @@
+<h3 style="text-align:center; padding-top:10px;">Credit & Payment History&nbsp;&nbsp;&nbsp;&nbsp;Total Credits : <?php echo "$".$this->totalcredits;?>&nbsp;&nbsp;&nbsp;&nbsp;Remaining Credits : <?php echo "$".number_format($this->remainingcredits,2);?></h3>
+<div class="user_dashboard">
+<?php include('leftnav.phtml');?>
+</div>
+
+<div class="welcome_user">
+<div class="credithistory" style="width:100%">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+	<td colspan="5" align="center"><h4>Transaction History</h4></td>
+</tr>
+<tr>
+	<td colspan="5" height="25"></td>
+</tr>
+<tr>
+	<td style="padding-bottom:8px;">
+		<strong>S.No.</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Order Id</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Transaction Id</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Payment Status</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Purchase Date</strong>
+	</td>
+	<td>
+		<strong>Action</strong>
+	</td>
+</tr>
+<?php
+ /*echo "<pre>";
+ print_r($this->userdetails['first_name']." ".$this->userdetails['last_name']);
+ echo "</pre>";*/
+$j=1;
+foreach($this->creditdata as $row)
+{	
+?>
+<tr>
+	<td style="padding-bottom:8px;">
+		<?php echo $j;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<a href="<?php echo $this->url(array('module'=>'user','controller'=>'index','action'=>'view','orderid'=>$row['order_id']),'',true);?>"><?php echo $row['order_id'];?></a>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $row['transaction_id'];;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php
+		if($row['payment_status'] == '1')
+		{
+			echo "Aproved";
+		}
+		elseif($row['payment_status'] == '2')
+		{
+			echo "Declined";
+		}
+		else {
+			echo "Incomplete";
+		}
+		?>
+	</td>
+	<td>
+		<?php echo $row['add_date']; ?>
+	</td>
+	<td>
+		<a class="action-icon" href="<?php echo $this->url(array('module'=>'user','controller'=>'index','action'=>'view','orderid'=>$row['order_id']),'',true);?>" title="view order" onclick="return goToPage(this.href,'tab6','transactionhistory');"><img alt="Edit" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/application_view_detail.png"/></a>
+	</td>
+</tr>
+
+<?php
+$j++;}
+?>
+
+</table> 
+</div>
+<!--Payment History-->
+</div>
+

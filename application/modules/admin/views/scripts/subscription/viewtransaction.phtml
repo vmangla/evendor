@@ -1,0 +1,315 @@
+<?php
+$producturrency = new Admin_Model_DbTable_Countries();
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+$this->modelPublisher = new Publisher_Model_DbTable_Publishers();
+?>
+<script type="text/javascript">	
+	$(document).ready(function(){			
+		new JsDatePick({
+			useMode:2,
+			target:"from_date",
+			dateFormat:"%Y-%m-%d"
+			/*selectedDate:{				This is an example of what the full configuration offers.
+				day:5,						For full documentation about these settings please see the full version of the code.
+				month:9,
+				year:2006
+			},
+			yearsRange:[1978,2020],
+			limitToToday:false,
+			cellColorScheme:"beige",
+			dateFormat:"%m-%d-%Y",
+			imgPath:"img/",
+			weekStartDay:1*/
+		});
+	});
+	
+	$(document).ready(function(){			
+		new JsDatePick({
+			useMode:2,
+			target:"to_date",
+			dateFormat:"%Y-%m-%d"
+			/*selectedDate:{				This is an example of what the full configuration offers.
+				day:5,						For full documentation about these settings please see the full version of the code.
+				month:9,
+				year:2006
+			},
+			yearsRange:[1978,2020],
+			limitToToday:false,
+			cellColorScheme:"beige",
+			dateFormat:"%m-%d-%Y",
+			imgPath:"img/",
+			weekStartDay:1*/
+		});
+	});
+	
+</script>
+
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Transaction Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<br style="clear: both;"/>
+			<div class="action-header">
+				<span class="action-title">Transaction</span>
+				<!--<ul class="horizonal-menu">
+					<li class="add"><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'add'),'',true);?>">Add Category</a></li>
+				</ul>-->
+			</div>
+			<br style="clear: both;"/>	
+			<form id="form-search" method="post" onsubmit="return validate_search('form-search');">
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">View Orders</th>
+				</tr>
+				<tr>
+					<td align="center" colspan="2">
+					<div align="center">
+					
+						<table class="table-list" cellpadding="0" cellspacing="0">
+							<tr>
+								<th>Item</th>
+								<th>Quantity</th>
+								<th>Price</th>
+								<th>Sub Total</th>
+							</tr>
+								
+					<?php 
+					if(count($this->order_list)>0)
+					{
+						foreach($this->order_list as $orderDetails)
+						{
+							$getCurrencyName = $producturrency->getCurrencyCode($orderDetails['store_id']);	
+						?>
+							<td><?php echo $orderDetails['book_name'];?></td>
+							<td><?php echo $orderDetails['quantity'];?></td>
+							<td>&#x20a6;<?php echo $producturrency->currencyconverter($getCurrencyName,"NGN",$orderDetails['price']);?></td>
+							<td>&#x20a6;<?php echo $orderDetails['quantity']*$orderDetails['price'];?></td>
+						<?php
+							$total = $total+$orderDetails['price'];
+						}
+					}
+					?>
+					<tr><td colspan="4">Total: &#x20a6;<?php echo $producturrency->currencyconverter($getCurrencyName,"NGN",$total)?></td></tr>
+					</table>
+					
+					<!-- <input type="button" name="showall" value="Export" class="button-Add" onclick="javascript:document.location.href='<?php echo $this->url(array('module'=>'admin','controller'=>'reports','action'=>'exportordertxls',"orderid"=>$this->order_id),'',true);?>'" title="Export"/> -->
+					</div>
+					</td>
+				</tr>
+				</table>
+			 </form>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			<br style="clear: both;"/>	
+			<table class="table-list" cellpadding="0" cellspacing="0">
+			   <tr>
+				   <th>Transaction Details</th>
+				   <th>Transaction Id: <?php echo $this->trans_id;?></th>
+			   </tr>
+			<?php 		
+			  if(isset($this->trans_history_data) && count($this->trans_history_data)>0)
+			  {
+				$sNumber=1;
+				foreach($this->trans_history_data as $row)
+				{
+			?>
+					<tr>
+					   <td>
+					   Order Id:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['orderId'];
+						?>
+						</td>
+				   </tr>
+				   <tr>
+					   <td>
+					   Transaction Type:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['transactionType'];
+						?>
+						</td>
+				   </tr>
+				   <tr>
+					   <td>
+					   Pan Number:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['pan'];
+						?>
+						</td>
+				   </tr>
+				   <tr>
+					   <td>
+						Purchase Amount					   </td>
+					   <td>
+					   <?php
+					   echo $row['purchaseAmount'];
+						?>
+						</td>
+				   </tr>
+				   <tr>
+					   <td>
+					   Response Code:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['responseCode'];
+						?>
+						</td>
+				   </tr>
+				   <tr>
+					   <td>
+					   Response Description:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['responseDescription'];
+						?>
+						</td>
+				   </tr>
+				   <tr>
+					   <td>
+					   Order Status:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['orderStatus'];
+						?>
+						</td>
+				   </tr>
+				   <tr>
+					   <td>
+					   Merchant TranId:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['merchantTranId'];
+						?>
+						</td>
+				   </tr>
+				   <tr>
+					   <td>
+					   Order Description:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['orderDescription'];
+						?>
+						</td>
+				   </tr>
+				    <tr>
+					   <td>
+					   Currency:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['currency'];
+						?>
+						</td>
+				   </tr>
+				    <tr>
+					   <td>
+					   Brand:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['brand'];
+						?>
+						</td>
+				   </tr>
+				    <tr>
+					   <td>
+					   Card Holder Name:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['card_holder_name'];
+						?>
+						</td>
+				   </tr>
+				    <tr>
+					   <td>
+					   ThreeDSStatus:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['ThreeDSStatus'];
+						?>
+						</td>
+				   </tr>
+				   <tr>
+					   <td>
+					   Transaction Date:
+					   </td>
+					   <td>
+					   <?php
+					   echo $row['tranDateTime'];
+						?>
+						</td>
+				   </tr>
+				   
+			<?php
+					$sNumber++;
+				}
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="9" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>
+		<div ><input type="button" name="print" id="print" value="Print" onClick="window.open('<?php echo $this->serverUrl().$this->baseUrl();?>/admin/reports/printtransaction/transid/<?php echo $this->trans_id;?>','name','height=700,width=500')" /></div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function validate_search(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
+function get_book_issues(ajax_url,parent_type_id,product_id)
+{
+//alert(ajax_url+'=>'+parent_type_id+'=>'+product_id);
+	$.ajax({
+	    type: "POST",
+		url: ajax_url,
+		async: false,
+		data: "cat_id="+parent_type_id+"&product_id="+product_id,
+		success: function(result) {
+			//alert(result);
+			$('#product_list').html(result);
+		}
+	});
+	
+	return false;
+}
+
+<?php
+if(isset($formData["category"]) && !empty($formData["category"]))
+{
+?>
+get_book_issues('<?php echo $title_brand_url;?>','<?php echo $formData["category"];?>','<?php echo $formData["product_id"];?>');
+<?php
+}
+?>
+</script>

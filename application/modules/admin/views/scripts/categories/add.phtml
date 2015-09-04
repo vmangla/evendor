@@ -1,0 +1,91 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'categories','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'categories','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Categories Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<div class="action-header">
+				<span class="action-title">Add Category</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>" title="Back">Back</a></li>
+				</ul>
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			
+			<form id="form-add-category" method="post" onsubmit="return validate_add_category('form-add-category');">
+					
+			<table class="table-form" cellpadding="0" cellspacing="0">
+				<!--<tr>
+					<td width="20%" class="tdrightBold">Parent Name : </td>
+					<td>
+						<SELECT id="parent_id" name="parent_id">
+							<OPTION value="0">---Select---</OPTION>
+							<?php 
+							if(count($this->parentCategoryList)>0)
+							{
+								foreach($this->parentCategoryList as $pcat)
+								{
+							?>	
+							<OPTION value="<?php echo $pcat->id;?>"><?php echo $pcat->category_name;?></OPTION>
+							<?php
+								}	
+							}
+							?>
+						</SELECT>
+					</td>
+				</tr>-->
+				
+				<tr>
+					<td width="20%" class="tdrightBold">Category Name<span class="required">*</span> : </td>
+					<td>
+						<input type="text" name="category_name" id="category_name" value="<?php if(isset($formData['category_name'])){echo $formData['category_name'];}?>" class="req form-textfield"  message="Please enter category name"  invalidmessage="Please enter valid category name"/>
+						<?php if(array_key_exists('category_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['category_name'].'</div>';}?>
+					</td>
+				</tr>
+				<tr>
+					<td width="20%" class="tdrightBold">Status : </td>
+					<td>
+						<input type="radio" name="status" value="1" checked="checked">Active
+						&nbsp;&nbsp;
+						<input type="radio" name="status" value="0">Inactive
+					</td>
+				</tr>
+				<tr>
+					<td width="20%" class="tdrightBold">&nbsp;</td>
+					<td>
+						<input type="submit" value="Add" class="button-Add" title="Add"/>
+						<input type="button" value="Cancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';" title="Cancel" />
+					</td>
+				</tr>
+			  
+			 </table>
+		 </form>
+	</div>
+</div>
+<?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+function validate_add_category(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>

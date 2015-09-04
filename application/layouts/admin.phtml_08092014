@@ -1,0 +1,148 @@
+<?php echo $this->doctype() ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<?php echo $this->headTitle('Electronic Vendor::Admin')?>
+<?php echo $this->headMeta()?>
+<?php echo $this->headLink()?>
+<?php echo $this->headStyle()?>
+<?php echo $this->headScript()?>
+
+<!------------------------  New Admin Code  -------------------------------->
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/invalid.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/reset.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/style.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/admin/jquery-v1.7.1.js"></script>
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/admin/facebox.js"></script>
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/admin/jquery.date.js"></script>
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/admin/jquery.datePicker.js"></script>
+<!--<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/admin/jquery.wysiwyg.js"></script>-->
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/admin/simpla.jquery.configuration.js"></script>
+
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/admin_styles.css" media="screen" rel="stylesheet" type="text/css"/>
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/admin/common_validation.js"></script>
+
+<link rel="stylesheet" type="text/css" media="all" href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/jsdatepick-calendar/jsDatePick_ltr.min.css" />
+<script type="text/javascript" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/jsdatepick-calendar/jsDatePick.min.1.3.js"></script>
+
+
+</head>
+
+<body>
+
+<div id="body-wrapper">
+<div>
+	<div id="headerinner" >
+		<ul class="horizonal-menu" style="margin-right:20px;margin-top:5px;">
+			<li class="userhi">Hi, <?php echo $this->sessAdminInfo->user_name;?></li>
+			<li class="logout"><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'auth','action'=>'logout'),'',true);?>" >Logout</a></li>
+		</ul>
+		<div class="logo"><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'index','action'=>'index'),'',true);?>" style="text-decoration:none; color:white;">E-Vendor :: Admin Panel</a>
+		<span style="float:right; margin-top:25px; margin-right:20px;"><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'index','action'=>'index'),'',true);?>" style="text-decoration:none; color:#FFFFFF;">Dashboard</a></span>
+		</div>
+</div>
+<div>
+
+<?php
+if(isset($this->modelModuleMenus) && count($this->modelModuleMenus)>0)
+{
+	 
+?>
+<div id="left">
+		<div class="content-box">
+		<div class="content-box-header"><h3 style="cursor: s-resize;">Admin Menu</h3></div>
+
+<div class="content-box-content" style="text-align:center; padding:5px;">				
+	<div id="sidebar">
+	<div id="sidebar-wrapper"> 
+		<ul id="main-nav">
+		<?php
+		foreach($this->modelModuleMenus as $key=>$moduleArray)
+		{
+			$menu_found=false;
+			foreach($moduleArray['menu_ids'] as $value)
+			{
+				if(in_array($value,$this->sessAdminInfo->modules))
+				{
+					$menu_found=true;
+					break;
+				}
+			}
+			
+			if($menu_found)
+			{
+			?>
+			<li>
+			<a href="javascript:void(0);" class="nav-top-item <?php if(in_array(strtolower(trim($this->currentController)),$moduleArray['controllers'])) echo"current";?>" style="padding-right: 15px;">
+				<?php echo $moduleArray['modulename'];?>
+			</a>
+			<ul style="display: none;">
+			<?php
+				foreach($moduleArray['menu_ids'] as $index=>$menu_id)
+				{
+					if(in_array($menu_id,$this->sessAdminInfo->modules))
+					{
+					$menuActionsArray['actions']=explode("@",$moduleArray['actions'][$index]);
+					//print_r($menuActionsArray);
+					?>
+					<li class="<?php echo strtolower(trim($moduleArray['controllers'][$index]));?>">
+					<a <?php if(strtolower(trim($this->currentController))==$moduleArray['controllers'][$index] && in_array(strtolower(trim($this->currentAction)), $menuActionsArray['actions'])) echo"class=\"current\"";?> href="<?php echo $this->url(array('module'=>'admin','controller'=>$moduleArray['controllers'][$index],'action'=>$menuActionsArray['actions'][0]),'',true);?>"><?php echo $moduleArray['menu_names'][$index];?></a>
+					</li>
+					<?php
+					}
+				}
+				?>
+			</ul>
+			</li>
+			<?php
+			}
+		}
+		?>
+		<?php if(in_array("0", $this->sessAdminInfo->modules)) {?>
+		<li>
+			<a href="javascript:void(0);" class="nav-top-item <?php if(strtolower(trim($this->currentController))==strtolower(trim('profile')) || strtolower(trim($this->currentController))==strtolower(trim('changepassword'))) echo"current";?>" style="padding-right: 15px;">
+				Admin Settings
+			</a>
+			<ul style="display: none;">
+				<li class="profile first-li">
+				<a <?php if(strtolower(trim($this->currentAction))==strtolower(trim('index'))) echo"class=\"current\"";?> href="<?php echo $this->url(array('module'=>'admin','controller'=>'profile','action'=>'index'),'',true);?>">My Profile</a>    </li>	
+				<li class="changepassword">
+				<a <?php if(strtolower(trim($this->currentAction))==strtolower(trim('changepassword'))) echo"class=\"current\"";?> href="<?php echo $this->url(array('module'=>'admin','controller'=>'profile','action'=>'changepassword'),'',true);?>">Change Password</a>
+				</li>
+				<li class="logout">
+				<a href="<?php echo $this->url(array('module'=>'admin','controller'=>'auth','action'=>'logout'),'',true);?>">Logout</a>
+				</li>
+			</ul>
+		</li> 
+		<?php } ?>		
+		</ul>		
+	</div>
+	</div><!--Sidebar-->
+</div>
+</div>
+</div>
+<?php
+}
+?>	
+
+<div id="right">
+<?php echo $this->layout()->content;?>
+</div>
+</div>
+	
+	
+	<div id="footer">
+		<small> 
+		&copy; Copyright <?php echo date("Y");?> All Rights Reserved By Electronic Vendor Ltd.
+		</small> 
+	</div>
+	
+	
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<?php 
+$groupObj = new Company_Model_DbTable_Groups();
+?>
+<div class="user_dashboard">
+<?php include('leftnav.phtml');
+$groupObj = new Company_Model_DbTable_Groups();
+$this->modelBooks = new Publisher_Model_DbTable_Books();
+?>
+</div>
+
+<div class="welcome_user">
+<div class="credithistory" style="width:100%">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+	<td colspan="7" align="center"><h4>Transaction History</h4></td>
+</tr>
+<tr>
+	<td colspan="5" height="25"></td>
+</tr>
+<tr>
+	<td colspan="5">Order Id : <?php echo $this->oderId;?></td><td align="right"><a href="<?php echo $this->url(array('module'=>'user','controller'=>'index','action'=>'grouppublication'),'',true);?>">Back</a></td>
+</tr>
+<tr>
+	<td colspan="5" height="25"></td>
+</tr>
+<tr>
+	<td style="padding-bottom:8px;">
+		<strong>S.No.</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Item</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Price</strong>
+	</td>
+
+	<td style="padding-bottom:8px;">
+		<strong>Publisher Name</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Group Name</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Purchase Date</strong>
+	</td>
+	<td>
+		<strong>Order Desciption</strong>
+	</td>
+	<td>
+		<strong>Order Currency</strong>
+	</td>
+</tr>
+
+<?php
+$usersObj = new Model_DbTable_Companies();
+ /*echo "<pre>";
+ print_r($this->userdetails['first_name']." ".$this->userdetails['last_name']);
+ echo "</pre>";*/
+$j=1;
+foreach($this->creditdata as $row)
+{	
+	$groupData =$groupObj->getInfoByGroupId($row['group_id']);
+	$comname = $usersObj->fetchRow("id='".$row['userid']."'");
+	$book_details = $this->modelBooks->fetchRow("id='".$row['bookid']."'");
+?>
+<tr>
+	<td style="padding-bottom:8px;">
+		<?php echo $j;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $row['book_name'];?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $row['price'];;?>
+	</td>
+
+	<td style="padding-bottom:8px;">
+		<?php echo $book_details['publisher']?>
+	</td>
+	<td><?php echo $groupData['group_name'];?></td>
+	<td>
+		<?php echo $row['add_date']; ?>
+	</td>
+	<td>
+			<?php echo $row['orderDescription']; ?>
+	</td>
+	<td>
+			<?php echo $row['currency']; ?>
+	</td>
+</tr>
+
+<?php
+$j++;}
+?>
+
+</table> 
+</div>
+<!--Payment History-->
+</div>
+

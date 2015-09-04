@@ -1,0 +1,1173 @@
+<?php
+/*$userDetails = new Zend_Session_Namespace('publisher_type');
+$compantDetails = new Zend_Session_Namespace('company_type');
+
+echo "<pre>";
+print_r($userDetails);
+print_r($compantDetails);*/
+
+
+$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+$publisher_data = $storage_publisher->read();
+
+$storage_company = new Zend_Auth_Storage_Session('company_type');
+$company_data = $storage_company->read();
+
+
+$productPrice = new Publisher_Model_DbTable_BookPrices();
+?>
+<!--Banner -->
+
+<section class="banner">
+
+<section class="slider">
+        <div class="flexslider">
+          <ul class="slides">
+            <li>
+  	    	    <img  alt="" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/slide1.jpg" />
+				<span>Lorem Ipsum</span>
+  	    		</li>
+  	    		<li>
+  	    	    <img  alt="" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/slide2.jpg" />
+				<span>Lorem Ipsum</span>
+  	    		</li>
+  	    		<li>
+  	    	    <img  alt="" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/slide3.jpg" />
+				<span>Lorem Ipsum</span>
+  	    		</li>
+  	      </ul>
+        </div>
+</section>
+ 
+<!--<div id="slidyBanner" class="slidyContainer">
+<div class="slidySlides">
+<figure class="slidyCurrent">
+<img  alt="" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/slide1.jpg">
+<br/>
+<figcaption>Lorem Ipsum<br>eBOOKS</figcaption>
+</figure>
+
+<figure>
+<img  alt=""  src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/slide1.jpg">
+<figcaption>Lorem Ipsum<br>eBOOKS</figcaption>
+</figure>
+</div>
+</div>-->
+
+</section>
+<!--Banner -->
+
+<!--left sidebar -->
+<aside class="left_panel">
+		<ul class="tab">
+			<li id="link_grid" class="grid active"><a href="javascript:void(0);">&nbsp;</a></li>
+			<li id="link_view" class="list_view"><a href="javascript:void(0);">&nbsp;</a></li>
+		</ul>
+		<!-- //Tab buttons -->
+<!-- //Tab 1 -->
+<div id="conetnt2_grid" class="tabContents">
+
+<!--Slider1 -->
+<section class="left_slider">
+<?php
+if(isset($this->approvedNewsletterList) && !empty($this->approvedNewsletterList) && count($this->approvedNewsletterList))
+{
+?>
+<h1>Featured Newspapers</h1>
+<?php
+
+	
+		$modelAuthor = new Publisher_Model_DbTable_Publishers();
+		$modelImage = new Publisher_Model_DbTable_BookImages();
+	
+
+	?>
+	<!--<h1>Featured Newspapers</h1>-->
+		<?php if(count($this->approvedNewsletterList)>4)
+		{
+			 
+		?>
+		<div class="jcarousel-skin-tango">
+		<div class="jcarousel-container jcarousel-container-horizontal">
+			<div class="jcarousel-clip jcarousel-clip-horizontal">
+			<ul id="mycarousel" class="jcarousel-list jcarousel-list-horizontal">
+				<?php
+				foreach($this->approvedNewsletterList as $newspaper_id=>$newspaperIssueArray)
+				{
+					$authorInfo = $modelAuthor->getInfoByPublisherId($newspaperIssueArray['publisher_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($newspaperIssueArray['product_id']);
+					
+					$productPriceInfo = $productPrice->getPriceByStoreId($newspaperIssueArray['product_id'],$newspaperIssueArray['country_id']);
+					
+					?>
+					<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-<?php echo $newspaper_id+1;?> jcarousel-item-<?php echo $newspaper_id+1;?>-horizontal">
+					
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon">
+						<div class="text">&nbsp;</div>
+					</div>
+					<?php
+					}
+					?>
+					
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperIssueArray['product_id'];?>/store/<?php echo $newspaperIssueArray['country_id'];?>/lang/<?php echo $newspaperIssueArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $newspaperIssueArray['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperIssueArray['product_id'];?>/store/<?php echo $newspaperIssueArray['country_id'];?>/lang/<?php echo $newspaperIssueArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo $newspaperIssueArray['title'];?>">
+					</a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+						<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperIssueArray['product_id'];?>/store/<?php echo $newspaperIssueArray['country_id'];?>/lang/<?php echo $newspaperIssueArray['language_id'];?>/">
+						
+						<?php $getBrandInfo=$this->modelBooks->getBrandInfo($newspaper_id); echo $newspaperIssueArray['title'];?>
+						</a>
+						<?php
+							if($newspaperIssueArray['publisher']!='')
+							{
+						?>
+						<br>
+							<span class="by">by <i>
+							<?php //echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];
+							echo stripslashes($newspaperIssueArray['publisher']);
+							?></i></span>
+							<?php } ?>
+							<?php
+							if(count($company_data)>0 && count($company_data)!=0)
+							{
+							?>
+							<p class="price">$ <?php echo $productPriceInfo['group_price'];?></p>
+							<?php 
+							}
+							else
+							{
+							?>
+							<p class="price">$ <?php echo $productPriceInfo['price'];?></p>
+							<?php
+							}
+							?>
+							
+							<p>RATING <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;">
+							
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;">12</span>
+							</p>
+						</div>
+					</div>
+					
+					</li>
+					<?php
+				}
+				?>
+			</ul>
+			</div>
+		</div>
+		</div>
+		<?php
+		}
+		else
+		{
+		?>
+		<ul class="no-slide">
+			<?php
+			foreach($this->approvedNewsletterList as $newspaper_id=>$newspaperIssueArray)
+			{
+				$authorInfo = $modelAuthor->getInfoByPublisherId($newspaperIssueArray['publisher_id']);
+				$imageInfo = $modelImage->getImageInfoByProductId($newspaperIssueArray['product_id']);
+				
+				$productPriceInfo = $productPrice->getPriceByStoreId($newspaperIssueArray['product_id'],$newspaperIssueArray['country_id']);
+				
+				?>
+				<li class="no-slide-item">
+				
+				<?php
+				if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+				{
+				?>
+				<div class="ribbon1">
+					<div class="text">&nbsp;</div>
+				</div>
+				<?php
+				}
+				?>
+					
+				<div class="slides marg">
+				<div class="book">
+				<?php
+				if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+				{
+				?>
+				<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperIssueArray['product_id'];?>/store/<?php echo $newspaperIssueArray['country_id'];?>/lang/<?php echo $newspaperIssueArray['language_id'];?>/">
+				<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $newspaperIssueArray['title'];?>">
+				</a>
+				<?php
+				}
+				else
+				{
+				?>
+				<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperIssueArray['product_id'];?>/store/<?php echo $newspaperIssueArray['country_id'];?>/lang/<?php echo $newspaperIssueArray['language_id'];?>/">
+				<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo $newspaperIssueArray['title'];?>">
+				</a>
+				<?php
+				}
+				?>
+				</div>
+					<div class="info">
+						<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperIssueArray['product_id'];?>/store/<?php echo $newspaperIssueArray['country_id'];?>/lang/<?php echo $newspaperIssueArray['language_id'];?>/">
+						
+						<?php $getBrandInfo=$this->modelBooks->getBrandInfo($newspaper_id); echo $newspaperIssueArray['title'];?>
+						</a>
+						<?php
+							if($newspaperIssueArray['publisher']!='')
+							{
+						?>
+						<br>
+						<span class="by">by <i><?php //echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];
+						echo stripslashes($newspaperIssueArray['publisher']);
+						
+						?></i></span>
+						<?php } ?>
+						<?php
+						if(count($company_data)>0 && count($company_data)!=0)
+		                {
+						?>
+						<p class="price">$ <?php echo $productPriceInfo['group_price'];?></p>
+						<?php 
+						}
+						else
+						{
+						?>
+						<p class="price">$ <?php echo $productPriceInfo['price'];?></p>
+						<?php
+						}
+						?>
+						
+						
+						
+						<p>RATING <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;">
+						
+						<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;">12</span>
+						</p>
+					</div>
+				</div>
+				
+				</li>
+				<?php
+			}
+			?>
+		</ul>
+		<?php
+		}
+	
+	
+	?>
+	<div class="bottom"><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/index/publication/newspapers/">View all Newspapers</a></div>
+	<?php
+}
+else
+{
+?>
+	<h1>About Newspapers</h1>
+	
+	<div class="jcarousel-skin-tango">
+	<p>
+	 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+	 </p>
+	</div>
+	
+<?php
+}
+?>
+</section>
+<!--Slider1 -->
+
+<!--Slider2 -->
+<section class="left_slider">
+<?php
+/*echo"<pre>";
+print_r($this->approvedBookList);
+echo"</pre>";
+*/		
+if(isset($this->approvedAndFeaturedBookList) && !empty($this->approvedAndFeaturedBookList))
+{
+?>
+<h1>Featured eBooks</h1>
+<?php
+	$modelAuthor = new Publisher_Model_DbTable_Publishers();
+	$modelImage = new Publisher_Model_DbTable_BookImages();
+?>
+	<!--<h1>Featured eBooks</h1>-->
+		<?php if(count($this->approvedAndFeaturedBookList)>4)
+		{
+		?>
+		<div class="jcarousel-skin-tango">
+		<div class="jcarousel-container jcarousel-container-horizontal">
+			<div class="jcarousel-clip jcarousel-clip-horizontal">
+			<ul id="mycarouse2" class="jcarousel-list jcarousel-list-horizontal">
+				<?php
+				foreach($this->approvedAndFeaturedBookList as $key=>$ebookArray)
+				{
+					$authorInfo = $modelAuthor->getInfoByPublisherId($ebookArray['author_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($ebookArray['product_id']);
+					
+				    $productPriceInfo = $productPrice->getPriceByStoreId($ebookArray['product_id'],$ebookArray['country_id']);
+					?>
+					<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-<?php echo $key+1;?> jcarousel-item-<?php echo $key+1;?>-horizontal">
+					
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon">
+						<div class="text">&nbsp;</div>
+					</div>
+					<?php
+					}
+					?>
+					
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $ebookArray['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo $ebookArray['title'];?>">
+					</a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+							<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/"><?php echo $ebookArray['title'];?></a><br>
+							<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+							<?php
+							if(count($company_data)>0 && count($company_data)!=0)
+							{
+							?>
+							<p class="price">$ <?php echo $productPriceInfo['group_price'];?></p>
+							<?php 
+							}
+							else
+							{
+							?>
+							<p class="price">$ <?php echo $productPriceInfo['price'];?></p>
+							<?php
+							}
+							?>
+							
+							<p>RATING <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;">
+							
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;">12</span>
+							</p>
+						</div>
+					</div>
+					
+					</li>
+					<?php
+				}
+				?>
+			</ul>
+			</div>
+		</div>
+		</div>
+		<?php
+		}
+		else
+		{
+		?>
+		<ul class="no-slide">
+			<?php
+				
+				foreach($this->approvedAndFeaturedBookList as $key=>$ebookArray)
+				{
+					$authorInfo = $modelAuthor->getInfoByPublisherId($ebookArray['author_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($ebookArray['product_id']);
+					$productPriceInfo = $productPrice->getPriceByStoreId($ebookArray['product_id'],$ebookArray['country_id']);
+					?>
+					<li class="no-slide-item">
+					
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon1">
+						<div class="text">&nbsp;</div>
+					</div>
+					<?php
+					}
+					?>
+					
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+						<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $ebookArray['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+						<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo $ebookArray['title'];?>">
+					</a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+							<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/"><?php echo$ebookArray['title'];?></a><br>
+							<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+						     <?php
+if(count($company_data)>0 && count($company_data)!=0)
+{
+?>
+<p class="price">$ <?php echo $productPriceInfo['group_price'];?></p>
+<?php 
+}
+else
+{
+?>
+<p class="price">$ <?php echo $productPriceInfo['price'];?></p>
+<?php
+}
+?>
+
+							
+							
+							
+							<p>RATING <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;">
+							
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;">12</span>
+							</p>
+						</div>
+					</div>
+					
+					</li>
+					<?php
+				}
+			?>
+		</ul>
+		<?php
+		}
+	
+	
+	?>
+	<div class="bottom"><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/index/publication/ebooks/">View all eBooks</a></div>
+	<?php
+}
+else
+{
+?>
+	<h1>About eBooks</h1>
+	
+	<div class="jcarousel-skin-tango">
+	<p>
+	 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+	 </p>
+	</div>
+	
+<?php
+}
+?>
+</section>
+<!--Slider2 -->
+
+<!--Slider3 -->
+<section class="left_slider">
+<?php
+	
+if(isset($this->approvedMagazineList) && !empty($this->approvedMagazineList) && count($this->approvedMagazineList)>0)
+{
+?>
+<h1>Featured Magazines</h1>
+<?php
+$modelAuthor = new Publisher_Model_DbTable_Publishers();
+$modelImage = new Publisher_Model_DbTable_BookImages();
+?>
+	<!--<h1>Featured eBooks</h1>-->
+	<?php 
+		if(count($this->approvedMagazineList)>4)
+		{
+		?>
+		<div class="jcarousel-skin-tango">
+		<div class="jcarousel-container jcarousel-container-horizontal">
+			<div class="jcarousel-clip jcarousel-clip-horizontal">
+			<ul id="mycarouse3" class="jcarousel-list jcarousel-list-horizontal">
+				<?php
+				foreach($this->approvedMagazineList as $magazine_id=>$magazineIssuesArray)
+				{
+					$authorInfo = $modelAuthor->getInfoByPublisherId($magazineIssuesArray['publisher_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($magazineIssuesArray['product_id']);
+					
+					$productPriceInfo = $productPrice->getPriceByStoreId($magazineIssuesArray['product_id'],$magazineIssuesArray['country_id']);
+					?>
+					<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-<?php echo $magazine_id+1;?> jcarousel-item-<?php echo $magazine_id+1;?>-horizontal">
+					
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon">
+						<div class="text"></div>
+					</div>
+					<?php
+					}
+					?>
+					
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineIssuesArray['product_id'];?>/store/<?php echo $magazineIssuesArray['country_id'];?>/lang/<?php echo $magazineIssuesArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $magazineIssuesArray['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineIssuesArray['product_id'];?>/store/<?php echo $magazineIssuesArray['country_id'];?>/lang/<?php echo $magazineIssuesArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo$magazineIssuesArray['title'];?>">
+					</a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+						<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineIssuesArray['product_id'];?>/store/<?php echo $magazineIssuesArray['country_id'];?>/lang/<?php echo $magazineIssuesArray['language_id'];?>/">
+						<?php $getBrandInfo=$this->modelBooks->getBrandInfo($magazine_id); echo $magazineIssuesArray['title'];?>
+						</a>
+							<!--<a href="#"><?php $getBrandInfo=$this->modelBooks->getBrandInfo($magazine_id); echo $magazineIssuesArray['title'];?>
+							</a>--><br>
+							<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+							
+							<?php
+if(count($company_data)>0 && count($company_data)!=0)
+{
+?>
+<p class="price">$ <?php echo $productPriceInfo['group_price'];?></p>
+<?php 
+}
+else
+{
+?>
+<p class="price">$ <?php echo $productPriceInfo['price'];?></p>
+<?php
+}
+?>
+							
+							<p>RATING <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;">
+							
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;">12</span>
+							</p>
+						</div>
+					</div>
+					
+					</li>
+					<?php
+				}
+				?>
+			</ul>
+			</div>
+		</div>
+		</div>
+		<?php
+		}
+		else
+		{
+		?>
+		<ul class="no-slide">
+		<?php
+				foreach($this->approvedMagazineList as $magazine_id=>$magazineIssuesArray)
+				{
+					$authorInfo = $modelAuthor->getInfoByPublisherId($magazineIssuesArray['publisher_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($magazineIssuesArray['id']);
+					$productPriceInfo = $productPrice->getPriceByStoreId($magazineIssuesArray['product_id'],$magazineIssuesArray['country_id']);
+					?>
+					<li class="no-slide-item">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon1">
+						<div class="text">&nbsp;</div>
+					</div>
+					<?php
+					}
+					?>
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineIssuesArray['product_id'];?>/store/<?php echo $magazineIssuesArray['country_id'];?>/lang/<?php echo $magazineIssuesArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $magazineIssuesArray['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineIssuesArray['product_id'];?>/store/<?php echo $magazineIssuesArray['country_id'];?>/lang/<?php echo $magazineIssuesArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo$magazineIssuesArray['title'];?>">
+					</a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+						<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineIssuesArray['product_id'];?>/store/<?php echo $magazineIssuesArray['country_id'];?>/lang/<?php echo $magazineIssuesArray['language_id'];?>/">
+						
+						<?php $getBrandInfo=$this->modelBooks->getBrandInfo($magazine_id); echo $magazineIssuesArray['title'];?>
+						</a><br>
+							<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+							
+								<?php
+								if(count($company_data)>0 && count($company_data)!=0)
+								{
+								?>
+								<p class="price">$ <?php echo $productPriceInfo['group_price'];?></p>
+								<?php 
+								}
+								else
+								{
+								?>
+								<p class="price">$ <?php echo $productPriceInfo['price'];?></p>
+								<?php
+								}
+								?>
+							
+							
+							<p>RATING <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;">
+							
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;">12</span>
+							</p>
+						</div>
+					</div>
+					
+					</li>
+					<?php
+				}
+				?>
+		</ul>
+		<?php
+		}
+	
+	
+?>
+	
+	<div class="bottom"><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/index/publication/magazines/">View all Magazines</a></div>
+	<?php
+}
+else
+{
+?>
+	<h1>About Magazines</h1>
+	
+	<div class="jcarousel-skin-tango">
+	<p>
+	 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+	 </p>
+	</div>
+	
+<?php
+}
+?>
+</section>
+<!--Slider3 -->
+</div>
+ 
+ <!-- //Tab 2 -->
+<div id="conetnt2_view" class="tabContents" style="display:none;">
+		
+		<div class="featured_newspaper">
+		<?php
+		if(isset($this->approvedNewsletterList) && !empty($this->approvedNewsletterList))
+		{
+		?>
+		<h1>Featured Newspapers</h1>
+		<?php
+			if(isset($this->approvedNewsletterList) && !empty($this->approvedNewsletterList))
+			{
+			?>
+			<!--<h1>Featured Newspapers</h1>-->
+			<?php
+				$modelAuthor = new Publisher_Model_DbTable_Publishers();
+				$modelImage = new Publisher_Model_DbTable_BookImages();
+					
+				foreach($this->approvedNewsletterList as $key=>$newspaperArray)
+				{
+				$authorInfo = $modelAuthor->getInfoByPublisherId($newspaperArray['publisher_id']);
+				$imageInfo = $modelImage->getImageInfoByProductId($newspaperArray['product_id']);
+				$productPriceInfo = $productPrice->getPriceByStoreId($newspaperArray['product_id'],$newspaperArray['country_id']);
+				?>
+				<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon1_2">
+						<div class="text">&nbsp;</div>
+					</div>
+					<?php
+					}
+					?>
+					<div class="slides marg">
+					<div class="book">
+					
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperArray['product_id'];?>/store/<?php echo $newspaperArray['country_id'];?>/lang/<?php echo $newspaperArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $newspaperIssueArray['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperArray['product_id'];?>/store/<?php echo $newspaperArray['country_id'];?>/lang/<?php echo $newspaperArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo $newspaperIssueArray['title'];?>">
+					</a>
+					<?php
+					}
+					?>
+					
+					</div>
+						<div class="info">
+							<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperArray['product_id'];?>/store/<?php echo $newspaperArray['country_id'];?>/lang/<?php echo $newspaperArray['language_id'];?>/"><?php echo $newspaperArray['title'];?></a><br>
+							<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+							<?php
+							if(count($company_data)>0 && count($company_data)!=0)
+							{
+							?>
+							<p class="price">$ <?php echo $productPriceInfo['group_price'];?></p>
+							<?php 
+							}
+							else
+							{
+							?>
+							<p class="price">$ <?php echo $productPriceInfo['price'];?></p>
+							<?php
+							}
+							?>
+							
+							<p><?php echo stripslashes($newspaperArray['description']); ?></p>
+							<p>RATING <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;">	
+
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;">12</span>
+							</p>
+						</div>
+				</div>
+				<?php
+				}
+			}
+			else
+			{
+				?>
+				<div class="jcarousel-skin-tango">
+				<p>Featured Newspapers Not Available This Time.</p>
+				</div>
+				<?php
+			}
+			?>
+			<div class="bottom"><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/index/publication/newspapers/">View all Newspapers</a></div>
+		<?php
+		}
+		else
+		{
+		?>
+			<h1>About Newspapers</h1>
+			<div class="jcarousel-skin-tango">
+			<p>
+			Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+			</p>
+			</div>
+		<?php
+		}
+		?>
+		</div>
+		
+		
+		<div class="featured_newspaper">
+		<?php
+		if(isset($this->approvedAndFeaturedBookList) && !empty($this->approvedAndFeaturedBookList))
+		{
+		?>
+		<h1>Featured eBooks</h1>
+		<?php
+			
+			
+			?>
+			<!--<h1>Featured eBooks</h1>-->
+			<?php
+				$modelAuthor = new Publisher_Model_DbTable_Publishers();
+				$modelImage = new Publisher_Model_DbTable_BookImages();
+				
+				foreach($this->approvedAndFeaturedBookList as $key=>$ebookArray)
+				{
+				$authorInfo = $modelAuthor->getInfoByPublisherId($ebookArray['author_id']);
+				$imageInfo = $modelImage->getImageInfoByProductId($ebookArray['product_id']);
+				
+				$productPriceInfo = $productPrice->getPriceByStoreId($ebookArray['product_id'],$ebookArray['country_id']);
+				?>
+				<div class="slides marg">
+				
+				    <?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon1_2">
+						<div class="text">&nbsp;</div>
+					</div>
+					<?php
+					}
+					?>
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $ebookArray['title'];?>"></a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo$ebookArray['title'];?>"></a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+							<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/"><?php echo $ebookArray['title'];?></a><br>
+							<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+							
+							<?php
+							if(count($company_data)>0 && count($company_data)!=0)
+							{
+							?>
+							<p class="price">$ <?php echo $productPriceInfo['group_price'];?></p>
+							<?php 
+							}
+							else
+							{
+							?>
+							<p class="price">$ <?php echo $productPriceInfo['price'];?></p>
+							<?php
+							}
+							?>
+							
+							<p><?php echo stripslashes($ebookArray['description']); ?></p>
+							<p>RATING <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;">	
+
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;">12</span>
+							</p>
+						</div>
+				</div>
+				<?php
+				}
+			
+			?>
+			<div class="bottom"><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/index/publication/ebooks/">View all eBooks</a></div>
+		<?php
+		}
+		else
+		{
+		?>
+			<h1>About eBooks</h1>
+			<div class="jcarousel-skin-tango">
+			<p>
+			Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+			</p>
+			</div>
+		<?php
+		}
+		?>	
+		</div>
+		
+		
+		<div class="featured_newspaper">
+<?php
+if(isset($this->approvedMagazineList) && !empty($this->approvedMagazineList))
+{
+?>
+<h1>Featured Magazines</h1>
+<?php
+
+
+?>
+<!--<h1>Featured eBooks</h1>-->
+<?php
+$modelAuthor = new Publisher_Model_DbTable_Publishers();
+$modelImage = new Publisher_Model_DbTable_BookImages();
+foreach($this->approvedMagazineList as $key=>$magazineArray)
+{
+$authorInfo = $modelAuthor->getInfoByPublisherId($magazineArray['publisher_id']);
+$imageInfo = $modelImage->getImageInfoByProductId($magazineArray['product_id']);
+$productPriceInfo = $productPrice->getPriceByStoreId($magazineArray['product_id'],$magazineArray['country_id']);
+?>
+<div class="slides marg">
+
+ <?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon1_2">
+						<div class="text">&nbsp;</div>
+					</div>
+					<?php
+					}
+					?>
+<div class="book">
+<?php
+if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+{
+?>
+
+
+<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineArray['product_id'];?>/store/<?php echo $magazineArray['country_id'];?>/lang/<?php echo $magazineArray['language_id'];?>/">
+<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $magazineArray['title'];?>">
+</a>
+<?php
+}
+else
+{
+?>
+<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineArray['product_id'];?>/store/<?php echo $magazineArray['country_id'];?>/lang/<?php echo $magazineArray['language_id'];?>/">
+<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo$magazineArray['title'];?>">
+</a>
+<?php
+}
+?>
+</div>
+<div class="info">
+<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineArray['product_id'];?>/store/<?php echo $magazineArray['country_id'];?>/lang/<?php echo $magazineArray['language_id'];?>/"><?php echo $magazineArray['title'];?></a><br>
+<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+
+<?php
+if(count($company_data)>0 && count($company_data)!=0)
+{
+?>
+<p class="price">$ <?php echo $productPriceInfo['group_price'];?></p>
+<?php 
+}
+else
+{
+?>
+<p class="price">$ <?php echo $productPriceInfo['price'];?></p>
+<?php
+}
+?>
+
+
+<p><?php echo stripslashes($magazineArray['description']); ?></p>
+<p>RATING <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;">	
+
+<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;">12</span>
+</p>
+</div>
+</div>
+<?php
+}
+
+
+?>
+			<div class="bottom"><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/index/publication/magazines/">View all Magazines</a></div>
+		<?php
+		}
+		else
+		{
+		?>
+			<h1>About Magazines</h1>
+			<div class="jcarousel-skin-tango">
+			<p>
+			Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+			</p>
+			</div>
+		<?php
+		}
+		?>
+		</div>
+		
+		
+		
+		
+</div>
+
+
+</aside>
+<!--left sidebar -->
+
+
+<!--Right sidebar -->
+<aside class="right_panel"> 
+<h5>NewsPapers</h5>
+<ul>
+<?php
+$this->modelGenres = new Admin_Model_DbTable_Genres();
+$this->modelBooks = new Publisher_Model_DbTable_Books();
+$genresearchUrl=$this->serverUrl().$this->baseUrl().'/search/index/publication/genre/id/'; 
+for($x=0;$x<count($this->getnewspapers_genres);$x++)
+{
+	 $genrename = $this->modelGenres->fetchAll('id="'.$this->getnewspapers_genres[$x]['product_type'].'"');
+	 
+	 $genrecount = $this->modelBooks->getGenreCount($this->getnewspapers_genres[$x]['product_type']);
+	 
+	 $genrename->toArray();
+	 
+	 
+	 
+?>
+<li><a href="<?php echo $genresearchUrl.$this->getnewspapers_genres[$x]['product_type'];?>"><?php echo $genrename[0]['genre']."(". count($genrecount).")";?></a></li>
+<?php } ?>
+<li>&nbsp;</li>
+</ul>
+
+<h5>Ebooks</h5>
+<ul>
+<?php
+$this->modelGenres = new Admin_Model_DbTable_Genres();
+$this->modelBooks = new Publisher_Model_DbTable_Books();
+$genresearchUrl=$this->serverUrl().$this->baseUrl().'/search/index/publication/genre/id/'; 
+for($x=0;$x<count($this->getebooks_genres);$x++)
+{
+	 $genrename = $this->modelGenres->fetchAll('id="'.$this->getebooks_genres[$x]['product_type'].'"');
+	 
+	 $genrecount = $this->modelBooks->getGenreCount($this->getebooks_genres[$x]['product_type']);
+	 
+	 $genrename->toArray();
+	 
+	 
+	 
+?>
+<li><a href="<?php echo $genresearchUrl.$this->getebooks_genres[$x]['product_type'];?>"><?php echo $genrename[0]['genre']."(". count($genrecount).")";?></a></li>
+<?php } ?>
+<li>&nbsp;</li>
+</ul>
+
+
+<h5>Magazines</h5>
+<ul>
+<?php
+$this->modelGenres = new Admin_Model_DbTable_Genres();
+$this->modelBooks = new Publisher_Model_DbTable_Books();
+$genresearchUrl=$this->serverUrl().$this->baseUrl().'/search/index/publication/genre/id/'; 
+for($x=0;$x<count($this->getmagazine_genres);$x++)
+{
+	 $genrename = $this->modelGenres->fetchAll('id="'.$this->getmagazine_genres[$x]['product_type'].'"');
+	 
+	 $genrecount = $this->modelBooks->getGenreCount($this->getmagazine_genres[$x]['product_type']);
+	 
+	 $genrename->toArray();
+	 
+?>
+<li><a href="<?php echo $genresearchUrl.$this->getmagazine_genres[$x]['product_type'];?>"><?php echo $genrename[0]['genre']."(". count($genrecount).")";?></a></li>
+<?php } ?>
+<li>&nbsp;</li>
+</ul>
+
+
+<h5>Best Selling Books</h5>
+<ul class="book">
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/img1.gif" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/img2.gif" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/img1.gif" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/img1.gif" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/img2.gif" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/img1.gif" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/img1.gif" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/img2.gif" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/img1.gif" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/img1.gif" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/img2.gif" alt=""></a></li>
+<li><a href="#"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/img1.gif" alt=""></a></li>
+ </ul>
+</aside>
+<!--Right sidebar -->
+
+
+<!--Article section -->
+<section class="article_section">
+<h2>Most Commented</h2>
+
+<!--Left artical -->
+<section class="left_s">
+
+<article>
+<p><span class="date">12.02.13</span> <b>Dolorem ipsum</b><br>
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+<p><a href="#">Read more</a></p>
+</article>
+
+
+<article>
+<p><span class="date">12.02.13</span> <b>Dolorem ipsum</b><br>
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+<p><a href="#">Read more</a></p>
+</article>
+
+
+
+</section>
+<!--Left artical -->
+
+<!--Right artical -->
+<section class="right_s">
+
+<article>
+<p><span class="date">12.02.13</span> <b>Dolorem ipsum</b><br>
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+<p><a href="#">Read more</a></p>
+</article>
+
+
+<article>
+<p><span class="date">12.02.13</span> <b>Dolorem ipsum</b><br>
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+<p><a href="#">Read more</a></p>
+</article>
+
+
+
+</section>
+<!--Right artical -->
+<!--Article section -->
+
+</section>

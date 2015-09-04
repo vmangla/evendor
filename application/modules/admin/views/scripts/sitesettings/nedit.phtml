@@ -1,0 +1,91 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'sitesettings','action'=>'notifications'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'sitesettings','action'=>'notifications'),'',true);
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Notifications Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+			<div class="action-header">
+				<span class="action-title">Edit Notification</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>">Back</a></li>
+				</ul>
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			<br  clear="all"/>
+			
+			<form id="form-edit-constant" method="post" onsubmit="return validate_edit_constant('form-edit-constant');">
+					
+			<table class="table-form" cellpadding="0" cellspacing="0">
+				
+				<tr>
+					<td width="20%" class="tdrightBold">Title<span class="required">*</span> : </td>
+					<td>
+					   <input type="text" name="title" id="title" value="<?php if(isset($formData['title']))echo stripslashes($formData['title']);?>" class="req" message="Please enter title" />
+					   
+					   <?php if(array_key_exists('title',$formErrors)){echo '<div class="inline-error">'.$formErrors['title'].'</div>';}?>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="20%" class="tdrightBold">Message Body: </td>
+					<td>
+					  <textarea name="message_body" id="message_body" rows="5" cols="40"><?php echo stripslashes($formData['message_body']);?></textarea>
+					   
+					   <?php if(array_key_exists('message_body',$formErrors)){echo '<div class="inline-error">'.$formErrors['message_body'].'</div>';}?>
+					   
+					   <br/>
+					   <br/>
+					   
+					   Insert into the message body to get replaced by actual values: 
+					   <br/>
+					   {name} , {title} , {link} , {publisher} , {author} , {image} , {desc} , {price}
+					    
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="20%" class="tdrightBold">Status: </td>
+					<td>
+					 <input type="radio" name="status" id="status" value="1" <?php if($formData['status']==1) { ?>checked<?php } ?>>Yes&nbsp;&nbsp;
+					 <input type="radio" name="status" id="status" value="0" <?php if($formData['status']==0) { ?>checked<?php } ?>>No
+					</td>
+				</tr>
+				 
+				<tr>
+					<td width="20%" class="tdrightBold">&nbsp;</td>
+					<td>
+						<input type="submit" value="Update" class="button-Add"/>
+						<input type="button" value="Cancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';"/>
+					</td>
+				</tr>
+			  
+			 </table>
+		 </form>
+	</div>
+</div>
+<?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+function validate_edit_constant(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>

@@ -1,0 +1,547 @@
+<link rel="stylesheet" type="text/css" media="all" href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/jsdatepick-calendar/jsDatePick_ltr.min.css" />
+<script type="text/javascript" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/jsdatepick-calendar/jsDatePick.min.1.3.js"></script>
+<script type="text/javascript">	
+	$(document).ready(function(){			
+		new JsDatePick({
+			useMode:2,
+			target:"publish_time",
+			dateFormat:"%Y-%m-%d"
+			/*selectedDate:{				This is an example of what the full configuration offers.
+				day:5,						For full documentation about these settings please see the full version of the code.
+				month:9,
+				year:2006
+			},
+			yearsRange:[1978,2020],
+			limitToToday:false,
+			cellColorScheme:"beige",
+			dateFormat:"%m-%d-%Y",
+			imgPath:"img/",
+			weekStartDay:1*/
+		});
+	});
+</script>
+<?php
+$currUrl=$this->url(); 
+$backUrl=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'index'),'',true);
+$cancelUrl=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'index'),'',true);
+
+$createsubscriptionURL =$this->url(array('module'=>'publisher','controller'=>'book','action'=>'addsubscription'),'',true);
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+//$updateURL="http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+?>
+<div id="panel">
+	<div class="panel-header"><h3>Update Publication Details</h3></div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+		
+		<div class="action-header">
+			<span class="action-title">&nbsp;</span>
+			<ul class="horizonal-menu">
+				<li class="back"><a href="<?php echo $backUrl;?>" title="Back" onclick="return goToPage(this.href,'tab2','book');">Back</a></li>
+			</ul>
+		</div>
+	
+		<br  clear="all"/>
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br  clear="all"/>
+	
+		<form id="form-edit-book" id="form-edit-book" method="post" onsubmit="return validate_common_form('form-edit-book','<?php echo $currUrl;?>','tab2');">
+		   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+								
+				<tr>
+				<td class="tdleftBold">Type<span class="required">*</span> : </td>
+				<td>
+				<?php
+				$modelCategory = new Publisher_Model_DbTable_Books();
+				$categoryList=$modelCategory->getCategoryList();
+				$categoryInfo=$modelCategory->getCategoryInfo($formData["cat_id"]);
+				
+				$title_brand_url=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'gettitlebrand','title_brand'=>$formData['title']),'',true);
+				
+				?>
+				<select name="category" id="category" class="req"  message="Please select category" onchange="return get_title_brands('<?php echo $title_brand_url;?>',this.value);">
+				<option value="">Select Category</option>
+				<?php
+				for($ii=0;$ii<count($categoryList);$ii++)
+				{
+				?>
+				<option value="<?php echo $categoryList[$ii]['id']; ?>" <?php if(isset($formData["cat_id"]) && $formData["cat_id"]==$categoryList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo stripslashes($categoryList[$ii]['category_name']); ?></option>
+				<?php
+				}
+				?>		   
+				</select>
+				<?php if(array_key_exists('category',$formErrors)){echo '<div class="inline-error">'.$formErrors['category'].'</div>';}?>
+				</td>
+				</tr>
+
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+				<td class="tdleftBold">Title / Brand<span class="required">*</span> : </td>
+				<td>
+				<span id="title_brand">
+				<?php
+				/*if(strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Newspaper')) || strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Newspapers')) || strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Magazines')) || strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Magazine')))
+				{*/
+				echo $titleBrandDropdown=$modelCategory->getTitleBrandList($formData['title'],$this->sessPublisherInfo->id,$formData["cat_id"]);
+				
+				if(strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Newspaper')) || strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Newspapers')) || strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Magazines')) || strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Magazine')))	
+				{	
+					$author_style='style="display:none;"';
+					$show_author=false;
+					$show_issn=true;
+					$subscription_block = 'style="display:block;"';
+					$refreshrate_block = 'style="display:block;"';
+				}
+				 
+				else
+				{
+					$author_style='style="display:block;"';
+					$show_author=true;
+					$show_issn=false;
+					$subscription_block = 'style="display:none;"';
+					$refreshrate_block = 'style="display:none;"';
+				}
+				?>
+				 
+				</span>
+				<?php if(array_key_exists('title',$formErrors)){echo '<div class="inline-error">'.$formErrors['title'].'</div>';}?>
+				</td>
+				</tr>
+				
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+				<td class="tdleftBold" width="50%">Genre<span class="required">*</span> : </td>
+				<td> 
+				<?php
+				$modelGenre = new Publisher_Model_DbTable_Genres();
+				$genreList=$modelGenre->getGenreList();
+				?>
+				<select name="book_genre" id="book_genre" class="req"  message="Please select book genre">
+				<option value="">Select</option>
+				
+				<?php
+				for($ii=0;$ii<count($genreList);$ii++)
+				{
+				?>
+				<option value="<?php echo $genreList[$ii]['id']; ?>" <?php if(isset($formData["book_genre"])==$genreList[$ii]["id"] && $formData["book_genre"]==$genreList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo stripslashes($genreList[$ii]['genre']); ?></option>
+				<?php
+				}
+				?>
+				</select>
+				<?php if(array_key_exists('book_genre',$formErrors)){echo '<div class="inline-error">'.$formErrors['book_genre'].'</div>';}?>
+
+				</td>
+				</tr>
+							
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+				<td class="tdleftBold">Publisher<span class="required">*</span> : </td>
+				<td>
+				<?php
+				$modelProfile = new Publisher_Model_DbTable_Publishers();
+				$profileInfo=$modelProfile->getInfoByPublisherId($this->sessPublisherInfo->id);
+				?>
+				<input type="hidden" name="publisher" id="publisher" value="<?php if(isset($profileInfo['publisher'])){echo $profileInfo['publisher'];}?>"  />
+				<?php if(isset($profileInfo['publisher'])){echo $profileInfo['publisher'];}?>
+				
+				<?php if(array_key_exists('publisher',$formErrors)){echo '<div class="inline-error">'.$formErrors['publisher'].'</div>';}?>
+				</td>
+				</tr>
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				
+				<tr id="author_row">
+				<td class="tdleftBold"><div id="author_label" <?php echo $author_style;?>>
+				<?php
+				if($show_author==true)
+				{
+				?>
+				Author<span class="required">*</span> : 
+				<?php
+				}
+				?>
+				</div>
+				</td>
+				
+				<td>
+				<div id="author_dropdown" <?php echo $author_style;?>>
+				<?php
+				if($show_author==true)
+				{
+				$modelAuthor = new Publisher_Model_DbTable_Books();
+				$authorList=$modelAuthor->getAuthorList($this->sessPublisherInfo->id);
+				?>
+				<select name="author" id="author" class="req"  message="Please select author">
+				<option value="">Select Author</option>
+				
+				<?php	
+				for($ii=0;$ii<count($authorList);$ii++)
+				{
+				?>
+				<option value="<?php echo $authorList[$ii]['id']; ?>" <?php if($formData["author_id"]==$authorList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $authorList[$ii]['first_name']." ".$authorList[$ii]['last_name']; ?></option>
+				<?php
+				}
+				?>		   
+				<option value="Self" <?php if($formData["author_id"]==$this->sessPublisherInfo->id)echo"selected";?>>Self</option>
+				</select>
+				<?php
+				}
+				?>
+				</div>
+				<?php if(array_key_exists('author',$formErrors)){echo '<div class="inline-error">'.$formErrors['author'].'</div>';}?>
+				</td>
+				</tr>
+				
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+							
+				<tr>
+				<td class="tdleftBold">
+				<div id="isbn_label">
+				<?php
+				if(strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Magazine')) || strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Magazines')) || strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Newspapers')))
+				{
+				?>
+				ISSN Number: 
+				<?php
+				}
+				elseif(strtolower(trim($categoryInfo['category_name']))==strtolower(trim('eBook')) || strtolower(trim($categoryInfo['category_name']))==strtolower(trim('eBooks')))
+				{
+				?>
+				ISBN Number<span class="required">*</span> : 
+				<?php
+				}
+				?>
+				</div>
+				</td>
+				<td>
+				<div id="isbn_field">
+				<?php
+				if(strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Magazine')) || strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Magazines')) || strtolower(trim($categoryInfo['category_name']))==strtolower(trim('Newspapers')))
+				{
+				?>
+				<input type="text" name="isbn_number" id="isbn_number" value="<?php if(isset($formData['isbn_number'])){echo $formData['isbn_number'];}?>"  class="issn"  message="Please enter issn number" invalidmessage="Please enter a valid ISSN number format."  readonly="true" />
+				<?php
+				}
+				elseif(strtolower(trim($categoryInfo['category_name']))==strtolower(trim('eBook')) || strtolower(trim($categoryInfo['category_name']))==strtolower(trim('eBooks')))
+				{
+				?>
+				<input type="text" name="isbn_number" id="isbn_number" value="<?php if(isset($formData['isbn_number'])){echo $formData['isbn_number'];}?>"  class="isbn"  message="Please enter isbn number" invalidmessage="Please enter a valid ISBN number format." />
+				<?php
+				}
+				?>
+				</div>
+				<?php if(array_key_exists('isbn_number',$formErrors)){echo '<div class="inline-error">'.$formErrors['isbn_number'].'</div>';}elseif(array_key_exists('isbn_number',$formErrors)){echo '<div class="inline-error">'.$formErrors['isbn_number'].'</div>';}?>
+				</td>
+				</tr>
+				<tr>
+					<td colspan="2" height="15"></td>
+</tr>				
+				<tr>
+				<td class="tdleftBold">
+				<div id="page_label" <?php echo $author_style;?>>
+				<?php
+				if($show_author==true)
+				{
+				?>
+				Total Pages<span class="required">*</span> : 
+				<?php
+				}
+				?>
+				</div>
+				</td>
+				
+				<td>
+				<div id="page_field" <?php echo $author_style;?>>
+				<?php
+				if($show_author==true)
+				{
+				?>
+				<input type="text" name="total_pages" id="total_pages" value="<?php if(isset($formData['total_pages'])){echo $formData['total_pages'];}?>"  class="req number"  message="Please enter total pages" invalidmessage="Please enter numeric value" />
+				<?php
+				}
+				?>
+				</div>
+				<?php if(array_key_exists('total_pages',$formErrors)){echo '<div class="inline-error">'.$formErrors['total_pages'].'</div>';}?>
+				<br />
+				</td>
+				</tr>
+				<?php
+					/*echo "before : - "."<br>------------";
+					echo $formData['description'];
+					echo "after : - "."<br>------------";
+					echo stripslashes($formData['description']);*/
+				?>
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+				<td class="tdleftBold">Publish Date: </td>
+				<td>
+			<input type="text" name="publish_time" id="publish_time"  value="<?php if(isset($formData['publish_time'])){echo $formData['publish_time'];}?>"  class=""/>
+				<?php if(array_key_exists('publish_time',$formErrors)){echo '<div class="inline-error">'.$formErrors['publish_time'].'</div>';}?>
+				</td>
+				</tr>
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				<tr>
+				<td class="tdleftBold">Description<span class="required">*</span> : </td>
+				<td>
+	    <textarea name="description" id="description" class="req" message="Please book description" rows="3" cols="5"><?php echo  stripslashes($formData['description']); ?></textarea>
+				<?php if(array_key_exists('description',$formErrors)){echo '<div class="inline-error">'.$formErrors['description'].'</div>';}?>
+				</td>
+				</tr>
+	
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div style="text-align:center;">
+							<input type="hidden" name="updatebook" value="Edit Book">
+							<input type="submit" name="update_book" id="update_book" value="Edit Publication" title="Edit Publication" class="button-Save"/>
+							<input type="button" value="Cancel" name="btnCancel" title="Cancel" class="button-cancel" onclick="return goToPage('<?php echo $cancelUrl;?>','tab2','book');" />
+						</div>
+						
+					</td>
+				</tr>
+				
+				
+				</table>
+			
+		</form>
+		
+		
+		<div id="showsubscription" <?php echo $subscription_block;?>>
+	  <form name="form-add-subscription" id="form-add-subscription" method="post" onsubmit="return  validate_subscription_form('form-add-subscription','<?php echo $createsubscriptionURL;?>');">
+	  <fieldset class="dashboard_fieldset">
+			<legend>Publication Subscription</legend>
+	  		<table width="99%"  class="table-list publisher"  border="0" cellspacing="0" cellpadding="0">
+				<tr>
+				<td align="center" colspan="2"><div id="priceoutput"></div></td>
+				</tr>
+				<tr>
+				<td class="tdleftBold">Store<span class="required">*</span> : </td>
+				<td>
+				<?php
+				$modelCountry = new Publisher_Model_DbTable_Books();
+				$countryList   = $modelCountry->getCountryList();
+				?>
+				<select name="country_sub" id="country_sub" class="req" onchange="getCurrency(this.value);"  message="Please select country for subscription">
+				<option value="">Select Store</option>
+				
+				<?php
+				for($ii=0;$ii<count($countryList);$ii++)
+				{
+				?>
+				<option value="<?php echo $countryList[$ii]['id']; ?>" <?php if($formData["country"]==$countryList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $countryList[$ii]['country']; ?></option>
+				<?php
+				}
+				?>		   
+				</select>
+				
+				<?php if(array_key_exists('country',$formErrors)){echo '<div class="inline-error">'.$formErrors['country'].'</div>';}?>
+				<br/>
+				<span id="err_country" style="color:#f00;"></span>	
+				</td>
+				</tr>
+				<tr>
+					<td class="tdleftBold" colspan="2"></td>					
+				</tr>
+				<tr>
+				<td class="tdleftBold">Language<span class="required">*</span> : </td>
+				<td>
+				<?php
+				$modelLanguage = new Publisher_Model_DbTable_Books();
+				$languageList  = $modelLanguage->getLanguageList();
+				?>
+				<select name="language" id="language" class="req"  message="Please select language">
+				<option value="">Select Language</option>
+				
+				<?php
+				for($ii=0;$ii<count($languageList);$ii++)
+				{
+				?>
+				<option value="<?php echo $languageList[$ii]['id']; ?>"><?php echo $languageList[$ii]['language_name']; ?></option>
+				<?php
+				}
+				?>		   
+				</select>
+				
+				<?php if(array_key_exists('language',$formErrors)){echo '<div class="inline-error">'.$formErrors['language'].'</div>';}?>
+				<span id="err_language" style="color:#f00;"></span>	
+				</td>
+				</tr>
+				
+				<tr>
+				<td class="tdleftBold">Select Subscription<span class="required">*</span> : </td>
+				<td><span id="currency_singh"></span>
+				<select name="subscription_type" id="subscription_type"  class="req"  message="Please select subscription type">
+				<option value="">Select</option>
+				<option value="Weekly">Weekly</option>
+				<option value="Monthly">Monthly</option>
+				<option value="Quarterly">Quarterly</option>
+				<option value="Half Yearly">Half Yearly</option>
+				<option value="Yearly">Yearly</option>
+				</select>
+				<span id="err_subscription" style="color:#f00;"></span>
+				</td>
+				</tr>
+			
+				<tr>
+				<td class="tdleftBold">Number of issues<span class="required">*</span> : </td>
+				<td><span id="currency_singh"></span>
+				<input type="text" name="number_of_issues" id="number_of_issues"  class="req number"  message="Please enter number of issues" invalidmessage="Please enter numeric value for number of issues" />
+				<?php if(array_key_exists('number_of_issues',$formErrors)){echo '<div class="inline-error">'.$formErrors['number_of_issues'].'</div>';}?>
+				<span id="err_numberofissues" style="color:#f00;"></span>
+				</td>
+				</tr>
+		
+				<tr>
+				<td class="tdleftBold">Individual Price<span class="required">*</span> : </td>
+				<td><span id="currency_singh"></span>
+				<input type="text" name="individual_price" id="individual_price"  class="req number"  message="Please enter individual user price" invalidmessage="Please enter numeric value for individual price" />
+				<?php if(array_key_exists('individual_price',$formErrors)){echo '<div class="inline-error">'.$formErrors['individual_price'].'</div>';}?>
+				<span id="err_individualprice" style="color:#f00;"></span>
+				</td>
+				</tr>
+				
+				<tr>
+				<td class="tdleftBold">Group Price : </td>
+				<td>
+				<input type="text" name="group_price_sub" id="group_price_sub" class="req number" message="Please enter group user price" invalidmessage="Please enter numeric value for group user" />
+				<?php if(array_key_exists('group_price_sub',$formErrors)){echo '<div class="inline-error">'.$formErrors['group_price_sub'].'</div>';}?>
+				</td>
+				</tr>
+		
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div style="text-align:center;">
+							<input type="hidden" name="createsubscription" value="Add Subscription">
+							<input type="hidden" name="productid" id="productid" value="<?php echo $formData['id']; ?>" />
+							<input type="submit" name="createsubscription" id="createsubscription" value="Add Subscription" class="button-Save"/>
+						</div>
+						
+					</td>
+				</tr>
+
+				</table>
+		</fieldset>
+		</form>
+		</div>
+		
+		
+		<div id="refreshrate" <?php echo $refreshrate_block;?>>
+<fieldset class="dashboard_fieldset">
+			<legend>Store Price</legend>
+<table width="100%" class="table-list" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20%"><div align="left"><strong>Store</strong></div></td>
+<td width="20%"><div align="left"><strong>Language</strong></div></td>
+<td width="20%"><div align="left"><strong>Subscription type</strong></div></td>
+<td width="20%"><div align="left"><strong>Number of issues</strong></div></td>
+<td width="10%"><div align="left"><strong>Individual Price</strong></div></td>
+<td width="20%"><div align="left"><strong>Group Price</strong></div></td>
+<td width="10%"><div align="left"><strong>Action</strong></div></td>
+
+</tr>
+
+<?php
+	$modelSubscription    = new Publisher_Model_DbTable_Subscriptions();
+	$subscriptionList     = $modelSubscription->getSubscriptionList($formData['id']);
+	$producturrency = new Admin_Model_DbTable_Countries();
+	
+	 
+	
+	
+for($jj=0;$jj<count($subscriptionList);$jj++)
+{	
+?>
+<tr>
+<td>
+    <div align="left">
+	   <?php
+			$modelCountry    = new Publisher_Model_DbTable_Books();
+			$countryRecord   = $modelCountry->getCountryName($subscriptionList[$jj]['country_sub']);
+			echo $countryRecord['country'];
+	   ?>
+    </div>
+</td>
+<td>
+   <div align="left">
+    <?php
+			$modelLanguage    = new Publisher_Model_DbTable_Books();
+			$languageRecord   = $modelLanguage->getLanguageName($subscriptionList[$jj]['language_sub']);
+			echo $languageRecord['language_name'];
+	?>
+    </div>
+</td>
+<td><div align="left"  style="display:block;"><?php echo $subscriptionList[$jj]['subscription_type'];?></div>
+
+</td>
+<td><div align="left"  style="display:block;"><?php echo $subscriptionList[$jj]['number_of_issues'];?></div>
+</td>
+
+<td><div align="left" id="show_price_<?php echo $subscriptionList[$jj]['id']; ?>" style="display:block;"><?php echo $producturrency->getCurrencyInfo($subscriptionList[$jj]['country_sub'])." ".$subscriptionList[$jj]['individual_price']; ?></div>
+
+</td>
+<td><div align="left"><?php echo $producturrency->getCurrencyInfo($subscriptionList[$jj]['country_sub'])." ".$subscriptionList[$jj]['group_price_sub']; ?></div></td>
+<td>
+   <div align="left">
+    <?php
+			echo "<a class='action-icon' href=".$this->url(array('module'=>'publisher','controller'=>'book','action'=>'deletesubscription','id'=>$subscriptionList[$jj]['id']),'',true)." onclick='return deletesubscription(this.href);' title='delete'>";
+			echo "<img src='".$this->serverUrl().$this->baseUrl()."/public/css/publisher/images/trash.gif' height='10' width='10'>";
+			echo  "</a>&nbsp;";
+			?>
+			<a href="javascript:void(0);" onclick="return updatesubscription1('<?php echo $subscriptionList[$jj]['id'];?>','<?php echo $this->serverUrl().$this->baseUrl()."/publisher/book/savesubscription";?>','<?php echo $formData['id'];?>');">
+			<img src="<?php echo $this->serverUrl().$this->baseUrl()."/public/css/publisher/images/icon_edit.png"?>" width="10" height="10"/>
+			</a>
+	 
+    </div>
+</td>
+
+</tr>
+<?php
+}
+if(count($subscriptionList)==0)
+{
+	echo "<tr><td colspan='6' align='center'>No Record Found</td></tr>";
+}
+?>
+</table>
+</fieldset>
+</div>
+		
+	</div>
+</div>	
+</div>

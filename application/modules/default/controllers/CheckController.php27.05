@@ -1,0 +1,41 @@
+<?php
+class CheckController extends Zend_Controller_Action
+{
+	 
+	
+    public function init()
+    {
+        
+	}
+    
+	public function indexAction()
+    {
+			$this->_helper->layout->disableLayout();
+			 $this->_helper->viewRenderer->setNoRender(true);
+			
+			
+			$file = '/mnt/target02/343621/424985/www.miprojects.com/web/content/projects/evendor/public/uploads/epubfile/epub_hindustan_times_(delhi)(2013-04-25)_page1-1921935034.epub';
+
+
+
+
+			if (file_exists($file)) {
+		 
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/epub');
+			header('Content-Disposition: attachment; filename='.basename($file));
+			header('Content-Transfer-Encoding: binary');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($file));
+			ob_clean();
+			flush();
+			readfile($file);
+			exit;
+			}
+	 
+	}
+	
+	 
+}

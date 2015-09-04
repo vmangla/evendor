@@ -1,0 +1,134 @@
+<?php 
+$cancelUrl=$this->url(array('module'=>'publisher','controller'=>'group','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'publisher','controller'=>'group','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+
+<div id="panel">
+	<div class="panel-header"><h3>View Group User</h3></div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+		
+		<div class="action-header">
+			<span class="action-title">&nbsp;</span>
+			<ul class="horizonal-menu">
+				<li class="back"><a href="<?php echo $backUrl;?>" title="Back" onclick="return goToPage(this.href,'tab3','group');">Back</a></li>
+			</ul>
+		</div>
+		
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br  clear="all"/>
+
+		<table>
+			<tr>
+				<td class="tdleftBold">Group Type<span class="required">*</span> : </td>
+				<td>
+				<?php
+				if(strtolower(trim($formData['user_type'])) == strtolower(trim('Pmanager')))
+				{
+					echo "Publication Manager";
+				}
+				elseif(strtolower(trim($formData['user_type'])) == strtolower(trim('Amanager')))
+				{
+					echo "Account Manager";
+				}
+				else
+				{
+					echo"---";
+				}
+				?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">First name<span class="required">*</span> : </td>
+				<td>
+				<?php
+				echo $formData['first_name'];
+				?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Last Name<span class="required">*</span> : </td>
+				<td>
+				<?php
+				echo $formData['last_name'];
+				?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Email<span class="required">*</span> : </td>
+				<td>
+				<?php
+				echo $formData['emailid'];
+				?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Username<span class="required">*</span> : </td>
+				<td>
+				<?php
+				echo $formData['username'];
+				?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Password<span class="required">*</span> : </td>
+				<td>
+				<?php
+				echo $formData['password'];
+				?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Phone</td>
+				<td>
+				<?php
+				echo $formData['phone'];
+				?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">&nbsp;</td>
+				<td>
+				<a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'group','action'=>'edit','id'=>$formData['id']),'',true);?>" title="Edit User" onclick="return goToPage(this.href,'tab3','group');"><input type="button" value="Edit User" name="btnEdit" class="button-Save" /></a>
+				<input type="button" value="Cancel" name="btnCancel" title="Cancel" class="button-cancel" onclick="return goToPage('<?php echo $cancelUrl;?>','tab3','group');" />
+				</td>
+			</tr>
+				
+		</table>
+	</div>
+</div>	
+</div>

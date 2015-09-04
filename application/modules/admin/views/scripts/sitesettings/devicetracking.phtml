@@ -1,0 +1,58 @@
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Device Tracking</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+		 
+			<br style="clear: both;"/>
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br style="clear: both;"/>	
+			<br style="clear: both;"/>	
+			
+			<table class="table-list" cellpadding="0" cellspacing="0">
+			
+			   <tr>
+				   <th width="10%">SL.No</th>
+				   <th width="30%">User Email</th>
+				   <th width="20%">Device-ID</th>		  
+				   <th width="10%">Action</th>
+			   </tr>
+			   
+			<?php 
+			  if(isset($this->dataRecord) && count($this->dataRecord)>0)
+			  {
+				$sNumber=1;
+				foreach($this->dataRecord as $row)
+				{
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					   <td><?php echo stripslashes($row['user_email']);?></td> 
+					   <td><?php echo stripslashes($row['device_id']);?></td>
+					   <td>
+							<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'sitesettings','action'=>'deletedeviceid','id'=>$row['id']),'',true);?>" onclick="return confirm('Are you sure to delete?');"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>
+							
+					   </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+					if($this->totalCount>$this->pageSize)
+					{
+						echo '<tr><td colspan="4">&nbsp;</td></tr>';
+						echo '<tr><td colspan="4"><div class="pagination">'.$this->paginationControl($this->dataRecord,'Sliding','pagination.phtml').'</div></td></tr>';
+					}
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="4" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>
+
+	</div>
+</div>

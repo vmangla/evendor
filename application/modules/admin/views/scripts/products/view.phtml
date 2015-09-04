@@ -1,0 +1,208 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'products','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'products','action'=>'index'),'',true);
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Product Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+			<div class="action-header">
+				<span class="action-title">Product Details</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>">Back</a></li>
+				</ul>
+			</div>
+		
+			<br  clear="all"/>
+			
+<table class="table-form" cellpadding="0" cellspacing="0">
+<caption style="padding:5px;"><strong>Basic Information:</strong></caption>
+<tr>
+<td width="20%" class="tdrightBold">Name</td>
+<td><?php echo $formData['title']; ?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Type</td>
+<td><?php echo $formData['product_type']; ?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Category</td>
+<td><?php
+$category = new Admin_Model_DbTable_Products();
+$categoryDetails=$category->getCategoryInfo($formData['cat_id']);
+echo $categoryDetails['category_name'];
+?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Author</td>
+<td><?php $author=new Admin_Model_DbTable_Products();
+	$publisher_info_array=$author->getPublisherInfo($formData['author_id']);
+	echo $publisher_info_array['first_name']."&nbsp;".$publisher_info_array['last_name'];?>
+</td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">ISBN Number</td>
+<td><?php echo $formData['isbn_number']; ?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Description</td>
+<td><?php echo $formData['description']; ?></td>
+</tr>
+<tr>
+<td width="20%" class="tdrightBold">Total Pages</td>
+<td><?php echo $formData['total_pages']; ?></td>
+</tr>
+
+<tr>
+<td width="20%" class="tdrightBold">Publish Time</td>
+<td><?php echo $formData['publish_time']; ?></td>
+</tr>
+
+<tr>
+<td width="20%" class="tdrightBold">Status</td>
+<td><?php
+if($formData['status']==1)
+echo "Published";
+else
+echo "Unpublished";
+ ?></td>
+</tr>
+</table>
+
+<br  clear="all"/>
+
+<table class="table-form" cellpadding="0" cellspacing="0">
+<caption style="padding:5px;"><strong>Product Images:</strong></caption>
+<tr>
+	<td align="left" valign="top">
+	<?php
+	$modelImage = new Admin_Model_DbTable_ProductImages();
+	$imageList=$modelImage->getImageList($formData['id']);
+	
+	if(count($imageList)>0)
+	{	
+		for($ii=0;$ii<count($imageList);$ii++)
+		{
+		
+		echo "&nbsp;<img src=http://". $_SERVER['HTTP_HOST']."/OnOfflineNewsstand/".USER_UPLOAD_DIR.$imageList[$ii]['image_name_thumb']." height='50' width='50'>";
+		
+		echo "<a class='action-icon' href=".$this->url(array('module'=>'admin','controller'=>'products','action'=>'deleteimage','id'=>$imageList[$ii]['id']),'',true)." onclick='return deleteImage(this.href);'>";
+		
+		echo "<img src='".$this->serverUrl().$this->baseUrl()."/public/css/publisher/images/trash.gif' height='10' width='10'>";
+		echo  "</a>&nbsp;";
+		
+		}
+	}
+	else
+	{
+	echo "No Image Found";
+	}
+	
+	?>
+
+	</td>
+</tr>
+</table>
+
+<br  clear="all"/>
+
+<table class="table-form" cellpadding="0" cellspacing="0">
+<caption style="padding:5px;"><strong>EPUB FILE Information:</strong></caption>
+			
+	<?php
+	if($formData['file_name']=="" && $formData['file_size']=="")
+	{
+	?>
+	<tr>
+	<td align="left" valign="top">No contents Found</td>
+	</tr>
+	<?php
+	}
+	else
+	{
+	?>
+	<tr>
+	<td align="left" valign="top">
+	<?php
+	
+		echo "<span style=\"bottom:25px; position:relative;\">File Size: ".$formData['file_size']."&nbsp;</span>";
+			
+		echo "&nbsp;<a href=".$this->url(array('module'=>'admin','controller'=>'products','action'=>'downloadpubfile','id'=>$formData['id']),'',true).">";
+		echo "<img src='".$this->serverUrl().$this->baseUrl()."/public/css/publisher/images/stock_task.png' height='50' width='50'>";
+		echo "</a>&nbsp;";
+				
+		echo "<a class='action-icon' href=".$this->url(array('module'=>'admin','controller'=>'products','action'=>'deleteepubfile','id'=>$formData['id']),'',true)." onclick='return deleteepubfile(this.href);'>";
+		echo "<img src='".$this->serverUrl().$this->baseUrl()."/public/css/publisher/images/trash.gif' height='10' width='10'>";
+		echo  "</a>&nbsp;";
+		
+		?>
+
+	</td>
+	</tr>
+	
+	<?php
+	}
+	?>
+</table>
+
+<br  clear="all"/>
+<table width="100%" class="table-list" border="0" cellspacing="0" cellpadding="0">
+<caption style="padding:5px;"><strong>Pricing:</strong></caption>
+<tr>
+<td width="25%"><div align="left"><strong>Country</strong></div></td>
+<td width="25%"><div align="left"><strong>Language</strong></div></td>
+<td width="25%"><div align="left"><strong>Price</strong></div></td>
+<td width="25%"><div align="left"><strong>Action</strong></div></td>
+
+</tr>
+
+<?php
+	$modelPrice    = new Admin_Model_DbTable_ProductPrices();
+	$priceList     = $modelPrice->getPriceList($formData['id']);
+	
+for($jj=0;$jj<count($priceList);$jj++)
+{	
+?>
+<tr>
+<td>
+    <div align="left">
+	   <?php
+			$modelCountry    = new Admin_Model_DbTable_Products();
+			$countryRecord   = $modelCountry->getCountryName($priceList[$jj]['country_id']);
+			echo $countryRecord['country'];
+	   ?>
+    </div>
+</td>
+<td>
+   <div align="left">
+    <?php
+			$modelLanguage    = new Admin_Model_DbTable_Products();
+			$languageRecord   = $modelLanguage->getLanguageName($priceList[$jj]['language_id']);
+			echo $languageRecord['language_name'];
+	?>
+    </div>
+</td>
+<td><div align="left"><?php echo $priceList[$jj]['price']; ?></div></td>
+<td>
+   <div align="left">
+    <?php
+			echo "<a class='action-icon' href=".$this->url(array('module'=>'admin','controller'=>'products','action'=>'deleteprice','id'=>$priceList[$jj]['id']),'',true).">";
+			echo "<img src='".$this->serverUrl().$this->baseUrl()."/public/css/publisher/images/trash.gif' height='10' width='10'>";
+			echo  "</a>&nbsp;";
+	?>
+    </div>
+</td>
+
+</tr>
+<?php
+}
+?>
+</table>
+
+</div>
+

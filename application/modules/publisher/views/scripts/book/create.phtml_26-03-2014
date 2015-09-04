@@ -1,0 +1,232 @@
+<?php 
+$currUrl=$this->url();
+$backUrl=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'index'),'',true);
+$cancelUrl=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'index'),'',true);
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+//$createURL="http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
+if(isset($formData['tab_ajax']) && $formData['tab_ajax']=='dashboard')
+{
+$return_function="getDashboard('hide-2');";
+}
+elseif(isset($formData['tab_ajax']) && $formData['tab_ajax']=='mysetting')
+{
+$return_function="getSettingPanel('hide-2');";
+}
+else
+{
+	$return_function="goToPage('".$backUrl."','tab2','book');";
+}
+
+?>
+<div id="panel">
+	<div class="panel-header"><h3>Create New Publication</h3></div>
+
+	<div class="panel-content">
+	<div class="panel-sub-content">
+
+	<div class="action-header">
+		<span class="action-title">&nbsp;</span>
+		<ul class="horizonal-menu">
+			<li class="back"><a href="<?php echo $backUrl;?>" title="Back" onclick="return <?php echo $return_function;?>">Back</a></li>
+		</ul>
+	</div>
+
+    
+		<form id="form-add-book" method="post" onsubmit="return validate_common_form('form-add-book','<?php echo $currUrl;?>','tab2');">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+				<td colspan="2"><div align="center">&nbsp;
+				<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+				<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+				<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+				
+				</div></td>
+				</tr>
+							
+				<tr>
+				<td class="tdleftBold">Type<span class="required">*</span> : </td>
+				<td>
+				<?php
+				$modelCategory = new Publisher_Model_DbTable_Books();
+				$categoryList=$modelCategory->getCategoryList();
+				
+				if(isset($formData['title']))
+				{
+					$formData['title']=$formData['title'];
+				}
+				else
+				{
+					$formData['title']='';
+				}				
+				if(isset($formData['isbn_number']))
+				{
+					$formData['isbn_number']=$formData['isbn_number'];
+				}
+				else
+				{
+					$formData['isbn_number']='';
+				}
+				
+							
+				$title_brand_url=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'gettitlebrand','title_brand'=>$formData['title'],'isbn'=>$formData['isbn_number']),'',true);
+				?>
+				<select name="category" id="category" class="req"  message="Please select category" onchange="return get_title_brands('<?php echo $title_brand_url;?>',this.value);">
+				<option value="">Select Category</option>				
+				<?php
+				for($ii=0;$ii<count($categoryList);$ii++)
+				{
+				?>
+				<option value="<?php echo $categoryList[$ii]['id']; ?>" <?php if(isset($formData["category"]) && $formData["category"]==$categoryList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $categoryList[$ii]['category_name']; ?></option>
+				<?php
+				}
+				?>		   
+				</select>
+				<?php if(array_key_exists('category',$formErrors)){echo '<div class="inline-error">'.$formErrors['category'].'</div>';}?>
+				</td>
+				</tr>
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+				<td class="tdleftBold">Title / Brand<span id="reqird" class="required">*</span> : </td>
+				<td>
+				 <span id="title_brand"><input type="text" name="title" id="title" value="<?php if(isset($formData['title'])){echo $formData['title'];}?>"  class="req"  message="Please enter title"/>
+				</span></br></br>
+				<span id="title_text" style="display:none;"><input type="text" name="title_txt" id="title_txt" value=""/></span>
+				<?php if(array_key_exists('title',$formErrors)){echo '<div class="inline-error">'.$formErrors['title'].'</div>';}?>
+				</td>
+				</tr>
+				
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+				<td class="tdleftBold" width="50%">Genre<span class="required">*</span> : </td>
+				<td>
+				<?php
+				$modelGenre = new Publisher_Model_DbTable_Genres();
+				$genreList=$modelGenre->getGenreList();
+				?>
+				<select name="book_genre" id="book_genre" class="req"  message="Please select book genre">
+				<option value="">Select</option>
+				<?php
+				for($ii=0;$ii<count($genreList);$ii++)
+				{
+				?>
+				<option value="<?php echo $genreList[$ii]['id']; ?>" <?php if(isset($formData["book_genre"]) && $formData["book_genre"]==$genreList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $genreList[$ii]['genre']; ?></option>
+				<?php
+				}
+				?>	
+				</select>
+			    <?php if(array_key_exists('book_genre',$formErrors)){echo '<div class="inline-error">'.$formErrors['book_genre'].'</div>';}?>
+				</td>
+				</tr>
+				
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+				<td class="tdleftBold">Publisher<span class="required">*</span> : </td>
+				<td>
+				<?php
+				$modelProfile = new Publisher_Model_DbTable_Publishers();
+				$parentPublisherId = !empty($this->sessPublisherInfo->parent_id)?$this->sessPublisherInfo->parent_id:$this->sessPublisherInfo->id;
+				$profileInfo=$modelProfile->getInfoByPublisherId($parentPublisherId);
+				?>
+				<input type="hidden" name="publisher" id="publisher" value="<?php if(isset($profileInfo['publisher'])){echo $profileInfo['publisher'];}?>" />
+				<?php if(isset($profileInfo['publisher'])){echo $profileInfo['publisher'];}?>
+				<?php if(array_key_exists('publisher',$formErrors)){echo '<div class="inline-error">'.$formErrors['publisher'].'</div>';}?>
+				<br /><br />
+				</td>
+				</tr>
+										
+				<tr id="author_row">
+				<td class="tdleftBold"><div id="author_label" <?php //echo $author_style;?>></div></td>
+				<td>
+				<div id="author_dropdown" <?php //echo $author_style;?>>
+				</div>			
+				<?php if(array_key_exists('author',$formErrors)){echo '<div class="inline-error">'.$formErrors['author'].'</div>';}?>
+				<br />
+				</td>
+				</tr>
+				
+				<tr id="isbn_row">
+				<td class="tdleftBold"><div id="isbn_label">
+				<?php if(isset($formData['isbn_number']) && !empty($formData['isbn_number'])){
+				echo'ISBN Number<span class="required">*</span> : ';}?></div></td>
+				<td>
+				<div id="isbn_field">
+				<?php if(isset($formData['isbn_number']) && !empty($formData['isbn_number']))
+				{
+				?>
+				<input type="text" name="isbn_number" id="isbn_number" value="<?php if(isset($formData['isbn_number'])){echo $formData['isbn_number'];}?>"  class="req isbn"  message="Please enter isbn number 3" invalidmessage="Please enter a valid ISBN number format." maxlength="13" />
+				<?php
+				}?></div>
+				<?php if(array_key_exists('isbn_number',$formErrors)){echo '<div class="inline-error">'.$formErrors['isbn_number'].'</div><br />';}elseif(array_key_exists('isbn_number',$formErrors)){echo '<div class="inline-error">'.$formErrors['isbn_number'].'</div><br />';}?>
+				</td>
+				</tr>
+									
+				<tr id="page_row">
+				<td class="tdleftBold"><div id="page_label" <?php //echo $author_style;?>>
+				<?php
+				if(isset($formData['total_pages'])){
+				echo'Total Pages<span class="required">*</span> : ';}?></div></td>
+				<td>
+				<div id="page_field" <?php //echo $author_style;?>>
+				<?php if(isset($formData['total_pages'])){
+				?>
+				<input type="text" name="total_pages" id="total_pages" value="<?php echo $formData['total_pages'];?>"  class="req number"  message="Please enter total pages" invalidmessage="Please enter numeric value" maxlength="4" />
+				<?php
+				}?></div>
+				<?php if(array_key_exists('total_pages',$formErrors)){echo '<div class="inline-error">'.$formErrors['total_pages'].'</div>';}?>
+				</td>
+				</tr>
+					
+				<tr>
+				<td class="tdleftBold">Description<span class="required">*</span> : </td>
+				<td>
+	    <textarea name="description" id="description" class="req" message="Please enter description" rows="3" cols="5"><?php if(isset($formData['description'])){echo $formData['description'];} ?></textarea>
+				<?php if(array_key_exists('description',$formErrors)){echo '<div class="inline-error">'.$formErrors['description'].'</div>';}?>
+				</td>
+				</tr>
+	
+				<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div style="text-align:center;">
+							<input type="hidden" name="createbook" value="Add Book">
+							<input type="submit" name="createbook" id="createbook" value="Add Publication" class="button-Save" />
+							<input type="button" value="Cancel" name="btnCancel" title="Cancel" class="button-cancel" onclick="return <?php echo $return_function;?>" />
+						</div>
+						
+					</td>
+				</tr>
+				
+				
+				</table>
+		</form>
+	</div>
+</div>
+</div>
+
+<?php if(isset($formData["category"]))
+{
+?>
+<script type="text/javascript">
+get_title_brands('<?php echo $title_brand_url;?>','<?php echo $formData["category"];?>');
+</script>
+<?php
+}
+?>

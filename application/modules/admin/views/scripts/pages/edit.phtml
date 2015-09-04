@@ -1,0 +1,96 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'pages','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'pages','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">CMS Pages</h3></div>
+	<div class="content-box-content">
+	
+	<div>
+			<div class="action-header">
+				<span class="action-title">Edit Page</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>" title="Back">Back</a></li>
+				</ul>
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			
+			<form id="form-edit-page" method="post" onsubmit="return validate_edit_page('form-edit-page');">
+				
+				<table class="table-form" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="20%" class="tdrightBold">Page Title<span class="required">*</span> : </td>
+						<td>
+							<input type="text" name="title" id="title" value="<?php if(isset($formData['title'])){echo $formData['title'];}?>" class="req form-textfield"  message="Please enter page title"  invalidmessage="Please enter valid page title"/>
+							<?php if(array_key_exists('title',$formErrors)){echo '<div class="inline-error">'.$formErrors['title'].'</div>';}?>
+						</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">Meta Title : </td>
+						<td><input type="text" name="meta_title" id="meta_title" value="<?php if(isset($formData['meta_title'])){echo $formData['meta_title'];}?>" class="form-textfield"/></td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">Meta Keywords : </td>
+						<td><textarea name="meta_keywords" id="meta_keywords" class="form-textarea"><?php if(isset($formData['meta_keywords'])){echo stripslashes($formData['meta_keywords']);}?></textarea></td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">Meta Description : </td>
+						<td><textarea name="meta_description" id="meta_description" class="form-textarea"><?php if(isset($formData['meta_description'])){echo stripslashes($formData['meta_description']);}?></textarea></td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">Page Content : </td>
+						<td><textarea name="content" id="content" class="form-textarea"><?php if(isset($formData['content'])){echo stripslashes($formData['content']);}?></textarea></td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">Status : </td>
+						<td>
+							<input type="radio" name="status" value="1" checked="checked">Active
+							&nbsp;&nbsp;
+							<input type="radio" name="status" value="0" <?php if(isset($formData['status']) && $formData['status']==0){echo 'checked="checked"';}?>>Inactive
+						</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">&nbsp;</td>
+						<td>
+							<input type="submit" value="Save" class="button-Save" title="Save" />
+							<input type="button" value="Cancel" name="btnCancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';" title="Cancel" />
+						</td>
+					</tr>
+				  
+				 </table>
+			</form>
+	</div>
+</div>
+
+<?php /************JAVASCRIPT CODE**************/?>
+<script language="javascript" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/fckeditor/fckeditor.js"></script>
+<script type="text/javascript">
+$(function()
+{
+var oFCKeditor = new FCKeditor('content') ;
+oFCKeditor.BasePath="<?php echo $this->serverUrl().$this->baseUrl();?>/public/fckeditor/";
+oFCKeditor.Height =400;
+oFCKeditor.Width = 600;
+//oFCKeditor.ToolbarSet = 'Basic';
+oFCKeditor.ReplaceTextarea() ;
+});
+function validate_edit_page(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>

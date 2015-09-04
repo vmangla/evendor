@@ -1,0 +1,93 @@
+<?php 
+$actionUrl=$this->url(array('module'=>'user','controller'=>'auth','action'=>'cngpwdweb'),'',true);
+$cancelUrl=$this->url(array('module'=>'user','controller'=>'auth','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+
+<div id="login">
+		<div class="login-header">Forgot Password</div>
+		
+		<div class="login-content">
+			<br clear="all"/>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<form id="form-change-password" action="<?php echo $actionUrl;?>" method="post" onsubmit="return validate_password_form('form-change-password');">
+				
+				<table cellpadding="0" cellspacing="0">
+					<!--<tr>
+						<td width="25%" class="tdrightBold">Old Password<span class="required">*</span> : </td>
+						<td>
+							<input type="password" name="password" id="password" value="<?php if(isset($this->formData['password'])){echo $this->formData['password'];}?>" class="req form-textfield"  message="Please enter your current password"  invalidmessage="Please enter your current password"/>
+							<?php if(array_key_exists('password',$this->formErrors)){echo '<div class="inline-error">'.$this->formErrors['password'].'</div>';}?>
+						</td>
+					</tr>-->
+					<tr>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td width="25%" class="tdrightBold">New Password<span class="required">*</span> : </td>
+						<td>
+							<input type="password" name="new_password" id="new_password" value="<?php if(isset($this->formData['new_password'])){echo $this->formData['new_password'];}?>" class="req form-textfield"  message="Please enter your new password"  invalidmessage="Please enter your new password"/>
+							<?php if(array_key_exists('new_password',$this->formErrors)){echo '<div class="inline-error">'.$this->formErrors['new_password'].'</div>';}?>
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">Confirm New Password<span class="required">*</span> : </td>
+						<td>
+							<input type="password" name="conf_new_password" id="conf_new_password" value="<?php if(isset($this->formData['conf_new_password'])){echo $this->formData['conf_new_password'];}?>" class="req form-textfield"  message="Please confirm your new password"  invalidmessage="Confirm password does not match"/>
+							<?php if(array_key_exists('conf_new_password',$this->formErrors)){echo '<div class="inline-error">'.$this->formErrors['conf_new_password'].'</div>';}?>
+                            <div id="neeconf" style="display:none"><font color="#FF0000">Confirm password does not match</font></div>
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td width="25%" class="tdrightBold">&nbsp;</td>
+						<td>
+							<input type="hidden" name="id_user" id="id_user" value="<?php echo $this->idVal;?>" >
+							<input type="hidden" name="key_user" id="key_user" value="<?php echo $this->keyVal;?>" >
+							<input type="hidden" name="change_password" id="change_password" value="Update Password" >
+							<input type="submit" value="Save" name="change_pwd" id="change_pwd" title="Update Password" class="button-Save"/>
+							 
+						</td>
+					</tr>
+				  
+				 </table>
+			</form>
+
+</div>
+<script type="text/javascript">
+
+function validate_password_form(pFormId)
+{
+	
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+		
+		if(document.getElementById("conf_new_password").value!=document.getElementById("new_password").value)
+		{
+		document.getElementById("neeconf").style.display="block";
+		return false;
+		}
+		
+	}
+	
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>	

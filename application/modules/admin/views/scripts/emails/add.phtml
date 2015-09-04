@@ -1,0 +1,132 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'emails','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'emails','action'=>'index'),'',true);
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Emails Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+			<div class="action-header">
+				<span class="action-title">Add Email Template</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>">Back</a></li>
+				</ul>
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			<br  clear="all"/>
+			
+			<form id="form-add-email" method="post" onsubmit="return validate_add_package('form-add-email');">
+					
+			<table class="table-form" cellpadding="0" cellspacing="0">
+				<tr>
+					<td width="20%" class="tdrightBold">Select Title<span class="required">*</span> : </td>
+					<td>
+					  <!-- <select name="template_name" id="template_name"  <?php if(isset($formData['package_name'])){echo $formData['template_name'];}?>" class="req form-textfield"  message="Please select email template">-->
+					  
+					   <select name="template_name" id="template_name">
+					   
+					        <option value="">Select Template</option>
+							<option value="User Registration">User Registration</option>
+							<option value="Model Registration">Model Registration</option>
+							<option value="Request Booking User">Request Booking User</option>
+							<option value="Request Booking Model">Request Booking Model</option>
+							<option value="Confirm Booking User">Confirm Booking User</option>
+							<option value="Confirm Booking Model">Confirm Booking Model</option>
+							<option value="Payment">Payment</option>
+							<option value="Payout Request">Payout Request</option>
+							<option value="Payment Made">Payment Made</option>
+							
+					   </select>
+					   
+						<?php if(array_key_exists('template_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['template_name'].'</div>';}?>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="20%" class="tdrightBold"> Or </td>
+					<td>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="20%" class="tdrightBold">New Title<span class="required">*</span> : </td>
+					<td>
+					   <input type="text" name="template_new" id="template_new"/>
+					   
+						<!--<input type="text" name="package_name" id="package_name" value="<?php if(isset($formData['package_name'])){echo $formData['package_name'];}?>" class="req form-textfield"  message="Please enter package name"  invalidmessage="Please enter valid package name"/>-->
+						
+						<?php /*if(array_key_exists('package_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['package_name'].'</div>';}*/?>
+					</td>
+				</tr>
+				
+			
+				<tr>
+					<td width="20%" class="tdrightBold">Email Body<span class="required">*</span> : </td>
+					<td>
+					<textarea name="template_description" id="template_description" class="form-textarea">
+					<?php if(isset($formData['template_description'])){echo $formData['template_description'];}?>
+					</textarea>
+					
+					<?php /*if(array_key_exists('template_description',$formErrors)){echo '<div class="inline-error">'.$formErrors['template_description'].'</div>';}*/?>
+					</td>
+				</tr>
+				<tr>
+					<td width="20%" class="tdrightBold">Status : </td>
+					<td>
+						<input type="radio" name="status" value="1" checked="checked">Active
+						&nbsp;&nbsp;
+						<input type="radio" name="status" value="0">Inactive
+					</td>
+				</tr>
+				<tr>
+					<td width="20%" class="tdrightBold">&nbsp;</td>
+					<td>
+						<input type="submit" value="Add" class="button-Add"/>
+						<input type="button" value="Cancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';"/>
+					</td>
+				</tr>
+			  
+			 </table>
+		 </form>
+	</div>
+</div>
+<?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+function validate_add_package(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>
+
+<?php /************JAVASCRIPT CODE**************/?>
+<script language="javascript" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/fckeditor/fckeditor.js"></script>
+<script type="text/javascript">
+$(function()
+{
+var oFCKeditor = new FCKeditor('template_description') ;
+oFCKeditor.BasePath="<?php echo $this->serverUrl().$this->baseUrl();?>/public/fckeditor/";
+oFCKeditor.Height =400;
+oFCKeditor.Width = 600;
+//oFCKeditor.ToolbarSet = 'Basic';
+oFCKeditor.ReplaceTextarea() ;
+});
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>

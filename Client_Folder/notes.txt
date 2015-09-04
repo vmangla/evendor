@@ -1,0 +1,3 @@
+Admin Login Folder 
+
+D:\wamp\www\PowerChatLive\application\modules\admin\views\scripts\auth\index.phtml

@@ -1,0 +1,200 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'stores','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'stores','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+$add_contient_Url=$this->url(array('module'=>'admin','controller'=>'stores','action'=>'addcontient'),'',true);
+
+?>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Stores</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<!--<div class="action-header">
+				<span class="action-title">Add Continent</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>" title="Back">Back</a></li>
+				</ul>
+			</div>
+			
+			<br  clear="all"/>
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			
+			<form id="form-add-Continent" method="post" action="<?php echo $add_contient_Url;?>" onsubmit="return validate_add_Continent('form-add-Continent');">
+			
+				<table class="table-form" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="20%" class="tdrightBold">Continent<span class="required">*</span> : </td>
+						<td>
+							<input type="text" name="continent" id="continent" value="<?php if(isset($formData['continent'])){echo $formData['continent'];}?>" class="req form-textfield"  message="Please enter continent"  invalidmessage="Please enter valid continent"/>
+							<?php if(array_key_exists('continent',$formErrors)){echo '<div class="inline-error">'.$formErrors['continent'].'</div>';}?>
+						</td>
+					</tr>
+					
+					<tr>
+						<td width="20%" class="tdrightBold">Status : </td>
+						<td>
+							<input type="radio" name="status" value="1" checked="checked">Active
+							&nbsp;&nbsp;
+							<input type="radio" name="status" value="0">Inactive
+						</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">&nbsp;</td>
+						<td>
+							<input type="submit" value="Add" class="button-Add"/>
+							<input type="button" value="Cancel" name="btnCancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';"/>
+						</td>
+					</tr>
+				  
+				  <tr>
+				  <td colspan="2">
+				  <table class="table-list" cellpadding="0" cellspacing="0">
+					<tr>
+						   <th width="5%">Sr.No</th>
+						   <th width="5%">ID</th>
+						   <th width="30%">Continent</th>
+						   <th width="10%">Action</th>
+					</tr>
+					
+					<?php 
+					  if(isset($this->continentList) && count($this->continentList)>0)
+					  {
+						$sNumber=1;
+						foreach($this->continentList as $row)
+						{
+					?>
+							<tr>
+							   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+							   <td><?php echo $row->id;?></td> 
+							   <td><?php echo $row->continent;?></td>
+							   
+							   <td>
+							   
+									<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'countries','action'=>'editcontinent','id'=>$row->id),'',true);?>"><img alt="Edit" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/icon_edit.png"/></a>
+									<a class="action-icon" href="<?php echo $this->url(array('module'=>'admin','controller'=>'countries','action'=>'deletecontinent','id'=>$row->id),'',true);?>" onclick="return confirm('Are you sure to delete?');"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>
+									
+							   </td>
+						   </tr>
+					<?php
+							$sNumber++;
+						}
+							if($this->totalCount>$this->pageSize)
+							{
+								echo '<tr><td colspan="8">&nbsp;</td></tr>';
+								echo '<tr><td colspan="8">'.$this->paginationControl($this->continentList,'Sliding','pagination.phtml').'</td></tr>';
+							}
+					  }
+					  else
+					  {
+						echo '<tr><td colspan="8" class="list-not-found">Data Not Found</td></tr>';
+					  }
+					?> 
+					 </table>
+				  </td>
+				  </tr>
+					
+				 </table>
+			</form>
+			
+			<br  clear="all"/>
+			<br  clear="all"/>-->
+			<div class="action-header">
+				<span class="action-title">Add Store</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>" title="Back">Back</a></li>
+				</ul>
+			</div>
+			<br  clear="all"/>
+			<?php if(isset($this->errorMessage1)){echo $this->errorMessage1;}?>
+			<br  clear="all"/>
+			
+			<form id="form-add-country" method="post" onsubmit="return validate_add_country('form-add-country');">
+			
+				<table class="table-form" cellpadding="0" cellspacing="0">
+				<tr>
+					<td width="20%" class="tdrightBold">Store<span class="required">*</span> : </td>
+					<td>
+					<select name="country_id" id="country_id" class="req" message="Please select a country">
+					<option value="">Select Ccountry</option>
+					<?php
+					foreach($this->countryForStoreList as $row)
+					{
+					?>
+					<option value="<?php echo $row['id']; ?>"><?php echo $row['country'];?></option>
+					<?php
+					}
+					?>		   
+					</select>
+					<?php 
+					//if(array_key_exists('continent_id',$formErrors))
+					//{
+						//echo '<div class="inline-error">'.$formErrors['continent_id'].'</div>';
+					//}
+					?>
+					</td>
+					</tr>
+					
+					<!--tr>
+						<td width="20%" class="tdrightBold">Store<span class="required">*</span> : </td>
+						<td>
+							<input type="text" name="country" id="country" value="<?php if(isset($formData['country'])){echo $formData['country'];}?>" class="req form-textfield"  message="Please enter country"  invalidmessage="Please enter valid country"/>
+							<?php if(array_key_exists('country',$formErrors)){echo '<div class="inline-error">'.$formErrors['country'].'</div>';}?>
+						</td>
+					</tr-->
+					
+					<tr>
+						<td width="20%" class="tdrightBold">Status : </td>
+						<td>
+							<input type="radio" name="is_store_status" value="1" checked="checked">Active
+							&nbsp;&nbsp;
+							<input type="radio" name="is_store_status" value="0">Inactive
+						</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">&nbsp;</td>
+						<td>
+							<input type="submit" value="Add" class="button-Add" title="Add"/>
+							<input type="button" value="Cancel" name="btnCancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';" title="Cancel" />
+						</td>
+					</tr>
+				  
+				 </table>
+			</form>
+	</div>
+</div>
+<?php /************JAVASCRIPT CODE**************/?>
+
+<script type="text/javascript">
+function validate_add_Continent(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+function validate_add_country(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>

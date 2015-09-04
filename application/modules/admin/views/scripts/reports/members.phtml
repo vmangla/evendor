@@ -1,0 +1,67 @@
+<?php
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Report Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+			<div class="action-header">
+				<span class="action-title">Members Report</span>
+				<!--<ul class="horizonal-menu">
+					<li class="add"><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'add'),'',true);?>">Add Category</a></li>
+				</ul>-->
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			<br style="clear: both;"/>	
+
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				
+				<tr>
+					<th colspan="2">View Members Report</th>
+				</tr>
+				
+				<tr>
+				<td align="right" width="30%">Total Customers :</td>
+				<td><?php echo $this->totalCustomerCount;?></td>
+				</tr>
+				
+				<tr>
+				<td align="right" width="30%">Total Publishers :</td>
+				<td><?php echo $this->totalPublisherCount;?></td>
+				</tr>
+				
+				<tr>
+				<td align="right" width="30%">Total Authors :</td>
+				<td><?php echo $this->totalAuthorCount;?></td>
+				</tr>
+				
+				</table>
+				
+				<br style="clear: both;"/>	
+				<br style="clear: both;"/>	
+				
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">Groups</th>
+				</tr>
+				
+				<tr>
+				<td align="right" width="30%">Total Account Managers :</td>
+				<td><?php echo $this->totalAccountManagersCount;?></td>
+				</tr>
+				
+				<tr>
+				<td align="right" width="30%">Total Publication Managers :</td>
+				<td><?php echo $this->totalPublicationManagersCount;?></td>
+				</tr>
+				</table>
+		</div>
+
+	</div>
+</div>

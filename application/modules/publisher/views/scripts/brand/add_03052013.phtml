@@ -1,0 +1,73 @@
+<?php 
+$currUrl=$this->url();
+$cancelUrl=$this->url(array('module'=>'publisher','controller'=>'brand','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'publisher','controller'=>'brand','action'=>'index'),'',true);
+
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+if(isset($formData['tab_ajax']) && $formData['tab_ajax']=='dashboard')
+{
+$return_function="getDashboard('hide-6');";
+}
+elseif(isset($formData['tab_ajax']) && $formData['tab_ajax']=='mysetting')
+{
+$return_function="getSettingPanel('hide-6');";
+}
+else
+{
+	$return_function="goToPage('".$backUrl."','tab6','brand');";
+}
+
+?>
+
+<div id="panel">
+	<div class="panel-header"><h3>Add Brand</h3></div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+		
+		<div class="action-header">
+			<span class="action-title">&nbsp;</span>
+			<ul class="horizonal-menu">
+				<li class="back"><a href="<?php echo $backUrl;?>" title="Back" onclick="return <?php echo $return_function;?>">Back</a></li>
+			</ul>
+		</div>
+		
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br clear="all"/>
+
+		<form id="form-add-brand" method="post" onsubmit="return validate_common_form('form-add-brand','<?php echo $currUrl;?>','tab6');">
+		<table cellpadding="0" cellspacing="0">
+			
+			<tr>
+				<td class="tdleftBold">
+				Brand<span class="required">*</span> : 
+				</td>
+				<td>
+					<input type="text" name="brand" id="brand" value="<?php if(isset($formData['brand'])){echo $formData['brand'];}?>"  class="req form-textfield"  message="Please enter brand name"/>
+					<?php if(array_key_exists('brand',$formErrors)){echo '<div class="inline-error">'.$formErrors['brand'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+								
+			<tr>
+				<td class="tdleftBold">&nbsp;</td>
+				<td>
+					<input type="hidden" name="add_brand" value="Add Brand">
+					<input type="submit" value="Add" title="Add Brand" class="button-Save" />
+					<input type="button" value="Cancel" name="btnCancel" title="Cancel" class="button-cancel" onclick="return <?php echo $return_function;?>" />
+				</td>
+			</tr>
+		</table>
+					
+	</form>
+	</div>
+</div>	
+</div>
+

@@ -1,0 +1,115 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'publisher','controller'=>'','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'publisher','controller'=>'','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+<div id="panel">
+	<div class="panel-header"><h3>Brands</h3><a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'brand','action'=>'add'),'',true);?>" title="Add New Brand" onclick="return goToPage(this.href,'tab6','brand');" class="addbook">Add Brand</a></div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+			
+			<!--<div class="action-header">
+				<span class="action-title">&nbsp;</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>">Back</a></li>
+				</ul>
+			</div>-->	
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br  clear="all"/>
+			
+			<table class="table-list" cellpadding="0" cellspacing="0" width="100%">
+			
+			   <tr>
+				   <th width="5%" align="center">S.No</th>
+				    <th width="5%" align="center">Category</th>
+				   <th width="30%" align="center">Brand</th>
+				   <th width="10%" align="center">Status</th>
+				   <th width="10%" align="center">Action</th>
+			   </tr>
+			  
+			<?php 
+			  $this->categories = new Admin_Model_DbTable_Categories();
+			  if(isset($this->brandList) && count($this->brandList)>0)
+			  {
+				$sNumber=1;
+				foreach($this->brandList as $row)
+				{
+						$getcatname = $this->categories->fetchAll('id='.$row['category'].'');
+					 
+			?>
+				<tr>
+				<td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+				<td><?php echo stripslashes($getcatname[0]['category_name']);?></td>
+				<td>
+				<a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'brand','action'=>'view','id'=>$row['id']),'',true);?>" title="View Brand" onclick="return goToPage(this.href,'tab6','brand');"><?php echo stripslashes($row['brand']);?></a>
+				</td> 
+				<td>
+					<?php 
+					if($row['status']=='1')
+					{
+					?>
+					<a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'brand','action'=>'inactive','id'=>$row['id']),'',true);?>" title="Click To Deactivate Brand" onclick="return inactive(this.href,'tab6','brand');"><img alt="Active" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/active.png"/></a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'brand','action'=>'active','id'=>$row['id']),'',true);?>" title="Click To Activate Brand" onclick="return active(this.href,'tab6','brand');"><img alt="Inactive" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/inactive.png"/></a>
+					<?php
+					}
+					?>
+						
+				</td>
+				<td>
+					<a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'brand','action'=>'edit','id'=>$row['id']),'',true);?>" title="Edit Brand" onclick="return goToPage(this.href,'tab6','brand');"><img alt="Edit" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/icon_edit.png"/></a>
+					
+					<a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'brand','action'=>'view','id'=>$row['id']),'',true);?>" title="View Brand" onclick="return goToPage(this.href,'tab6','brand');"><img alt="View" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/application_view_detail.png"/></a>
+						
+					<?php
+					$modelIssue = new Publisher_Model_DbTable_Issues();
+					$issueList=$modelIssue->fetchAll("publisher_id='$this->parentPublisherId' AND title='$row[id]'");
+					if(count($issueList)>0)
+					{
+					?>
+					<a class="action-icon" href="javascript:void(0);" title="Delete Brand" onclick="javascript:alert('Delete all it\'s issues first!'); return false;"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>
+					<?php
+					}
+					else
+					{
+					?>			
+					<a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'brand','action'=>'delete','id'=>$row['id']),'',true);?>" title="Delete Brand" onclick="return deleteAction(this.href,'tab6','brand');"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>
+					<?php
+					}
+					?>
+					
+				</td>
+				</tr>
+			<?php
+					$sNumber++;
+				}
+				
+				if($this->totalCount>$this->pageSize)
+				{
+					global $tab,$tab_ajax;
+					$tab=6;$tab_ajax='brand';
+					
+					echo '<tr><td colspan="8">&nbsp;</td></tr>';
+					echo '<tr><td colspan="8"><div class="pagination">'.$this->paginationControl($this->brandList,'Sliding','pagination.phtml').'</div></td></tr>';
+					
+				}
+				
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="8" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>	
+	</div>
+</div>

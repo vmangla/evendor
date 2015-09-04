@@ -1,0 +1,99 @@
+<?php 
+$cancelUrl=$this->url(array('module'=>'publisher','controller'=>'brand','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'publisher','controller'=>'brand','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+
+<div id="panel">
+	<div class="panel-header"><h3>View Brand</h3></div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+		
+		<div class="action-header">
+			<span class="action-title">&nbsp;</span>
+			<ul class="horizonal-menu">
+				<li class="back"><a href="<?php echo $backUrl;?>" title="Back" onclick="return goToPage(this.href,'tab6','brand');">Back</a></li>
+			</ul>
+		</div>
+		
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br  clear="all"/>
+
+		<table>
+			<tr>
+				<td class="tdleftBold">Brand<span class="required">*</span> : </td>
+				<td>
+				<?php
+				echo $formData['brand'];
+				?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			
+			<tr>
+				<td class="tdleftBold">Added Date<span class="required">*</span> : </td>
+				<td>
+				<?php
+				echo $formData['added_date'];
+				?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			
+			<tr>
+				<td class="tdleftBold">Last Update<span class="required">*</span> : </td>
+				<td>
+				<?php
+				echo $formData['updated_date'];
+				?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			
+			<tr>
+				<td class="tdleftBold">Status<span class="required">*</span> : </td>
+				<td>
+				<?php
+				if($formData['status']==1)
+				{
+					echo 'Active';
+				}
+				else
+				{
+					echo 'Inactive';
+				}
+				
+				?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			
+			<tr>
+				<td class="tdleftBold">&nbsp;</td>
+				<td>
+				<a class="action-icon" href="<?php echo $this->url(array('module'=>'publisher','controller'=>'brand','action'=>'edit','id'=>$formData['id']),'',true);?>" title="Edit brand" onclick="return goToPage(this.href,'tab6','brand');"><input type="button" value="Edit Brand" name="btnEdit" class="button-Save" /></a>
+				<input type="button" value="Cancel" name="btnCancel" title="Cancel" class="button-cancel" onclick="return goToPage('<?php echo $cancelUrl;?>','tab6','brand');" />
+				</td>
+			</tr>
+				
+		</table>
+	</div>
+</div>	
+</div>

@@ -1,0 +1,368 @@
+<?php
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+<script type="text/javascript">	
+	$(document).ready(function(){			
+		new JsDatePick({
+			useMode:2,
+			target:"from_date",
+			dateFormat:"%Y-%m-%d"
+			/*selectedDate:{				This is an example of what the full configuration offers.
+				day:5,						For full documentation about these settings please see the full version of the code.
+				month:9,
+				year:2006
+			},
+			yearsRange:[1978,2020],
+			limitToToday:false,
+			cellColorScheme:"beige",
+			dateFormat:"%m-%d-%Y",
+			imgPath:"img/",
+			weekStartDay:1*/
+		});
+	});
+	
+	$(document).ready(function(){			
+		new JsDatePick({
+			useMode:2,
+			target:"to_date",
+			dateFormat:"%Y-%m-%d"
+			/*selectedDate:{				This is an example of what the full configuration offers.
+				day:5,						For full documentation about these settings please see the full version of the code.
+				month:9,
+				year:2006
+			},
+			yearsRange:[1978,2020],
+			limitToToday:false,
+			cellColorScheme:"beige",
+			dateFormat:"%m-%d-%Y",
+			imgPath:"img/",
+			weekStartDay:1*/
+		});
+	});
+	
+</script>
+
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Report Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<br style="clear: both;"/>
+			<div class="action-header">
+				<span class="action-title">Reports</span>
+				<!--<ul class="horizonal-menu">
+					<li class="add"><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'add'),'',true);?>">Add Category</a></li>
+				</ul>-->
+			</div>
+			<br style="clear: both;"/>	
+			
+			<form id="form-search" method="post" action="<?php echo $this->url(array('module'=>'admin','controller'=>'reports','action'=>'reportsearch'),'',true);?>">
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">View Reports</th>
+				</tr>
+				
+				<tr>
+				<td align="right" width="50%">
+				<div align="right">Type:  </div></td>
+				<td>
+				<?php
+				$this->modelBooks 	= new Publisher_Model_DbTable_Books();
+				$this->modelPublisher = new Publisher_Model_DbTable_Publishers();
+				$modelCategory = new Publisher_Model_DbTable_Books();
+				$categoryList=$modelCategory->getCategoryList();
+				$title_brand_url=$this->url(array('module'=>'admin','controller'=>'reports','action'=>'getbrand'),'',true);
+				$title_brand_issue_url=$this->url(array('module'=>'admin','controller'=>'reports','action'=>'getbookissues'),'',true);
+				?>
+				<select name="category" id="category" class=""  message="Please select a type" onchange="return get_book_brand('<?php echo $title_brand_url;?>','<?php echo $title_brand_issue_url;?>',this.value,'','');">
+				<option value="">Select Type</option>				
+				<?php
+				for($ii=0;$ii<count($categoryList);$ii++)
+				{
+				?>
+				<option value="<?php echo $categoryList[$ii]['id']; ?>" <?php if(isset($formData["category"]) && $formData["category"]==$categoryList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $categoryList[$ii]['category_name']; ?></option>
+				<?php
+				}
+				?>		   
+				</select>
+				<?php if(array_key_exists('category',$formErrors)){echo '<div class="inline-error">'.$formErrors['category'].'</div>';}?>
+				</td>
+				</tr>
+				
+				<tr id="brand_id" style="display:none";>
+					<td align="right" width="50%"><div align="right">Brand: </div></td>
+					<td width="50%"><div id="product_list">
+					<select name="brand" id="brand" class="" onchange="return get_book_issues('<?php echo $title_brand_issue_url;?>',this.value);"   message="Please select a brand">
+					<option value="">Select Product</option>
+					</select>
+				
+					</div></td>
+				</tr>
+				<tr>
+					<td align="right" width="50%"><div align="right">Issue/Title: </div></td>
+					<td width="50%"><div id="product_list">
+					<select name="product_id" id="product_id" class=""  message="Please select a brand">
+					<option value="">Select Product</option>
+					</select>
+				
+					</div></td>
+				</tr>
+				
+				<tr>
+					<td align="right" width="50%"><div align="right">From Date: </div></td>
+					<td width="50%"><div id="product_list">
+					 <input type="text" size="12" name="from_date" id="from_date" value="<?php echo $formData['from_date'];?>" />
+				
+					</div></td>
+				</tr>
+				<tr>
+					<td align="right" width="50%"><div align="right">To Date: </div></td>
+					<td width="50%"><div id="product_list">
+					<input type="text" name="to_date" id="to_date" value="<?php echo $formData['to_date'];?>" />
+					</div></td>
+				</tr>
+				
+				<tr>
+					<td align="right" width="50%"><div align="right">Select Publisher: </div></td>
+					<td width="50%"><div id="product_list">
+					<!-- <input type="text" name="publisher" id="publisher" value="<?php echo $formData['publisher'];?>" /> -->
+				<select id="publisher" name="publisher" >
+						<option value="" ></option>
+					<?php
+					if(count($this->publisher_data)>0)
+					{
+						foreach($this->publisher_data as $puData)
+						{
+					?>		<option value="<?php echo $puData['publisher'];?>" <?php if($formData['publisher']==$puData['publisher']){?>selected<?php } ?> ><?php echo $puData['publisher']?></option>
+					<?php
+						}
+					}
+					?> 
+					</select>				
+					</div></td>
+				</tr>
+				 
+				<tr>
+					<td align="center" colspan="2">
+					<div align="center"><input type="submit" name="searchresult" id="searchresult" value="Search"  class="button-Add">
+					<input type="button" name="showall" value="Show All" class="button-Add" onclick="javascript:document.location.href='<?php echo $this->url(array('module'=>'admin','controller'=>'reports','action'=>'index'),'',true);?>'" />
+					<input type="button" name="showall" value="Export" class="button-Add" onclick="javascript:document.location.href='<?php echo $this->url(array('module'=>'admin','controller'=>'reports','action'=>'exportreportxls',"category"=>$formData["category"],"brand"=>$formData["brand"],"productid"=>$formData["product_id"],"frmdate"=>$formData['from_date'],"todate"=>$formData['to_date'],"publisher"=>$formData['publisher']),'',true);?>'" title="Export"/>
+					</div>
+					</td>
+				</tr>
+				</table>
+			 </form>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			<br style="clear: both;"/>	
+			<table class="table-list" cellpadding="0" cellspacing="0">
+			   <tr>
+				   <th>SL.No</th>
+				   <th>Publication ID</th>
+				   <th>Title / Brand</th>
+				   <th>Category</th>
+				   <th>Publisher</th>
+				   <th>Total Downloads</th>
+				   <th>Total Purchase</th>
+				   <th>Unit Price</th>
+				    <th>Total Amount</th>
+				   <th>Last Purchased</th>
+			   </tr>
+			<?php 
+			$productPrice = new Publisher_Model_DbTable_BookPrices();
+			$producturrency = new Admin_Model_DbTable_Countries();
+
+			  if(isset($this->prodList) && count($this->prodList)>0)
+			  {
+				$sNumber=1;
+				foreach($this->prodList as $row)
+				{
+					$catInfo=$modelCategory->getCategoryInfo($row['cat_id']);
+					$title_details_url=$this->url(array('module'=>'admin','controller'=>'reports','action'=>'detailsreport',"publication"=>$row['id']),'',true);
+					$productPriceInfo = $productPrice->getPriceByStoreId($row['id'],$row['store_id']);
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					   <td><?php echo $row['id'];?></td> 
+					   <td>
+					   <a href="<?php echo $title_details_url;?>" target="_blank" >
+					   <?php
+					   $modelCategory = new Publisher_Model_DbTable_Books();
+					   $getProductInfo=$this->modelCompany->getProductInfo($row['id']);
+					   
+					   $getBrandInfo=$modelCategory->getBrandInfo($getProductInfo['title']);
+					   
+					   if(!empty($getBrandInfo))
+					   {
+							$titleBrand=$getBrandInfo['brand'];
+					   }
+					   else
+					   {
+							$titleBrand=$getProductInfo['title'];
+					   }
+						if(!empty($getProductInfo['parent_brand_id']))
+						{
+						$productInfo=$this->modelCompany->getProductInfo($getProductInfo['parent_brand_id']);
+						$getParentBrandInfo=$modelCategory->getBrandInfo($productInfo['title']);
+							if(!empty($getParentBrandInfo))
+							{
+								$titleBrand=$getParentBrandInfo['brand'].' - '.$titleBrand;
+							}
+						}
+						
+					   echo stripslashes($titleBrand);
+						?></a></td>
+						<td><?php echo $catInfo['category_name'];?></td>
+					   <td>
+					   <?php
+					   /*$modelCompanyInfo=new Company_Model_DbTable_Companies();
+					   $company_info_array = $modelCompanyInfo->getInfoByCompanyId($row['company_id']);
+					   echo $company_info_array['first_name']."&nbsp;".$company_info_array['last_name'];
+					    * 
+					    * 
+					    */
+					    $publiseherDetails = $this->modelPublisher->getInfoByPublisherId($row['publisher_id']);
+						echo $publiseherDetails['publisher'];
+					     ?>
+					   </td> 
+					   <td><?php echo $row['tot_download']; ?></td>
+					   <td>
+						<?php 
+						echo $row['total_count'];
+						?>
+					  </td>
+					  <td>
+					  <?php
+					  if($row['group_id']!=0)
+					  {
+						echo $producturrency->getCurrencyInfo($row['store_id']).$productPriceInfo['group_price'];
+					  }
+					  else
+					  {
+						 echo $producturrency->getCurrencyInfo($row['store_id']).$productPriceInfo['price'];
+					  }					
+					  ?>
+					  </td>
+					  <td>
+					  <?php // echo $row['totAmnt'];
+					 $getCurrencyName = $producturrency->getCurrencyCode($row['store_id']);
+					  $totNairaPrice = $producturrency->currencyconverter($getCurrencyName,"NGN",$row['grtotal']);
+					   echo $producturrency->getCurrencyInfo(226).@number_format($totNairaPrice,2);
+					  ?>
+					  </td>
+					  <td>
+						<?php 
+						echo $row['add_date'];
+						?>
+					  </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+					if($this->totalCount>$this->pageSize)
+					{
+						echo '<tr><td colspan="9">&nbsp;</td></tr>';
+						echo '<tr><td colspan="9"><div class="pagination">'.$this->paginationControl($this->prodList,'Sliding','pagination.phtml').'</div></td></tr>';
+					}
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="9" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			  
+			  
+			?> 
+			 </table>
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+function validate_search(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
+function get_book_brand(ajax_url,ajax_url1,parent_type_id,brand,product_id)
+{
+//alert(ajax_url+'=>'+parent_type_id+'=>'+product_id);
+	if(parent_type_id == '1' || parent_type_id =='2')
+	{
+		$("#brand_id").show();
+		$.ajax({
+			type: "POST",
+			url: ajax_url,
+			async: false,
+			data: "cat_id="+parent_type_id+"&brand="+brand,
+			success: function(result) {
+				//alert(result);
+				$('#brand').html(result);
+			}
+		});
+	}
+	else
+	{
+		$("#brand_id").hide();
+			$.ajax({
+			type: "POST",
+			url: ajax_url1,
+			async: false,
+			//data: "cat_id="+cat_val[1]+"&brand_id="+cat_val[0],
+			data: "cat_id="+parent_type_id+"&product_id="+product_id,
+			success: function(result) {
+				//alert(result);
+				$('#product_id').html(result);
+			}
+		});
+	}
+	
+	return false;
+}
+function get_book_issues(ajax_url,cat_id,brand,product_id)
+{
+	cat_val = cat_id.split("**");
+//alert(ajax_url+'=>'+parent_type_id+'=>'+product_id);
+	$.ajax({
+	    type: "POST",
+		url: ajax_url,
+		async: false,
+		data: "cat_id="+cat_val[1]+"&brand_id="+cat_val[0]+"&product_id="+product_id,
+		success: function(result) {
+			//alert(result);
+			$('#product_id').html(result);
+		}
+	});
+	
+	return false;
+}
+<?php
+if(isset($formData["category"]) && !empty($formData["category"]))
+{
+?>
+get_book_brand('<?php echo $title_brand_url;?>','<?php echo $title_brand_issue_url;?>','<?php echo $formData["category"];?>','<?php echo $formData["brand"];?>','<?php echo $formData["product_id"];?>');
+<?php
+}
+?>
+<?php
+if(isset($formData["brand"]) && !empty($formData["brand"]))
+{
+?>
+get_book_issues('<?php echo $title_brand_issue_url;?>','<?php echo $formData["brand"];?>','','<?php echo $formData["product_id"];?>');
+<?php
+}
+?>
+</script>

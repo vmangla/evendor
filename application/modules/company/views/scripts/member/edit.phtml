@@ -1,0 +1,130 @@
+<?php 
+$cancelUrl=$this->url(array('module'=>'company','controller'=>'member','action'=>'index'),'',true);
+$currUrl=$this->url();
+$backUrl=$this->url(array('module'=>'company','controller'=>'member','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+<div id="panel">
+	<div class="panel-header"><h3>Update Member</h3></div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+		
+		<div class="action-header">
+			<span class="action-title">&nbsp;</span>
+			<ul class="horizonal-menu">
+				<li class="back"><a href="<?php echo $backUrl;?>" title="Back" onclick="return goToPage(this.href,'tab3','member');">Back</a></li>
+			</ul>
+		</div>
+		
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br  clear="all"/>
+	
+		<form id="form-edit-member-user" id="form-edit-member-user" method="post" onsubmit="return validate_common_form('form-edit-member-user','<?php echo $currUrl;?>','tab3');">
+			<table>
+			<tr>
+				<td class="tdleftBold">
+				Group<span class="required">*</span> : 
+				</td>
+				<td>
+				<select name="group_id" id="group_id" class="req" message="Please select a group">
+				<option value="">Select Group</option>
+				<?php
+				foreach($this->GroupList as $row)
+				{
+				?>
+				<option value="<?php echo $row['id']; ?>" <?php if(isset($formData["group_id"]) && $formData["group_id"]==$row['id']){ ?> selected <?php } ?>><?php echo $row['group_name'];?></option>
+				<?php
+				}
+				?>		   
+				</select>
+				<?php 
+				if(array_key_exists('group_id',$formErrors))
+				{
+					echo '<div class="inline-error">'.$formErrors['group_id'].'</div>';
+				}
+				?>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">First name<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="first_name" id="first_name" value="<?php if(isset($formData['first_name'])){echo $formData['first_name'];}?>"  class="req form-textfield"  message="Please enter first name"/>
+					<?php if(array_key_exists('first_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['first_name'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Last Name<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="last_name" id="last_name" value="<?php if(isset($formData['last_name'])){echo $formData['last_name'];}?>"  class="req form-textfield"  message="Please enter last name" />
+					<?php if(array_key_exists('last_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['last_name'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Email<span class="required">*</span> : </td>
+				<td>
+					<input type="text" name="user_email" id="user_email" value="<?php if(isset($formData['user_email'])){echo $formData['user_email'];}?>"  class="req validmail form-textfield" message="Please enter your email" invalidmessage="Please enter valid email address"/>
+					<?php if(array_key_exists('user_email',$formErrors)){echo '<div class="inline-error">'.$formErrors['user_email'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Password: </td>
+				<td>
+					<input type="text" name="user_password" id="user_password" onBlur="if (this.value == '') {this.value = 'Please enter new password';}" onFocus="if(this.value == 'Please enter new password') {this.value = '';}" value="Please enter new password" class="pass form-textfield" message="Please new enter password" />
+					<?php if(array_key_exists('user_password',$formErrors)){echo '<div class="inline-error">'.$formErrors['user_password'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">Phone : </td>
+				<td>
+					<input type="text" name="phone" id="phone" value="<?php if(isset($formData['phone'])){echo $formData['phone'];}?>"  class="number form-textfield"  invalidmessage="Please enter numeric value" />
+					<?php if(array_key_exists('phone',$formErrors)){echo '<div class="inline-error">'.$formErrors['phone'].'</div>';}?>
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tdleftBold">&nbsp;</td>
+				<td>
+				<input type="hidden" name="edit_member" value="Edit Member">
+				<input type="submit" value="Update" title="Update" class="button-Save"/>
+				<input type="button" value="Cancel" title="Cancel"  name="btnCancel" class="button-cancel" onclick="return goToPage('<?php echo $cancelUrl;?>','tab3','member');" />
+				</td>
+			</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			</tr>
+		</table>
+	</form>
+	</div>
+</div>	
+</div>
+

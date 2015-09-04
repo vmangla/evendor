@@ -1,0 +1,168 @@
+<?php 
+$cancelUrl=$this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+<div id="content">
+
+	<div class="div-register">
+		<form id="form-add-user" method="post" onsubmit="return validate_user('form-add-user');" enctype="multipart/form-data">
+			<table width="99%">
+				<tr>
+					<td width="40%" style="vertical-align:top;">
+					<h1>SignUp - Step-2</h1>
+					<div>
+						<span>Upload Logo</span>
+						<input type="file" name="logo"/>
+					</div>
+					</td>
+					<td>
+						<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+						<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+						<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+						
+							<table>
+							
+								<tr>
+									<td class="tdleftBold">Business Name<span class="required">*</span> : </td>
+									<td colspan="3">
+										<input type="text" name="business_name" id="business_name" value="<?php if(isset($formData['business_name'])){echo $formData['business_name'];}?>"  class="req" style="width:100%;"  message="Please enter your business name"/>
+										<?php if(array_key_exists('business_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['business_name'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Suburb/PostCode<span class="required">&nbsp;</span> : </td>
+									<td>
+										<input type="text" name="post_code" id="post_code" value="<?php if(isset($formData['post_code'])){echo $formData['post_code'];}?>" style="width:150px;"/>
+										<?php if(array_key_exists('post_code',$formErrors)){echo '<div class="inline-error">'.$formErrors['post_code'].'</div>';}?>
+									</td>
+									<td class="tdleftBold">State<span class="required">&nbsp;</span> : </td>
+									<td>
+										<input type="text" name="state" id="state" value="<?php if(isset($formData['state'])){echo $formData['state'];}?>" style="width:150px;"/>
+										<?php if(array_key_exists('state',$formErrors)){echo '<div class="inline-error">'.$formErrors['state'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Industry #1<span class="required">&nbsp;</span> : </td>
+									<td>
+										<SELECT name="industry_1" style="width:150px;">
+											<OPTION value="">---Select---</OPTION>
+											<?php
+											if(isset($this->industryList) && $this->industryList!=null && count($this->industryList)>0)
+											{
+												foreach($this->industryList as $inds)
+												{
+											?>
+													<OPTION value="<?php echo $inds->id;?>"><?php echo $inds->industry_name;?></OPTION>
+											<?php		
+												}
+											}
+											?>
+										</SELECT>
+										<?php if(array_key_exists('industry_1',$formErrors)){echo '<div class="inline-error">'.$formErrors['industry_1'].'</div>';}?>
+									</td>
+									<td class="tdleftBold">Industry #2<span class="required">&nbsp;</span> : </td>
+									<td>
+										<SELECT name="industry_2" style="width:150px;">
+											<OPTION value="">---Select---</OPTION>
+										</SELECT>
+										<?php if(array_key_exists('industry_2',$formErrors)){echo '<div class="inline-error">'.$formErrors['industry_2'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">About Us<span class="required">&nbsp;</span> : </td>
+									<td colspan="3">
+										<textarea name="about_us" id="about_us"style="width:100%;height:70px;"><?php if(isset($formData['about_us'])){echo $formData['about_us'];}?></textarea>
+										<?php if(array_key_exists('about_us',$formErrors)){echo '<div class="inline-error">'.$formErrors['about_us'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Opening Hours<span class="required">&nbsp;</span> : </td>
+									<td>
+										<input type="text" name="opening_hours" id="opening_hours" value="<?php if(isset($formData['opening_hours'])){echo $formData['opening_hours'];}?>" style="width:150px;"/>
+										<?php if(array_key_exists('opening_hours',$formErrors)){echo '<div class="inline-error">'.$formErrors['opening_hours'].'</div>';}?>
+									</td>
+									<td class="tdleftBold">Telephone #<span class="required">&nbsp;</span> : </td>
+									<td>
+										<input type="text" name="telephone" id="telephone" value="<?php if(isset($formData['telephone'])){echo $formData['telephone'];}?>" style="width:150px;"/>
+										<?php if(array_key_exists('telephone',$formErrors)){echo '<div class="inline-error">'.$formErrors['telephone'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Website<span class="required">&nbsp;</span> : </td>
+									<td colspan="3">
+										<input type="text" name="website" id="website" value="<?php if(isset($formData['website'])){echo $formData['website'];}?>" style="width:100%;"/>
+										<?php if(array_key_exists('website',$formErrors)){echo '<div class="inline-error">'.$formErrors['website'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">ABN<span class="required">&nbsp;</span> : </td>
+									<td colspan="3">
+										<input type="text" name="abn" id="abn" value="<?php if(isset($formData['abn'])){echo $formData['abn'];}?>" style="width:100%;"/>
+										<?php if(array_key_exists('abn',$formErrors)){echo '<div class="inline-error">'.$formErrors['abn'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">ACN<span class="required">&nbsp;</span> : </td>
+									<td colspan="3">
+										<input type="text" name="acn" id="acn" value="<?php if(isset($formData['acn'])){echo $formData['acn'];}?>" style="width:100%;"/>
+										<?php if(array_key_exists('acn',$formErrors)){echo '<div class="inline-error">'.$formErrors['acn'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Link to Facebook<span class="required">&nbsp;</span> : </td>
+									<td colspan="3">
+										<input type="text" name="facebook_url" id="facebook_url" value="<?php if(isset($formData['facebook_url'])){echo $formData['facebook_url'];}?>" style="width:100%;"/>
+										<?php if(array_key_exists('facebook_url',$formErrors)){echo '<div class="inline-error">'.$formErrors['facebook_url'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Link to Twitter<span class="required">&nbsp;</span> : </td>
+									<td colspan="3">
+										<input type="text" name="twitter_url" id="twitter_url" value="<?php if(isset($formData['twitter_url'])){echo $formData['twitter_url'];}?>" style="width:100%;"/>
+										<?php if(array_key_exists('twitter_url',$formErrors)){echo '<div class="inline-error">'.$formErrors['twitter_url'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">SHIFTe URL<span class="required">&nbsp;</span> : </td>
+									<td colspan="3">
+										<input type="text" name="shifte_url" id="shifte_url" value="<?php if(isset($formData['shifte_url'])){echo $formData['shifte_url'];}?>" style="width:100%;"/>
+										<?php if(array_key_exists('shifte_url',$formErrors)){echo '<div class="inline-error">'.$formErrors['shifte_url'].'</div>';}?>
+									</td>
+								</tr>
+							 </table>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div style="width:99%;border:1px solid #000000;text-align:right;">
+
+								<input type="submit" value="Sign up" class="button-save"/>
+						</div>
+						
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	
+ <?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+
+function validate_user(pFormId)
+{
+	/*
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}*/
+	
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>
+</div>
+

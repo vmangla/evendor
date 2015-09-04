@@ -1,0 +1,134 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'stores','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'stores','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Stores</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<div class="action-header">
+				<span class="action-title">Edit Store</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>" title="Back">Back</a></li>
+				</ul>
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			
+			<form id="form-edit-country" method="post" onsubmit="return validate_edit_country('form-edit-country');" enctype="multipart/form-data">
+				
+				<table class="table-form" cellpadding="0" cellspacing="0">
+				<!--tr>
+					<td width="20%" class="tdrightBold">Continent<span class="required">*</span> : </td>
+					<td>
+					<select name="continent_id" id="continent_id" class="req" message="Please select a continent">
+					<option value="">Select Continent</option>
+					<?php
+					foreach($this->continentList as $row)
+					{
+					?>
+					<option value="<?php echo $row['id']; ?>" <?php if(isset($formData["continent_id"]) && $formData["continent_id"]==$row['id']){ ?> selected <?php }elseif($row['continent']=='Africa'){?> selected <?php } ?>><?php echo $row['continent'];?></option>
+					<?php
+					}
+					?>		   
+					</select>
+					<?php 
+					if(array_key_exists('continent_id',$formErrors))
+					{
+						echo '<div class="inline-error">'.$formErrors['continent_id'].'</div>';
+					}
+					?>
+					</td>
+					</tr-->
+					
+					<tr>
+						<td width="20%" class="tdrightBold">Store<span class="required">*</span> : </td>
+						<td>
+							<input type="text" name="country" id="country" value="<?php if(isset($formData['country'])){echo $formData['country'];}?>" class="req form-textfield"  message="Please enter country"  invalidmessage="Please enter valid store" readonly="readonly"/>
+							<?php if(array_key_exists('country',$formErrors)){echo '<div class="inline-error">'.$formErrors['country'].'</div>';}?>
+						</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">Currency<span class="required">*</span> : </td>
+						<td>
+							<select name="currency_id" id="currency_id" class="req" message="Please select a currency" >
+								<option value="" >Select One</option>
+								<?php
+								$currency_list = $this->currencyForStoreList;
+								for($i=0;$i<count($currency_list);$i++)
+								{
+									if($formData['currency_id'] == $currency_list[$i]['currency_id'])
+									{
+									?>
+										<option value="<?php echo $currency_list[$i]['currency_id']?>" selected ><?php echo $currency_list[$i]['currency_name']?></option>
+									<?php
+									}
+									else {
+									?>
+									<option value="<?php echo $currency_list[$i]['currency_id']?>" ><?php echo $currency_list[$i]['currency_name']?></option>
+								<?php
+									}
+								}
+								?>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">Status : </td>
+						<td>
+							<input type="radio" name="is_store_status" value="1" <?php if(isset($formData['is_store_status']) && $formData['is_store_status']==1)echo'checked="checked"';?>>Active
+							&nbsp;&nbsp;
+							<input type="radio" name="is_store_status" value="0" <?php if(isset($formData['is_store_status']) && $formData['is_store_status']==0)echo'checked="checked"';?>>Inactive
+						</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">Upload Flag: </td>
+						<td>
+							<input type="file" name="ImageFile" id="ImageFile" />
+							<?php
+							if($formData['country_flag'])
+							{
+							?>
+								<img src="<?php echo $this->serverUrl().$this->baseUrl()."/public/uploads/users/".$formData['country_flag']?>" > <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'stores','action'=>'deleteflag',"id"=>$formData["id"]),'',true);?>" >Delete</a>
+							<?php
+							}
+							?>
+						</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">&nbsp;</td>
+						<td>
+							<input type="submit" value="Update" class="button-Add" title="Update" />
+							<input type="button" value="Cancel" name="btnCancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';" title="Cancel" />
+						</td>
+					</tr>
+				  
+				 </table>
+			</form>
+	</div>
+</div>
+
+<?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+
+function validate_edit_country(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>

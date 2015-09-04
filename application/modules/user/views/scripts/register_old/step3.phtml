@@ -1,0 +1,205 @@
+<?php 
+$cancelUrl=$this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+<div id="content">
+
+	<div class="div-register">
+		<form id="form-add-user" method="post" onsubmit="return validate_user('form-add-user');" enctype="multipart/form-data">
+			<table width="99%">
+				<tr>
+					<td width="30%" style="vertical-align:top;">
+					<h1>SignUp - Step-3</h1>
+					</td>
+					<td>
+						<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+						<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+						<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+						<h2>My Resume</h2>
+						<h3>1. Education History</h3>
+						<table id="education_main_holder">
+							<tr>
+								<td>Education Type</td><td>School Name</td><td>Years Attended</td>
+							</tr>
+							<tr>
+								<td>
+									<select name="education_type[]" class="req" style="width:200px;">
+										<option value="High School">High School</option>
+									</select>
+								</td>
+								<td>
+									<input type="text" name="school_name[]" class="req" style="width:200px;"/>
+								</td>
+								<td>
+									<input type="text" name="years_attended[]" class="req" style="width:200px;"/>
+								</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td>
+									<select name="education_type[]" class="req" style="width:200px;">
+										<option value="1">High School</option>
+									</select>
+								</td>
+								<td>
+									<input type="text" name="school_name[]" class="req" style="width:200px;"/>
+								</td>
+								<td>
+									<input type="text" name="years_attended[]" class="req" style="width:200px;"/>
+								</td>
+								<td>&nbsp;</td>
+							</tr>
+						</table>
+						<div style="text-align:right;"><a href="javascript:void(0);" onclick="addMoreEducation('education_main_holder');">add more...</a></div>
+						<hr/>
+						<h3>2. About Me</h3>
+						<textarea name="about_me" id="about_us"style="width:99%;height:70px;"><?php if(isset($formData['about_me'])){echo $formData['about_me'];}?></textarea>
+						<?php if(array_key_exists('about_me',$formErrors)){echo '<div class="inline-error">'.$formErrors['about_me'].'</div>';}?>
+						<hr/>
+						
+						<h3>3. Employment History</h3>
+						<div id="employment_main_holder">
+							<table>
+								<tr>
+									<td class="tdleftBold">Company</td><td><input type="text" name="employment_company[]" class="req"/></td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Role</td><td><input type="text" name="employment_role[]" class="req"/></td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Location</td><td><input type="text" name="employment_location[]" class="req"/></td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">When</td>
+									<td>Month <input type="text" name="employment_month[]" class="req" style="width:80px;"/> 
+									Year <input type="text" name="employment_year[]" class="req" style="width:80px;"/></td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Responsibilities</td><td><input type="text" name="employment_responsibilities[]" class="req"/></td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Achievements</td><td><input type="text" name="employment_achievements[]" class="req"/></td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">References</td><td><input type="file" name="employment_file_references[]" class="req"/></td>
+								</tr>
+							</table>
+						</div>
+						<div><a href="javascript:void(0);" onclick="addMoreEmployment('employment_main_holder');">add more...</a></div>
+						<hr/>
+						
+						<h3>4. Skills and Specialization</h3>
+						<p><b>Certificates and Compliance Courses (Tick the boxes of appropriate certificates the employee has achieved</b><p>
+						<ul style="list-style:none;padding:0px;">
+							<li><input type="checkbox" name="specializations[]" value="RSA (Responsible Service of Alcohol)"/>RSA (Responsible Service of Alcohol)</li>
+							<li><input type="checkbox" name="specializations[]" value="LFS (Licensee’s First Step)"/>LFS (Licensee’s First Step)</li>
+							<li><input type="checkbox" name="specializations[]" value="RSF (Responsible Service of Food/Workplace Hygiene)"/>RSF (Responsible Service of Food/Workplace Hygiene)</li>
+							<li><input type="checkbox" name="specializations[]" value="Workplace Hygiene - Health and Community Services Sector"/>Workplace Hygiene - Health and Community Services Sector</li>
+							<li><input type="checkbox" name="specializations[]" value="FSS (Food Safety Supervisors)"/>FSS (Food Safety Supervisors)</li>
+							<li><input type="checkbox" name="specializations[]" value="Food Safety Supervisor - Health and Community Services Sector"/>Food Safety Supervisor - Health and Community Services Sector</li>
+							<li><input type="checkbox" name="specializations[]" value="Bridging Hygiene Course"/>Bridging Hygiene Course</li>
+							<li><input type="checkbox" name="specializations[]" value="RSG (Responsible Service of Gaming)"/>RSG (Responsible Service of Gaming)</li>
+							<li><input type="checkbox" name="specializations[]" value="RSG Refresher Training"/>RSG Refresher Training</li>
+							<li><input type="checkbox" name="specializations[]" value="TAB Operator Program"/>TAB Operator Program</li>
+							<li><input type="checkbox" name="specializations[]" value="TAB Manager Program"/>TAB Manager Program</li>
+							<li><input type="checkbox" name="specializations[]" value="TAB Licensed Venue Manager Program"/>TAB Licensed Venue Manager Program</li>
+							<li><input type="checkbox" name="specializations[]" value="Working With Children Check"/>Working With Children Check</li>
+						</ul>
+						
+						<div><b>Driving License</b> <input type="radio" name="driving_license" value="Yes" checked="checked"/>YES&nbsp;&nbsp;<input type="radio" name="driving_license" value="No"/>NO</div>
+						
+						<p><b>Skills</b></p>
+						<ul style="list-style:none;padding:0px;">
+							<li><input type="checkbox" name="skills[]" value="Coffee Making and Barista Knowledge"/>Coffee Making and Barista Knowledge</li>
+							<li><input type="checkbox" name="skills[]" value="Sommelier Knowledge"/>Sommelier Knowledge</li>
+							<li><input type="checkbox" name="skills[]" value="Forklift Training"/>Forklift Training</li>
+							<li><input type="checkbox" name="skills[]" value="Computers"/>Computers</li>
+							<li><input type="checkbox" name="skills[]" value="Data Input"/>Data Input</li>
+							<li><input type="checkbox" name="skills[]" value="Cash Registers"/>Cash Registers</li>
+							<li><input type="checkbox" name="skills[]" value="Accounting and Book Keeping"/>Accounting and Book Keeping</li>
+							<li><input type="checkbox" name="skills[]" value="Working with People"/>Working with People</li>
+							<li><input type="checkbox" name="skills[]" value="Waiting Tables"/>Waiting Tables</li>
+							<li><input type="checkbox" name="skills[]" value="Event Work"/>Event Work</li>
+						</ul>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div style="width:99%;border:1px solid #000000;text-align:right;">
+
+								<input type="submit" value="Sign Up" class="button-save"/>
+						</div>
+						
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	
+ <?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+
+function validate_user(pFormId)
+{
+	/*
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}*/
+	
+	return true;
+}
+/***************ADD/Remove Education History*******************/
+var vEducation=1;
+function addMoreEducation(pMainHolder)
+{
+	var childHTML='';	
+	childHTML+='<tr id="education_holder_'+vEducation+'">';
+	childHTML+='<td><select name="education_type[]" class="req" style="width:200px;"><option value="1">High School</option></select></td>';
+	childHTML+='<td><input type="text" name="school_name[]" class="req" style="width:200px;"/></td>';
+	childHTML+='<td><input type="text" name="years_attended[]" class="req" style="width:200px;"/></td>';
+	childHTML+='<td><a href="javascript:void(0);" class="link-delete" onclick="removeEducation(\'education_holder_'+vEducation+'\');">Delete</a></td>';
+	childHTML+='</tr>';
+	
+	$("#"+pMainHolder).append(childHTML);
+	vEducation=vEducation+1;
+}
+function removeEducation(pChildren)
+{
+	$("#"+pChildren).remove();
+	vEducation=vEducation-1;
+}
+/***************ADD/Remove Employment History*******************/
+var vEmployment=1;
+function addMoreEmployment(pMainHolder)
+{
+	var childHTML='';	
+
+	childHTML+='<table id="employment_holder_'+vEmployment+'">';
+	childHTML+='<tr><td class="tdleftBold">Company</td><td><input type="text" name="employment_company[]" class="req"/></td></tr>';
+	childHTML+='<tr><td class="tdleftBold">Role</td><td><input type="text" name="employment_role[]" class="req"/></td></tr>';
+	childHTML+='<tr><td class="tdleftBold">Location</td><td><input type="text" name="employment_location[]" class="req"/></td></tr>';
+	childHTML+='<tr><td class="tdleftBold">When</td><td>Month <input type="text" name="employment_month[]" class="req" style="width:80px;"/> Year <input type="text" name="employment_year[]" class="req" style="width:80px;"/></td></tr>';
+	childHTML+='<tr><td class="tdleftBold">Responsibilities</td><td><input type="text" name="employment_responsibilities[]" class="req"/></td></tr>';
+	childHTML+='<tr><td class="tdleftBold">Achievements</td><td><input type="text" name="employment_achievements[]" class="req"/></td></tr>';
+	childHTML+='<tr><td class="tdleftBold">References</td><td><input type="file" name="employment_file_references[]" class="req"/></td></tr>';
+	childHTML+='<tr><td class="tdleftBold">&nbsp;</td><td style="text-align:right;"><a href="javascript:void(0);" class="link-delete" onclick="removeEmployment(\'employment_holder_'+vEmployment+'\');">Delete</a></td></tr>';
+	childHTML+='</table>';
+	
+	$("#"+pMainHolder).append(childHTML);
+	vEmployment=vEmployment+1;
+}
+function removeEmployment(pChildren)
+{
+	$("#"+pChildren).remove();
+	vEmployment=vEmployment-1;
+}
+</script>
+
+<?php /************END JAVASCRIPT CODE**************/?>
+</div>
+

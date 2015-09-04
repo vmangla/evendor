@@ -1,0 +1,87 @@
+<?php echo $this->doctype(); ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<?php echo $this->headTitle('Electronic Vendor Ltd :: Publisher')?>
+<?php //echo $this->headMeta()?>
+<?php //echo $this->headLink()?>
+<?php //echo $this->headStyle()?>
+<?php //echo $this->headScript()?>
+
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/invalid.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/reset.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/style.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/publisher/jquery-v1.7.1.js"></script>
+
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/publisher/facebox.js"></script>
+<!--<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/publisher/jquery-1.3.2.min.js"></script>-->
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/publisher/jquery.date.js"></script>
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/publisher/jquery.datePicker.js"></script>
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/publisher/jquery.wysiwyg.js"></script>
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/publisher/simpla.jquery.configuration.js"></script>
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/publisher_styles.css" media="screen" rel="stylesheet" type="text/css"/>
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/publisher/common_validation.js"></script>
+
+<!------------------------------------  Image Uploder --------------------------->
+
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/publisher/imageuploader.css" media="screen" rel="stylesheet" type="text/css"/>
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/publisher/jquery.form.js"></script>
+
+<?php
+include_once("public/js/publisher/common_ajax_functions.php");
+?>
+
+</head>
+
+<body>
+
+<div id="body-wrapper">
+
+<div>
+	<div id="publisher_headerinner" >
+		<?php
+		if(isset($this->sessPublisherInfo) && $this->sessPublisherInfo!=null)
+		{
+		?>
+			<ul class="horizonal-menu" style="margin-right:20px;margin-top:5px;">
+				<li class="userhi">Hi, <?php echo ucfirst($this->sessPublisherInfo->first_name);?></li>
+				
+				<li class="logout"><a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'auth','action'=>'logout'),'',true);?>">Logout</a></li>
+			</ul>
+		<?php
+		}
+		?>
+		
+		<div class="logo"><a href="<?php echo $this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);?>"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/logo.png" alt=""></a> <span style="text-decoration:none; color:white;">:: Publisher Panel</span></div>
+</div>
+	
+<?php
+//$dataModules=explode(",",$_SESSION['publisher_type']['storage']->modules);
+$dataModules=explode(",","0,1,2,3,4,5,6,7");
+
+//$pageURL .= 'http://'.$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+$pageURL = 'http://'.$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+$parameter =explode("/",$pageURL);
+
+?>
+<div>
+<div id="tab-content">
+<?php echo $this->layout()->content;?>
+</div>
+</div>
+	
+</div>
+
+<div id="publisher_footer">
+		<div class="publisher_footer_info"> 
+		&copy; Copyright <?php echo date("Y");?>. All Rights Reserved By Electronic Vendor Ltd.
+		</div> 
+	</div>
+	
+</div>
+</body>
+</html>

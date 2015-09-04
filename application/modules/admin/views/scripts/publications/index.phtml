@@ -1,0 +1,365 @@
+<?php
+$formData=(isset($this->formData))?$this->formData:array();
+?>
+<script language="javascript" type="text/javascript">
+function checkAllCheckboxes(frm)
+{ 
+
+ var ctr=0;
+ var checked = "";
+ if(checked == false){checked = true}else{checked = false}
+ for (var ctr= 0; ctr < frm.length; ctr++)
+ {
+  field_name = frm.elements[ctr].name;
+  if (field_name.indexOf("chk") != -1)
+  {
+   if (frm.elements[ctr].checked == false)
+    {
+    frm.elements[ctr].checked = true;
+    //document.getElementById("check").style.display='none';
+    //document.getElementById("uncheck").style.display='block';
+    
+    }else{
+    frm.elements[ctr].checked = true;
+    //document.getElementById("uncheck").style.display='none';
+    //document.getElementById("check").style.display='block';
+    }
+  }
+ }
+
+}
+
+function uncheckAllCheckboxes(frm)
+{ 
+ 
+ for (ctr=0; ctr < frm.length; ctr++)
+ {
+  field_name = frm.elements[ctr].name;
+  if (field_name.indexOf("chk") != -1)
+  {
+   //if (frm.elements[ctr].checked)
+   //{
+    frm.elements[ctr].checked = false;
+   //}
+  }
+ }
+ //document.getElementById("uncheck").style.display='none';
+ //document.getElementById("check").style.display='block';
+}
+ 
+function chk_checkbox()
+{
+var chks = document.getElementsByName('chk[]');
+	var hasChecked = false;
+	
+	var myArray = new Array();
+	 
+	for (var i = 0; i < chks.length; i++)
+	{
+		if (chks[i].checked)
+		{
+		 	hasChecked = true;
+			myArray = chks[i].value;
+			
+		}
+	 
+	}
+	if (!hasChecked)
+	{
+		alert("Please select atleast one checkbox for performing action.");
+		//chks[0].focus();
+		return false;
+	}
+	 
+}
+
+
+
+
+function checked_text()
+{
+	if(document.frm.checkall.checked==true)
+	{
+		checkAllCheckboxes(document.frm);
+	}
+	if(document.frm.checkall.checked==false)
+	{
+		uncheckAllCheckboxes(document.frm);
+	}
+	
+}
+</script>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Publication Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<br style="clear: both;"/>
+			<div class="action-header">
+				<span class="action-title">Publication List</span>
+				<!--<ul class="horizonal-menu">
+					<li class="add"><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'add'),'',true);?>">Add Category</a></li>
+				</ul>-->
+			</div>
+			<br style="clear: both;"/>	
+			
+			<form id="form-search" method="post" onsubmit="return validate_search('form-search');">
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">Search Publications</th>
+				</tr>
+				
+				 <tr>
+					<td width="100%" colspan="8">Title / Brand:<input type="text" name="searchword" id="searchword" value="<?php if(isset($formData["searchword"]) && !empty($formData["searchword"])) echo $formData["searchword"]; ?>" style="width:120px;"> Genre:
+					<?php
+					$modelGenre = new Publisher_Model_DbTable_Genres();
+					$genreList=$modelGenre->getGenreList();
+					?>
+					<select name="booktype" id="booktype" style="width:120px;">
+					<option value="">Select Genre</option>
+					<?php
+					for($ii=0;$ii<count($genreList);$ii++)
+					{
+					?>
+					<option value="<?php echo $genreList[$ii]['id']; ?>" <?php if(isset($formData["booktype"]) && $formData["booktype"]==$genreList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $genreList[$ii]['genre']; ?></option>
+					<?php
+					}
+					?>	
+					</select>
+					ISBN / ISSN:<input type="text" name="searchisbn" id="searchisbn" value="<?php if(isset($formData["searchisbn"]) && !empty($formData["searchisbn"])) echo $formData["searchisbn"]; ?>" style="width:120px;">
+					
+					<input type="submit" name="searchresult" id="searchresult" value="Search"  class="button-Add" title="Search">
+					<input type="button" name="showall" value="Show All" class="button-Add" onclick="javascript:document.location.href='<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'index'),'',true);?>'" title="Show All"/>
+					<input type="button" name="showall" value="Export" class="button-Add" onclick="javascript:document.location.href='<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'exportusercsv',"searchword"=>$formData["searchword"],"booktype"=>$formData["booktype"],"searchisbn"=>$formData["searchisbn"]),'',true);?>'" title="Export csv"/>
+					</td>
+				</tr>
+				</table>
+			 </form>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			<br style="clear: both;"/>	
+			
+			<form name="frm" id="frm" action="" enctype="multipart/form-data" method="post">
+			
+			
+			<table class="table-list" cellpadding="0" cellspacing="0">
+			 
+				
+				 <tr>
+					<td colspan="2" align="right">
+				 
+					<input type="submit" name="set_featured" id="set_featured" value="Set As Featured" onClick="return chk_checkbox();"/>
+					 
+					&nbsp;&nbsp;
+					 <input type="submit" name="remove_featured" id="remove_featured" value="Remove from Featured" onClick="return chk_checkbox();"/>
+					 
+					&nbsp;&nbsp;
+					 
+					<input type="submit" name="approve_all" id="approve_all" value="Approve All" onClick="return chk_checkbox();"/>
+				 
+					&nbsp;&nbsp;
+					 
+					<input type="submit" name="unapprove_all" id="unapprove_all" value="Unapprove All" onClick="return chk_checkbox();"/>
+					</td>
+					 
+				</tr>
+				</table>
+			
+			
+			
+			<table class="table-list" cellpadding="0" cellspacing="0">
+			   <tr>
+				   <th>SL.No</th>
+				   <th><input type='checkbox' name='checkall' onClick='return checked_text();'></th> 
+				    <th>Publication Id</th>
+				   <th>Title / Brand</th>
+				   <th>Genre</th>
+				   <th>Author / Publisher</th>
+				   <th>ISBN / ISSN</th>
+				   <th>Subscriptions</th>
+				   <th>Publish Time</th>
+				   <th>Status</th>
+				   <th align="center">Set <BR />Featured</th>
+				   <th>Action</th>
+			   </tr>
+			<?php 
+			  $this->modelBooks = new Publisher_Model_DbTable_Books();
+			  $this->modelSubscriptions = new Publisher_Model_DbTable_Subscriptions();
+			  if(isset($this->prodList) && count($this->prodList)>0)
+			  {
+				$sNumber=1;
+				foreach($this->prodList as $row)
+				{
+					$bookDetail=$this->modelBooks->getInfoByPublicationId($row->id);
+					
+					$issuesList=$this->modelIssue->getList(0,$row->id);
+					
+					$subscriptionlist = $this->modelSubscriptions->fetchAll('product_id 	='.$row->id);
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					   
+					   <td>
+					   <input type="checkbox" name="chk[]" value="<?php echo $row->id;?>" id="chk" onClick="javascript:checked_chkbox(this.form);">
+					   </td>
+					   <td><?php echo $row->id;?></td>
+					   <td>
+					   <?php
+					   $modelCategory = new Publisher_Model_DbTable_Books();
+					   $getBrandInfo=$modelCategory->getBrandInfo($row->title);
+					   if(!empty($getBrandInfo))
+					   {
+							$titleBrand=$getBrandInfo['brand'];
+					   }else
+					   {
+							$titleBrand=$row->title;
+					   }
+						if(!empty($row->parent_brand_id))
+						{
+						$productInfo=$this->modelPublications->fetchRow('id='.$row->parent_brand_id);
+						$getParentBrandInfo=$modelCategory->getBrandInfo($productInfo->title);
+							if(!empty($getParentBrandInfo))
+							{
+								$titleBrand=$getParentBrandInfo['brand']." - ".$titleBrand;
+							}
+						}
+						
+					   echo stripslashes($titleBrand);
+						?></td>						
+					   <td>
+					   <?php
+					   //echo $row->product_type;
+					   $genreInfo=$this->modelGenre->getGenreInfo($row->product_type);
+					   echo $genreInfo['genre'];?></td>
+					   <td><?php $this->modelPublications=new Admin_Model_DbTable_Publications();
+					   $publisher_info_array=$this->modelPublications->getPublisherInfo($row->author_id);
+					   if(!empty($publisher_info_array))
+					   {
+					   echo $publisher_info_array['first_name']."&nbsp;".$publisher_info_array['last_name'];
+					   }
+					   else
+					   {
+						echo $row->publisher;
+					   }
+					   
+					   ?></td>	   
+					   <td><?php echo $row->isbn_number; ?></td>
+					   <td>
+					   <?php
+						  if($row->parent_brand_id==0 && count($subscriptionlist)>0)
+						  {
+					   ?>
+					   <a href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'subscriptions','id'=>$row->id),'',true);?>">Manage Subscriptions</a>
+					   <?php } else {  echo 'N/A'; }?>
+					   
+					   
+					   </td>
+					   <td><?php echo CommonFunctions::formatDate($row->publish_time); ?></td>
+					   <td>
+						<?php 
+							if($row->admin_approve=='1')
+							{
+							?>
+							<a class="action-icon" title="Active" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'inactive','id'=>$row->id),'',true);?>"><img alt="Active" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/active.png"/></a>
+							<?php  
+							}
+							else
+							{
+							?>
+							<a class="action-icon" title="Inactive" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'active','id'=>$row->id,'pid'=>$row->parent_brand_id),'',true);?>"><img alt="Inactive" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/inactive.png"/></a>
+							<?php  
+							}
+							?>
+						<!---->
+						
+					   </td>
+					   <td align="center" style="text-align:center;">
+					   
+						<?php 
+						if($row->is_featured=='1')
+						{
+						?>
+						<a class="action-icon" title="Set Featured" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'featuredinactive','id'=>$row->id),'',true);?>"><img alt="Featured" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/active.png"/></a>
+						<?php  
+						}
+						else
+						{
+						?>
+						<a class="action-icon" title="Set Featured" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'featuredactive','id'=>$row->id),'',true);?>"><img alt="Featured" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/inactive.png"/></a>
+						<?php  
+						}
+						?>
+						
+					   </td>
+					   <td>
+							<!--<a class="action-icon" title="Edit" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'edit','id'=>$row->id),'',true);?>"><img alt="Edit" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/icon_edit.png"/></a>-->
+							
+							<?php
+							if(!empty($issuesList) && count($issuesList)>0)
+							{
+							?>
+							<a class="action-icon" title="View And Manage Issues" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'issues','parentid'=>$row->id),'',true);?>"><img alt="View And Manage Issues" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/application_view_detail.png"/></a>
+							<?php
+							}
+							else
+							{
+							?>
+							<a class="action-icon" title="View" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'view','id'=>$row->id),'',true);?>"><img alt="View" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/application_view_detail.png"/></a>
+							<?php
+							}
+							if($bookDetail['file_name']!='')
+							{
+								$filename = EPUB_UPLOAD_DIR.$bookDetail['file_name']; 
+								$file_details = pathinfo($filename);			
+								$ext = $file_details['extension'];
+								?>
+								<a class="action-icon" title="Download" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'download','id'=>$row->id),'',true);?>"><img alt="Download" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/webimages/download-icon.png" width='12' height='12'/></a>
+								<?php
+								if($ext != 'pdf')
+								{
+								?>
+									To read epub <a href='http://www.magicscroll.net/' target="_blank">Click Here</a>
+								<?php
+								}
+							}
+							?>
+							<!--<a class="action-icon" title="Delete" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'delete','id'=>$row->id),'',true);?>" onclick="return confirm('Are you sure to delete?');"><img alt="Delete" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/trash.gif"/></a>-->
+					   </td>
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+					if($this->totalCount>$this->pageSize)
+					{
+						echo '<tr><td colspan="9">&nbsp;</td></tr>';
+						echo '<tr><td colspan="9"><div class="pagination">'.$this->paginationControl($this->prodList,'Sliding','pagination.phtml').'</div></td></tr>';
+					}
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="9" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+			</form>
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+function validate_search(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>

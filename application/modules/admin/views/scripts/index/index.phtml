@@ -1,0 +1,160 @@
+<div class="content-box">
+				
+	<div class="content-box-header">
+					
+		 <h3 style="cursor: s-resize;">Dashboard</h3>
+	
+	</div> <!-- End .content-box-header -->
+				
+	<div class="content-box-content" style="text-align:center; ">
+				
+		<br clear="all"/>
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		<br clear="all"/>		
+		<BR><strong>Welcome to admin panel</strong><BR><BR>
+				
+				<ul class="shortcut-buttons-set">
+				<?php
+				$modelModuleMenus = new Admin_Model_DbTable_ModulesMenus();
+				$staffModuleInfo = $modelModuleMenus->fetchRow("controller='adminusers'");
+				if(!empty($staffModuleInfo) && in_array($staffModuleInfo['id'], $this->sessAdminInfo->modules)) {?> 					
+				<li>
+				<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'admin','controller'=>'adminusers','action'=>'index'),'',true);?>">
+				<span>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/staffe.png" alt="icon"><br>
+					Staff 
+				</span>
+				</a>
+				</li>
+				<?php } ?>
+				
+				<?php
+				$userModuleInfo = $modelModuleMenus->fetchRow("controller='users'");
+				if(!empty($userModuleInfo) && in_array($userModuleInfo['id'], $this->sessAdminInfo->modules)) {?> 				
+				<li>
+				<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'admin','controller'=>'users','action'=>'index'),'',true);?>">
+				<span>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/userconfig.png" alt="icon"><br>
+					Customers 
+				</span>
+				</a>
+				</li>
+				<?php } ?>
+				
+				<?php
+				$categoryModuleInfo = $modelModuleMenus->fetchRow("controller='categories'");
+				if(!empty($categoryModuleInfo) && in_array($categoryModuleInfo['id'], $this->sessAdminInfo->modules)) {?>
+				<li>
+				<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'admin','controller'=>'categories','action'=>'index'),'',true);?>">
+				<span>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/mcategories.png" width="48" height="48" alt="icon"><br>
+					Category 
+				</span>
+				</a>
+				</li>
+				<?php } ?>
+				
+				<?php $publicationModuleInfo = $modelModuleMenus->fetchRow("controller='publications'");
+				if(!empty($publicationModuleInfo) && in_array($publicationModuleInfo['id'], $this->sessAdminInfo->modules)){?>
+				<li>
+				<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'index'),'',true);?>">
+				<span>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/product_image.png" width="48" height="48" alt="icon"><br>
+					Publications 
+				</span>
+				</a>
+				</li>
+				<?php } ?>
+				
+				<?php $languageModuleInfo = $modelModuleMenus->fetchRow("controller='languages'");
+				if(!empty($languageModuleInfo) && in_array($languageModuleInfo['id'], $this->sessAdminInfo->modules)){?>
+				<li>
+				<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'admin','controller'=>'languages','action'=>'index'),'',true);?>">
+				<span>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/config-language.png" alt="icon" width="48" height="48"><br>
+					Languages 
+				</span>
+				</a>
+				</li>
+				<?php } ?>
+				
+				<?php $pageModuleInfo = $modelModuleMenus->fetchRow("controller='pages'");
+				if(!empty($pageModuleInfo) && in_array($pageModuleInfo['id'], $this->sessAdminInfo->modules)){?> 				
+				<li>
+				<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'admin','controller'=>'pages','action'=>'index'),'',true);?>">
+				<span>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/cms_pages.png" alt="icon" width="48" height="48"><br>
+					 Pages
+				</span>
+				</a>
+				</li>
+				<?php } ?>
+				
+				<?php $faqModuleInfo = $modelModuleMenus->fetchRow("controller='faqs'");
+				if(!empty($faqModuleInfo) && in_array($faqModuleInfo['id'], $this->sessAdminInfo->modules)){?>				
+				<li>
+				<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'admin','controller'=>'faqs','action'=>'index'),'',true);?>">
+				<span>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/FAQ.png" alt="icon" width="48" height="48"><br>
+					FAQ 
+				</span>
+				</a>
+				</li>
+				<?php } ?>
+				
+				<?php /* if(in_array("4", $dataModules)) {?> 
+				<li>
+				<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'admin','controller'=>'emails','action'=>'index'),'',true);?>">
+				<span>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/e_mail.png" alt="icon" width="48" height="48"><br>
+					Email 
+				</span>
+				</a>
+				</li>
+				<?php }*/ ?>
+				
+				<?php $enquirysModuleInfo = $modelModuleMenus->fetchRow("controller='enquirys'");
+				if(!empty($enquirysModuleInfo) && in_array($enquirysModuleInfo['id'], $this->sessAdminInfo->modules)){?>
+				<li>
+				<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'admin','controller'=>'enquirys','action'=>'index'),'',true);?>">
+				<span>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/stock_task.png" alt="icon" ><br>
+					Enquiry 
+				</span>
+				</a>
+				</li>
+				<?php } ?>
+				
+				<?php $reviewModuleInfo = $modelModuleMenus->fetchRow("controller='reviews'");
+				if(!empty($reviewModuleInfo) && in_array($reviewModuleInfo['id'], $this->sessAdminInfo->modules)){?>
+				<li>
+				<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'admin','controller'=>'reviews','action'=>'index'),'',true);?>">
+				<span>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/document-preview.png" alt="icon" ><br>
+					Review 
+				</span>
+				</a>
+				</li>
+				<?php } ?>
+				
+				<?php if(in_array("0", $this->sessAdminInfo->modules)) {?>				
+				<li>
+				<a class="shortcut-button" href="<?php echo $this->url(array('module'=>'admin','controller'=>'profile','action'=>'changepassword'),'',true);?>">
+				<span>
+				<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/admin/images/advancedsettings.png" alt="icon" ><br>
+					 Settings
+				</span>
+				</a>
+				</li>
+				<?php } ?>					
+			</ul><!-- End .shortcut-buttons-set -->
+				
+			
+	</div> <!-- End .content-box-content -->
+				
+</div> <!-- End .content-box -->
+			
+		
+  

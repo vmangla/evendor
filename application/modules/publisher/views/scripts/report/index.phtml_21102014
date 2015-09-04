@@ -1,0 +1,235 @@
+<?php
+$producturrency = new Admin_Model_DbTable_Countries();
+?>
+
+<?php
+$currUrl=$this->url();
+$addUrl=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'create'),'',true);
+$bookList=(isset($this->bookList))?$this->bookList:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+$formData=(isset($this->formData))?$this->formData:array();
+$searchAllUrl=$this->url(array('module'=>'publisher','controller'=>'book','action'=>'index'),'',true);
+?>
+<div id="panel">
+	<div class="panel-header">
+	    <h3>My Reports</h3>
+	    <a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'book','action'=>'create'),'',true);?>" onclick="return goToPage(this.href,'tab2','book');" title="Add New Publication" class="addbook"></a>
+	</div>
+	
+	<div class="panel-content" id="addbook">
+		<div class="panel-sub-content" >
+		
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		
+		<br  clear="all"/>
+			<form name="report-search" id="report-search" method="post" onsubmit="return validate_common_form('report-search','<?php echo $currUrl;?>','tab9');">
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">Search Publications</th>
+				</tr>
+				<tr>
+					<td colspan="2"></td>
+				</tr>
+				 <tr>
+					<td width="100%" colspan="8">Select Manager:<select name="manager" id="manager" onchange="getuserlist('<?php echo $this->parentPublisherId;?>',this.value,'');"><option value="" >Select One</option><option value="publication_manager" <?php if($formData['manager']=='publication_manager') {?>selected<?php } ?> >Publication Manager</option><option value="account_manager" <?php if($formData['manager']=='account_manager') {?>selected<?php } ?>  >Account Manager</option></select> 
+						Manager List:
+					<select name="userList" id="userlist" ></select>
+					<?php
+					if($formData['manager']!='' && $formData['userList']!='')
+					{
+					?>
+						<script type="text/javascript">getuserlist('<?php echo $this->parentPublisherId;?>','<?php echo $formData['manager'];?>','<?php echo $formData['userList'];?>');</script>
+					<?php
+					}
+					?><span style="text-align:right;" ><strong>Total:&#x20a6;<?php echo $this->totalPrice;?></strong></span></br>
+					From Date <input type="text" size="12" name="from_date" id="from_date" value="<?php echo $formData['from_date'];?>" />
+					To Date <input type="text" name="to_date" id="to_date" value="<?php echo $formData['to_date'];?>" />
+					<input type="submit" name="searchresult" id="searchresult" value="Search"  class="button-Add">
+					<input type="button" name="showall" value="Show All" class="button-Add" onclick="return goToPage('<?php echo $currUrl;?>','tab9','reports');" />
+					</td>
+				</tr>
+				</table>
+			 </form>
+			 <br  clear="all"/>
+			 <br  clear="all"/>
+			<table class="table-list" cellpadding="0" cellspacing="0" width="100%">			
+			   <tr>
+				   <th width="5%" align="center">S.No</th>
+				   <th width="15%" align="center">Title / Brand</th>				  
+				   <th width="15%" align="center">Genre</th>
+				   <th width="15%" align="center">Author / Publisher</th>
+				   <th width="15%" align="center">Subscription Type</th>
+				   <th width="15%" align="center">Type</th>
+				   <th width="5%" align="center">No Of Download</th>
+				   <th width="5%" align="center">No Of Purchased</th>
+				   <th width="5%" align="center">Base Price</th>
+				   <th width="15%" align="center">Total Price</th>
+				     <th width="15%" align="center">Last Date Of Purchase</th>
+			   </tr>			   
+			<?php 
+			 
+			$productPrice = new Publisher_Model_DbTable_BookPrices();
+			$producturrency = new Admin_Model_DbTable_Countries();
+			$this->modelPublisher = new Publisher_Model_DbTable_Publishers();
+			$this->modelBooks = new Publisher_Model_DbTable_Books();
+			$modelAuthor = new Publisher_Model_DbTable_Publishers();
+			$modelSubscription  = new Publisher_Model_DbTable_Subscriptions();	
+			//$modelCategory = new Publisher_Model_DbTable_Books();
+			  if(isset($this->bookList) && count($this->bookList)>0)
+			  { 
+				$sNumber=1;
+				foreach($this->bookList as $row)
+				{
+					$reportUrl=$this->url(array('module'=>'publisher','controller'=>'report','action'=>'detailsreport',"publication"=>$row['id']),'',true);
+					$productPriceInfo = $productPrice->getPriceByStoreId($row['id'],$row['store_id']);
+					
+					$product_details = $this->modelBooks->fetchRow("id='".$row['id']."'");
+					
+					$publisherDet = $modelAuthor->getInfoByPublisherId($product_details['publisher_id']);
+
+					$subscription_data = $modelSubscription->fetchAll('id="'.$row['subscription_type'].'"');
+					
+					if(count($subscription_data)>0)
+					{
+						if($subscription_data[0]->subscription_type!='')
+						{
+							$subtype = $subscription_data[0]->subscription_type;
+						}
+
+					}
+					else
+					{
+						$subtype = "N/A";
+					}
+			?>
+					<tr>
+					<td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					<td>
+					<?php					
+					$categoryDetails=$this->modelBooks->getCategoryInfo($row['cat_id']);
+					$getBrandInfo=$this->modelBooks->getBrandInfo($row['title']);					
+					if(!empty($categoryDetails) && !empty($getBrandInfo))
+					{					
+						$title_pub =  stripslashes($getBrandInfo['brand']);
+					}
+					else
+					{
+						$title_pub = stripslashes($row['title']);				
+					}
+					?>
+					<a href="#tab9" title="Reports" onclick="return goToPage('<?php echo $reportUrl;?>','tab9','reports');"><?php echo $title_pub;?></a>
+					</td> 					
+					<td>
+					<?php					
+					$modelGenre = new Publisher_Model_DbTable_Genres();
+					$genreDetails=$modelGenre->getGenreInfo($row['product_type']);
+					echo $genreDetails['genre'];
+					?></td>
+					<td>
+					<?php					
+						echo $publisherDet['publisher'];					
+					?>
+					</td>
+				    
+					
+					<td>
+					<?php
+					echo $subtype;
+					?>
+					</td> 
+					<td>
+					<?php
+					echo $categoryDetails['category_name'];
+					?>
+					</td>
+					<!--<td>-->
+					<?php
+					
+					/*if($row['group_user_id']!='')
+					{
+						$userData = $this->modelPublisher->getInfoByPublisherId($row['group_user_id']);
+						echo $name = $userData['first_name']." ".$userData['last_name'];
+					}
+					else
+					{
+						$assignPublisherUser = $this->modelBooks->getPublicationAssignUser($row['id'],$row['publisher_id']);
+						for($i=0;$i<count($assignPublisherUser);$i++)
+						{
+							$userData = $this->modelPublisher->getInfoByPublisherId($assignPublisherUser[$i]['group_user_id']);
+							echo $name = $userData['first_name']." ".$userData['last_name']."</br>";
+						}
+					}*/
+					//echo $row['group_user_id'];
+					?>							
+					<!--</td>-->
+				 	<td>
+				 	<?php
+						echo $row['tot_down'];
+					
+				 	?>
+				 	</td>
+						
+				 	<td>
+				 		<?php
+				 	echo $row['quantity'];
+				 	?>
+				 	</td>
+					<td>
+					 <?php
+					  if($row['group_id']!=0)
+					  {
+						echo $producturrency->getCurrencyInfo($row['store_id']).$productPriceInfo['group_price'];
+					  }
+					  else
+					  {
+						 echo $producturrency->getCurrencyInfo($row['store_id']).$productPriceInfo['price'];
+					  }					
+					  ?>
+					<?php
+						//echo $producturrency->getCurrencyInfo($row['store_id']).$row['cr_price'];
+					?>
+					</td>
+				 	<td>
+				 		<?php
+					
+						$tot_price = $row['tot_price'];
+						$getCurrencyName = $producturrency->getCurrencyCode($row['store_id']);
+					  $totNairaPrice = $producturrency->currencyconverter($getCurrencyName,"NGN",$tot_price);
+					   echo $producturrency->getCurrencyInfo(226).@number_format($totNairaPrice,2);
+					
+				 		//echo $producturrency->getCurrencyInfo($row['store_id']).$tot_price;
+				 		?>
+				 	</td>
+					<td><?php echo $row['add_date'];?></td> 
+				   </tr>
+			<?php
+					$sNumber++;
+				}				
+				if($this->totalCount>$this->pageSize)
+				{
+					global $tab,$tab_ajax;
+					$tab=9; $tab_ajax='report';
+					echo '<tr><td colspan="12">&nbsp;</td></tr>';
+					echo '<tr><td colspan="12"><div class="pagination">'.$this->paginationControl($this->bookList,'Sliding','pagination.phtml').'</div></td></tr>';
+				}				
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="12" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>	
+	</div>
+</div>
+<script type="text/javascript">
+	function getuserlist(pId,val,userid)
+	{
+		//alert(val);
+		$.post("<?php echo $this->serverUrl().$this->baseUrl();?>/publisher/report/getmanageruser/",{"type":val,"pId":pId,"user_id":userid},function(data){
+			$("#userlist").html(data);
+		});
+	}
+</script>

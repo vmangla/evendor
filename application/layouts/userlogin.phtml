@@ -1,0 +1,92 @@
+<?php echo $this->doctype() ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<?php echo $this->headTitle('Electronic Vendor Ltd')?>
+<?php echo $this->headMeta()?>
+<?php echo $this->headLink()?>
+<?php echo $this->headStyle()?>
+<?php echo $this->headScript()?>
+<link href="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/user/user_styles.css" media="screen" rel="stylesheet" type="text/css"/>
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/user/jquery-v1.7.1.js"></script>
+<script src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/js/user/common_validation.js"></script>
+</head>
+<body>
+<div class="main" id="main">
+	<div id="header">
+		<div class="logo"><a href="<?php echo $this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);?>">Site Logo</a></div>
+		<!--<div class="header-menu">
+			<ul>
+				<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>1),'',true);?>">What is SHIFTe</a></li>
+				<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>2),'',true);?>">SHIFTe Last Minute</a></li>
+				<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>3),'',true);?>">Get Qualified</a></li>
+				<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>4),'',true);?>">About Us</a></li>
+				<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>5),'',true);?>">FAQS</a></li>
+				<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>6),'',true);?>">Support</a></li>
+				<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>7),'',true);?>">Contact Us</a></li>
+			</ul>
+		</div>-->
+	</div>
+	<div class="middle" id="middle">
+		<?php echo $this->layout()->content;?>
+	</div>
+	<!--<div id="footer">
+		<table>
+			<tr>
+			<td style="vertical-align:top;">
+				<ul>SHIFTe.com.au
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>1),'',true);?>">What is SHIFTe</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>2),'',true);?>">SHIFTe Last Minute</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>3),'',true);?>">Get Qualified</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>4),'',true);?>">About Us</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>5),'',true);?>">FAQS</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>6),'',true);?>">Support</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index','id'=>7),'',true);?>">Contact Us</a></li>
+				</ul>
+			</td>
+			<td style="vertical-align:top;">
+				<ul>Jobs
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">Job Search</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">Featured Job</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">Jobs Awarded</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">Featured Employers</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">Advanced Search</a></li>
+				</ul>
+			</td>
+			<td style="vertical-align:top;">
+				<ul>Get in Touch
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">Advertise with us</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">Careers</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">Freelancer Blog</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">Affiliate Programs</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">Affiliate API</a></li>
+				</ul>	
+			</td>
+			<td style="vertical-align:top;">
+				<ul>Follow us on
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">Facebook</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">twitter</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">linkedin</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">pinterest</a></li>
+					<li><a href="<?php echo $this->url(array('module'=>'default','controller'=>'page','action'=>'index'),'',true);?>">contact us</a></li>
+				</ul>
+			</td>
+			<td style="vertical-align:top;">
+				<ul>
+					<li>
+						<div style="width:200px;height:100px;">
+							<h3>SHIFTe on Facebook</h3>
+						</div>
+					</li>
+					<li>
+						<p class="copyright">&copy; copyright by SHIFTe</p>
+					</li>
+				</ul>
+				
+				
+			</td>
+			</tr>
+		</table>
+	</div>-->
+</div>
+</body>
+</html>

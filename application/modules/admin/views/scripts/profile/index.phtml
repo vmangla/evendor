@@ -1,0 +1,31 @@
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize; text-decoration:none;">My Profile</h3></div>
+	
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+	<div class="content-box-content">
+		
+		
+			<table class="table-form" cellpadding="0" cellspacing="0">
+				<tr>
+					<td width="20%" class="tdrightBold">First Name</td>
+					<td><?php echo $this->profileInfo->first_name;?></td>
+				</tr>
+				<tr>
+					<td width="20%" class="tdrightBold">Last Name</td>
+					<td><?php echo $this->profileInfo->last_name;?></td>
+				</tr>
+				<tr>
+					<td width="20%" class="tdrightBold">Email</td>
+					<td><?php echo $this->profileInfo->user_email;?></td>
+				</tr>
+				<tr>
+					<td width="20%" class="tdrightBold">Username</td>
+					<td><?php echo $this->profileInfo->user_name;?></td>
+				</tr>
+				
+			 </table>
+		
+	</div>
+</div>

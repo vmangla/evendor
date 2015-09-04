@@ -1,0 +1,170 @@
+<?php
+class AuthController extends Zend_Controller_Action
+{
+	protected $_flashMessenger=null;
+	
+	public function init()
+    {
+		$this->_flashMessenger =$this->_helper->getHelper('FlashMessenger');
+    }
+	
+	
+    public function indexAction()
+    {
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		
+		//$this->_helper->layout()->setLayout('adminlogin');
+		
+		$users = new Model_DbTable_Users();  
+        if($this->getRequest()->isPost())
+		{
+			$formdata =$this->getRequest()->getPost();
+			//print_r($formdata);exit;
+			$auth = Zend_Auth::getInstance();
+			$authAdapter = new Zend_Auth_Adapter_DbTable($users->getAdapter(),TBL_USERS);
+			$authAdapter->setIdentityColumn('username')
+						->setCredentialColumn('password');
+			
+			$authAdapter->setIdentity($formdata['user_name'])
+						->setCredential($formdata['user_password']);
+			$result = $auth->authenticate($authAdapter);
+			if($result->isValid())
+			{
+				$storage = new Zend_Auth_Storage_Session('user_type');
+				$storage->write($authAdapter->getResultRowObject());
+				$this->_redirect('publisher/');
+			} 
+			else 
+			{
+				$this->view->errorMessage='<div class="div-error">Invalid username or password</div>';
+			}
+        }
+    }
+	
+    public function logoutAction()
+    {
+		$storage = new Zend_Auth_Storage_Session('user_type');
+        $storage->clear();
+		$this->_flashMessenger->addMessage('<div class="div-success">You have logged out successfully</div>');
+        $this->_redirect('/');
+    }
+	
+	public function storechangeAction()
+    {
+		
+		/***********************************************************/
+		$modelCountry = new Admin_Model_DbTable_Countries();
+		$storeId=$this->_getParam('storeid');
+		if(!empty($storeId))
+		{
+			$country_info = $modelCountry->fetchRow("id='$storeId'");
+			$storeId=$this->getRequest()->getCookie('sid');
+			$storeName=$this->getRequest()->getCookie('sname');
+			
+			if(!empty($storeId) && !empty($storeName))
+			{
+				setcookie("sid", $country_info->id);
+				setcookie("sname", $country_info->country);
+				
+				$storeSession = new Zend_Session_Namespace('storeInfo');
+				$storeSession->sid=$country_info->id;
+				$storeSession->sname=$country_info->country;
+			}
+			else
+			{
+				setcookie("sid", $country_info->id);
+				setcookie("sname", $country_info->country);
+				
+				$storeSession = new Zend_Session_Namespace('storeInfo');
+				$storeSession->sid=$country_info->id;
+				$storeSession->sname=$country_info->country;
+				
+				//$publication_store = new Zend_Auth_Storage_Session('store_type');
+				//$publication_store->write($country_info);
+			}
+		//exit;			
+		}
+		else
+		{
+			$storeId=$this->getRequest()->getCookie('sid');
+			$storeName=$this->getRequest()->getCookie('sname');
+			
+			if(empty($storeId) && empty($storeName))
+			{
+				$country_info = $modelCountry->fetchRow('country="Nigeria"');
+				setcookie("sid", $country_info->id);
+				setcookie("sname", $country_info->country);				
+				$storeSession = new Zend_Session_Namespace('storeInfo');
+				$storeSession->sid=$country_info->id;
+				$storeSession->sname=$country_info->country;
+				$storeSession->cid=$country_info->id;
+				$storeSession->cname=$country_info->country;
+				
+			}
+			else
+			{
+				$storeSession = new Zend_Session_Namespace('storeInfo');
+				$storeSession->sid=$storeId;
+				$storeSession->sname=$storeName;
+				$storeSession->cid=$storeId;
+				$storeSession->cname=$storeName;
+			}
+		//exit;	
+		}
+		/********************************************************************/
+		$this->_redirect('/');
+	}
+	function loginajaxAction()
+	{
+		$this->_helper->layout->disableLayout();
+		$this->modelCompanies = new Company_Model_DbTable_Companies();
+		$redirect_url = $_SERVER['HTTP_REFERER'];
+		$formData =$this->getRequest()->getPost();	
+		/*echo "<pre>";
+		print_r($formData);
+		exit;*/
+		if(!(isset($formData['user_name'])) || trim($formData['user_name'])=="")
+		{
+			echo "Please enter your username/password";
+		}
+		if(!(isset($formData['user_password'])) || trim($formData['user_password'])=="")
+		{
+			echo "Please enter your username/password";
+		}
+		if(count($formErrors)==0)
+		{
+			
+			$comp_pwd=md5($formData['user_password']);
+			$auth = Zend_Auth::getInstance();
+			$authAdapter = new Zend_Auth_Adapter_DbTable($this->modelCompanies->getAdapter(),TBL_COMPANIES);
+			$authAdapter->setIdentityColumn('user_email')
+						->setCredentialColumn('user_password');
+			$authAdapter->setIdentity($formData['user_name'])
+						->setCredential($comp_pwd);
+			$result = $auth->authenticate($authAdapter);		
+			if($result->isValid())
+			{
+				$userInfo=$authAdapter->getResultRowObject();			
+				if($userInfo->account_type == '1')
+				{
+					$storage = new Zend_Auth_Storage_Session('company_type');
+					$storage->write($userInfo);
+					//header("Location:$redirect_url");
+					echo "s";
+				}
+				elseif($userInfo->account_type == '2')
+				{
+					$storage = new Zend_Auth_Storage_Session('account_type');
+					$storage->write($userInfo);
+					echo "s";
+				}
+			}
+			else {
+				echo "Invalid username or password";
+			}
+		}	
+		exit;	
+	}
+	
+}
+

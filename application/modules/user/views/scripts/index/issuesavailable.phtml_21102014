@@ -1,0 +1,120 @@
+<div class="user_dashboard">
+<?php include('leftnav.phtml');
+$this->modelBooks = new Publisher_Model_DbTable_Books();
+$modelAuthor = new Publisher_Model_DbTable_Publishers(); 
+ 
+?>
+</div>
+
+<div class="welcome_user">
+<div class="credithistory" style="width:100%">
+<form name="frm_history" id="frm_history" method="get" action="">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+ 
+<tr>
+	<td colspan="5" height="25"></td>
+</tr>
+ 
+<tr>
+	<td colspan="5" height="25"></td>
+</tr>
+<tr>
+	 
+	<td style="padding-bottom:8px;">
+		<strong>Item</strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		<strong>Publisher Name</strong>
+	</td>
+ 
+	 
+</tr>
+
+<?php
+if(count($this->usersubscriptions)>0)
+{
+$j=1;
+foreach($this->usersubscriptions as $row)
+{	
+ 
+	$publications_id = $this->modelBooks->fetchAll('id="'.$row['product_id'].'"');
+
+	$parent_brand_id  = $this->modelBooks->fetchAll('id="'.$publications_id[0]['parent_brand_id'].'"');	
+	 
+	$publisherDet = $modelAuthor->getInfoByPublisherId($parent_brand_id[0]['publisher_id']);
+	
+	$getBrandInfo=$this->modelBooks->getBrandInfo($parent_brand_id[0]['title']);
+	 
+	if(!empty($getBrandInfo) && is_numeric($parent_brand_id[0]['title']))
+	{
+		$titleBrand =$getBrandInfo['brand'];
+	}
+	else
+	{
+		$titleBrand =$parent_brand_id[0]['title'];
+	}
+  
+?>
+<tr>
+	 
+	<td style="padding-bottom:8px;">
+		<?php echo $titleBrand;?>
+	</td>
+	<td style="padding-bottom:8px;">
+		<?php echo $publisherDet['publisher'];?>
+	</td>
+</tr>
+<tr>
+	<td colspan="2" style="height:25px;">&nbsp;&nbsp;&nbsp; Issues Available</td>
+</tr>
+
+<?php
+	if($row['number_of_issues']>$row['number_of_downloaded'])
+	{
+		$allissues = $this->modelBooks->fetchAll('add_time >= "'.$row['start_date'].'" and admin_approve=1 and parent_brand_id="'.$publications_id[0]['parent_brand_id'].'"');
+		if(count($allissues)>0)
+		{		
+		 foreach($allissues as $rowissues)
+		 {
+		 
+			$getBrandInfoissue=$this->modelBooks->getBrandInfo($rowissues['title']);
+
+			if(!empty($getBrandInfoissue) && is_numeric($rowissues['title']))
+			{
+				$titleBrandissue =$getBrandInfoissue['brand'];
+			}
+			else
+			{
+				$titleBrandissue =$rowissues['title'];
+			}
+?>
+
+<tr>
+	 
+	<td style="padding-bottom:8px;padding-left:30px;">
+		<strong> <?php echo $titleBrandissue;?></strong>
+	</td>
+	<td style="padding-bottom:8px;">
+		 <strong><?php echo $rowissues['description'];?></strong>
+	</td>
+ 
+</tr>
+
+
+	<?php
+	} } else { echo "<tr><td colspan='2' style='padding-left:30px;'>No issues available</td></tr>"; } }	}
+	?>
+	 
+	 
+</tr>
+
+<?php
+} ?>
+
+</table> 
+</form>
+
+</div>
+<!--Payment History-->
+</div>
+

@@ -1,0 +1,228 @@
+<?php
+class Publisher_ReportController extends Zend_Controller_Action
+{
+
+	protected $_flashMessenger=null;
+	var $sessPublisherInfo=null;
+	var $parentPublisherId=null;	
+	var $modelPublisher=null;
+	var $modelBook=null;
+	var $modelBrand=null;	
+    public function init()
+    {		 
+		$this->_flashMessenger =$this->_helper->getHelper('FlashMessenger');		
+		$storage = new Zend_Auth_Storage_Session('publisher_type');
+        $data = $storage->read();		
+		if($data && $data!=null)
+		{
+            $this->modelPublisher = new Publisher_Model_DbTable_Publishers();
+			$this->modelBooks = new Publisher_Model_DbTable_Books();
+			$this->modelBrand=new Publisher_Model_DbTable_Brand();			
+			$this->sessPublisherInfo=$this->modelPublisher->getInfoByPublisherId($data->id);
+			$this->view->sessPublisherInfo =$this->sessPublisherInfo;			
+			$this->parentPublisherId = !empty($this->sessPublisherInfo->parent_id)?$this->sessPublisherInfo->parent_id:$this->sessPublisherInfo->id;
+			$tab_ajax=$this->_request->getParam('tab_ajax',0);
+			/*if(empty($tab_ajax))
+			{
+				$this->_redirect('publisher/');
+			}			
+			if($data->user_type!='publisher' && $data->user_type!='Pmanager') 
+			{
+			$this->_redirect('publisher/access/index/tab_ajax/book/');
+			}*/
+		}
+		else
+		{
+			$this->_redirect('publisher/auth/');
+		}
+		
+	}
+	
+	
+	public function indexAction()
+	{
+		$producturrency = new Admin_Model_DbTable_Countries();
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		$this->_helper->layout->disableLayout();		
+		$formData=$this->getRequest()->getPost();	
+		$storage = new Zend_Auth_Storage_Session('publisher_type');
+        $sessDataIds = $storage->read();	
+		if(isset($formData['manager']) && (trim($formData['manager'])!="") && $formData['userList']!='' )
+		{			
+		  $assign_user_id=trim($formData['userList']);
+		  $publisher_id = $sessDataIds->id;
+		  if($formData['from_date']!='' && $formData['to_date']!='')
+		  {
+		  	 $bookList=$this->modelBooks->getPublicationAssignListDate($publisher_id,$assign_user_id,$formData['from_date'],$formData['to_date']);
+		  }
+		  else 
+		  {		  		
+			$bookList=$this->modelBooks->getPublicationAssignList($publisher_id,$assign_user_id);
+		  }
+		}
+		else
+		{
+			if($formData['from_date']!='' && $formData['to_date']!='')
+	  		{
+	  			 $bookList=$this->modelBooks->getPublicationProductListDate($this->parentPublisherId,$formData['from_date'],$formData['to_date']);
+	  		}
+			else 
+			{
+				$bookList=$this->modelBooks->getPublicationProductList($this->parentPublisherId);
+			}
+		}		
+		foreach($bookList as $bookDetails)
+		{
+			$getCurrencyName = $producturrency->getCurrencyCode($bookDetails['store_id']);	
+			//echo $bookDetails['purchaseAmount']."<br/>";
+			$price_t = $producturrency->currencyconverter($getCurrencyName,"NGN",$bookDetails['cr_price']);
+			$totalPrice = $totalPrice + $bookDetails['best_seller']*$price_t;
+		}		
+		$page=$this->_getParam('page',1);
+		
+	    $paginator = Zend_Paginator::factory($bookList);
+	    $paginator->setItemCountPerPage(10);
+	    $paginator->setCurrentPageNumber($page);
+		
+		$this->view->totalCount=count($bookList);
+		$this->view->pageSize=10;
+		$this->view->page=$page;
+		$this->view->bookList=$paginator;		
+		$this->view->parentPublisherId=$this->parentPublisherId;
+		$this->view->formData=$formData;
+		$this->view->totalPrice = $totalPrice;
+		
+	}
+	
+	public function freereportAction()
+	{
+		$producturrency = new Admin_Model_DbTable_Countries();
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		$this->_helper->layout->disableLayout();		
+		$formData=$this->getRequest()->getPost();	
+		$storage = new Zend_Auth_Storage_Session('publisher_type');
+        $sessDataIds = $storage->read();	
+		if(isset($formData['manager']) && (trim($formData['manager'])!="") && $formData['userList']!='' )
+		{			
+		  $assign_user_id=trim($formData['userList']);
+		  $publisher_id = $sessDataIds->id;
+		  if($formData['from_date']!='' && $formData['to_date']!='')
+		  {
+		  	 $bookList=$this->modelBooks->getPublicationAssignListDateFree($publisher_id,$assign_user_id,$formData['from_date'],$formData['to_date']);
+		  }
+		  else 
+		  {		  		
+			$bookList=$this->modelBooks->getPublicationAssignListFree($publisher_id,$assign_user_id);
+		  }
+		}
+		else
+		{
+			if($formData['from_date']!='' && $formData['to_date']!='')
+	  		{
+	  			 $bookList=$this->modelBooks->getPublicationProductListDateFree($this->parentPublisherId,$formData['from_date'],$formData['to_date']);
+	  		}
+			else 
+			{
+				$bookList=$this->modelBooks->getPublicationProductListFree($this->parentPublisherId);
+			}
+		}		
+		foreach($bookList as $bookDetails)
+		{
+			$getCurrencyName = $producturrency->getCurrencyCode($bookDetails['store_id']);	
+			//echo $bookDetails['purchaseAmount']."<br/>";
+			$price_t = $producturrency->currencyconverter($getCurrencyName,"NGN",$bookDetails['cr_price']);
+			$totalPrice = $totalPrice + $bookDetails['best_seller']*$price_t;
+		}		
+		$page=$this->_getParam('page',1);
+		
+	    $paginator = Zend_Paginator::factory($bookList);
+	    $paginator->setItemCountPerPage(10);
+	    $paginator->setCurrentPageNumber($page);
+		
+		$this->view->totalCount=count($bookList);
+		$this->view->pageSize=10;
+		$this->view->page=$page;
+		$this->view->bookList=$paginator;		
+		$this->view->parentPublisherId=$this->parentPublisherId;
+		$this->view->formData=$formData;
+		$this->view->totalPrice = $totalPrice;
+		
+	}
+	
+	public function issueAction()
+	{
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		$this->_helper->layout->disableLayout();	
+		$this->modelIssue = new Publisher_Model_DbTable_Issues();
+		$parent_publication_id=$this->_request->getParam('parentid',0);
+		$parent_publication_info=$this->modelIssue->getParentPublicationInfo($parent_publication_id);
+		$parent_brand_info=$this->modelIssue->getParentBrandInfo($parent_publication_info['title']);
+	
+		
+		$parentPublisherId = !empty($this->sessPublisherInfo->parent_id)?$this->sessPublisherInfo->parent_id:$this->sessPublisherInfo->id;
+		
+		$issueList=$this->modelIssue->getList($parentPublisherId,$parent_publication_id);
+		$this->view->bookList=$issueList;
+		
+	}
+	public function getmanageruserAction()
+	{
+		
+		
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();		
+		$formData=$this->getRequest()->getPost();
+		$this->modelPublisher = new Publisher_Model_DbTable_Publishers();
+		$drop_dwon = "<option value=''>Select One</option>";	 
+		if($formData['type'] == 'publication_manager')
+		{
+			$getMemeberList = $this->modelPublisher->getPublicationManagersList($formData['pId']);
+		}
+		elseif($formData['type'] == 'account_manager')
+		{
+			$getMemeberList = $this->modelPublisher->getAccountManagersList($formData['pId']);
+		}
+		if(count($getMemeberList)>0)
+		{
+			
+			for($i=0;$i<count($getMemeberList);$i++)
+			{
+				if($formData['user_id'] == $getMemeberList[$i]['id'])
+				{
+					$drop_dwon.="<option value='".$getMemeberList[$i]['id']."' selected >".$getMemeberList[$i]['first_name']." ".$getMemeberList[$i]['last_name']."</option>";
+				}
+				else {
+					$drop_dwon.="<option value='".$getMemeberList[$i]['id']."'>".$getMemeberList[$i]['first_name']." ".$getMemeberList[$i]['last_name']."</option>";
+				}
+			}
+		}
+		echo $drop_dwon;
+	}
+	public function detailsreportAction()
+	{
+		$publication = $this->_request->getParam('publication');
+		$producturrency = new Admin_Model_DbTable_Countries();
+		$this->view->messages = $this->_flashMessenger->getMessages();
+		$this->_helper->layout->disableLayout();		
+		$formData=$this->getRequest()->getPost();	
+		$storage = new Zend_Auth_Storage_Session('publisher_type');
+        $sessDataIds = $storage->read();
+		 $publisher_id = $sessDataIds->id;
+		$bookList=$this->modelBooks->getreportByPublication($publication,$publisher_id);
+		$page=$this->_getParam('page',1);
+		
+	    $paginator = Zend_Paginator::factory($bookList);
+	    $paginator->setItemCountPerPage(10);
+	    $paginator->setCurrentPageNumber($page);
+		
+		$this->view->totalCount=count($bookList);
+		$this->view->pageSize=10;
+		$this->view->page=$page;
+		$this->view->bookList=$paginator;		
+		$this->view->parentPublisherId=$this->parentPublisherId;
+		$this->view->formData=$formData;
+		$this->view->totalPrice = $totalPrice;
+	}
+		
+}
+

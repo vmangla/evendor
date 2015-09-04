@@ -1,0 +1,411 @@
+<?php
+$productHistory = $this->tempOrderData;
+$storage_company = new Zend_Auth_Storage_Session('company_type');	
+$company_data = $storage_company->read();
+$groupObj = new Company_Model_DbTable_Groups();
+if(isset($company_data->id))
+{
+	$groupList = $groupObj->getGroupList($company_data->id);
+}
+if(isset($company_data->id) && $company_data->id!='' && $_POST['subscription_type']!='' && count($groupList)>0)
+{	
+	$groupid = $groupList[0]->id;
+}
+else
+{
+	$groupList = "";
+	$groupid = "";
+}
+?>
+<style>
+#shipping_record
+	{
+    display: none;
+    height: auto;
+    left: 50%;
+    margin-left: -50px;
+    margin-top: -90px;
+    min-height: 50px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 10px;
+    position: fixed;
+    top: 50%;
+    width: 50px;
+    z-index: 1000;
+}
+#visa_enrolment
+	{
+    display: none;
+    height: auto;
+    left: 55%;
+    margin-left: -330px;
+    margin-top: -130px;
+    min-height: 50px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 10px;
+    position: relative;
+    top: 20%;
+    width: 50%;
+	background:#000;
+    z-index: 1000;
+	border:#666 solid 3px;
+}
+#mastered_enrolment
+	{
+    display: none;
+    height: auto;
+    left: 55%;
+    margin-left: -330px;
+    margin-top: -130px;
+    min-height: 50px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 10px;
+    position: relative;
+    top: 20%;
+    width: 50%;
+	background:#000;
+    z-index: 1000;
+	border:#666 solid 3px;
+}
+.overdelay {
+    background: none repeat scroll 0 0 #000000;
+    height: 100%;
+    left: 0;
+    opacity: 0.8;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+}
+.check_terms{ float:left; width:100%; clear:both; padding:5px 0px;}
+.check_terms a{ color:#fff; text-decoration:;}
+.check_terms input[type="checkbox"]{vertical-align:middle; margin-right:5px;}
+</style>
+<script type="text/javascript" >
+	function getHistory(sesid)
+	{
+		$.post("<?php echo $this->serverUrl().$this->baseUrl();?>/checkout/cartajax/",{"sessionid":sesid,"subscription_type":"<?php echo $_POST['subscription_type'];?>","chk_button":"<?php echo $_POST['chk_button'];?>","grId":"<?php echo $groupid;?>"},function(data){
+			dddd = data.split("####");
+			$("#cardId").html(dddd[0]);
+			$("#det_tot").html(dddd[1]);
+		});
+	}
+getHistory('<?php echo $this->sesid;?>');
+
+function removeProduct(id,sesid)
+{
+	$("#overdelay").show();
+	$("#shipping_record").show();
+	$.post("<?php echo $this->serverUrl().$this->baseUrl();?>/checkout/cartajax/",{"sessionid":sesid,"action":"delete","id":id},function(data){
+			dddd = data.split("####");
+			$("#cardId").html(dddd[0]);
+			$("#det_tot").html(dddd[1]);
+			$("#overdelay").hide();
+			$("#shipping_record").hide();
+		});	
+}	
+function increaseDecreaseQuantity(incrs,id,sesid)
+{
+	$("#overdelay").show();
+	$("#shipping_record").show();
+	var qnt = document.getElementById('item_quantity'+id).value;
+	qnt = parseInt(qnt);
+	if(incrs == 'increase')
+	{
+		qnt = qnt+1;
+	}
+	else if(incrs == 'decrease' && qnt>1)
+	{
+		qnt = qnt-1;
+	}
+	document.getElementById('item_quantity'+id).value = qnt;
+	$.post("<?php echo $this->serverUrl().$this->baseUrl();?>/checkout/cartajax/",{"sessionid":sesid,"subscription_type":"<?php echo $_POST['subscription_type'];?>","action":"increasedecrease","id":id,"quantity":qnt},function(data){
+			dddd = data.split("####");
+			$("#cardId").html(dddd[0]);
+			$("#det_tot").html(dddd[1]);
+			$("#overdelay").hide();
+			$("#shipping_record").hide();	
+		});
+		
+	
+}
+function cangeItemVal(qnt,id,sesid)
+{
+	$("#overdelay").show();
+	$("#shipping_record").show();
+	$.post("<?php echo $this->serverUrl().$this->baseUrl();?>/checkout/cartajax/",{"sessionid":sesid,"subscription_type":"<?php echo $_POST['subscription_type'];?>","action":"increasedecrease","id":id,"quantity":qnt},function(data){
+			dddd = data.split("####");
+			$("#cardId").html(dddd[0]);
+			$("#det_tot").html(dddd[1]);
+			$("#overdelay").hide();
+			$("#shipping_record").hide();	
+		});
+}
+function getGroupmem(grId,id,sesid)
+{
+	$("#overdelay").show();
+	$("#shipping_record").show();
+	$.post("<?php echo $this->serverUrl().$this->baseUrl();?>/checkout/cartajax/",{"sessionid":sesid,"subscription_type":"<?php echo $_POST['subscription_type'];?>","action":"includegroupmember","id":id,"grId":grId},function(data){
+			dddd = data.split("####");
+			$("#cardId").html(dddd[0]);
+			$("#det_tot").html(dddd[1]);
+			$("#groupmember").html(dddd[2]);
+			$("#overdelay").hide();
+			$("#shipping_record").hide();	
+			$("#groupid").val(grId);
+			$("#sessionid").val(sesid);
+			$("#tempid").val(id);
+		});
+		/*var nextValue = $(ab).parent().next().text().trim();
+		if(nextValue!="N/A"){*/
+		$('.pop-up').fadeIn(500);
+		$('#overlay').fadeIn(500);
+		//}
+}
+function getNotGroupMessage()
+{
+	$("#msg_alert").html("<font color='red'>No group is selected.</font>");
+	$("#msg_alert").show();
+	return false;
+}
+/*function getNotPriceMessage()
+{
+	$("#msg_alert").html("<font color='red'>You have already purchases or it is free product.</font>");
+	$("#msg_alert").show();
+	return false;
+}*/
+function getValidate()
+{
+var x=0;
+$('.space_content').each(function(){
+	var thisHtml=$(this).children().val();
+	if(thisHtml==""){
+		x=1;
+		return false;
+	}
+});
+	//alert("hhhh");
+	if(x!=0){
+		alert("Please select group members.");
+		return false;
+	}
+	else if(document.getElementById('terms_condition').checked==false)
+	{
+		$("#msg_alert_terms").html("<font color='red'>Please check terms and condition</font>");
+		$("#msg_alert_terms").show();
+		return false;
+	}
+	else if($('#paymentOption').val()==""){
+		alert("payment option");
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+function getPaymentOp(value)
+{
+	//alert(value);
+	if(value == 'visa')
+	{
+		$("#visa_enrolment").show();
+		$("#mastered_enrolment").hide();
+		
+	}
+	else if(value == 'master')
+	{
+		$("#visa_enrolment").hide();
+		$("#mastered_enrolment").show();
+		
+	}
+}
+function getClose(id)
+{
+	//alert("llll");
+	$("#"+id).hide();
+}
+ 
+function checkedvalue()
+{
+	
+	/*if($('input[name="groupmember[]"]:checked').length == 0) {
+		alert('No checkbox is checked');
+		return false;
+	}*/
+	
+   /*var checkbox = document.getElementsByName("groupmember[]");
+
+  var checkedAtLeastOne = false;
+  var chkArray = [];
+
+  $('input[type="checkbox"]').each(function () {
+          if ($(this).is(":checked")) { 
+              checkedAtLeastOne = true;
+          } else { 
+			  //$("#proceedbtn").removeClass("close");	
+              alert('Please select atleast one checkbox.');
+			  return false;
+          }
+      });
+	 
+	
+	alert(checkedAtLeastOne);*/
+	
+	/* look for all checkboes that have a class 'chk' attached to it and check if it was checked */
+	
+	 var chkArray = [];
+		$(".chk:checked").each(function() {
+			chkArray.push($(this).val());
+		});
+		
+		/* we join the array separated by the comma */
+		var selected;
+		selected = chkArray.join(',') + ",";
+		document.getElementById('checked_users').value = selected;
+		
+		var strLen = selected.length;
+		selected = selected.slice(0,strLen-1);
+		 
+		var sesid = document.getElementById('sessionid').value;
+		var grid = document.getElementById('groupid').value;
+		var id = document.getElementById('tempid').value;
+		$.post("<?php echo $this->serverUrl().$this->baseUrl();?>/checkout/cartajax/",{"grId":grid,"selectedusers":selected,"action":"storememberdata","sessionid":sesid,"id":id},function(data){
+				 
+				dddd = data.split("####");
+				$("#cardId").html(dddd[0]);
+				$("#det_tot").html(dddd[1]);
+				//$("#groupmember").html(dddd[2]);
+				
+				$("#overdelay").hide();
+				$("#shipping_record").hide();
+			});
+			
+ 
+	 
+	//alert(document.getElementById('checked_users').value);
+}
+
+</script>
+
+<script type="text/javascript">
+function checkAll(checkEm) {
+    var cbs = document.getElementsByTagName('input');
+    for (var i = 0; i < cbs.length; i++) {
+        if (cbs[i].type == 'checkbox') {
+            if (cbs[i].name == 'groupmember[]') {
+                cbs[i].checked = checkEm;
+            }
+        }
+    }
+}
+</script>
+<section id="middle">
+<div id="msg_alert" style="display:none;" ></div>
+<div id="overdelay" class="overdelay" style="display:none;"></div>
+<!--cart section start -->
+<div class="cart">
+<span>For IE users – This site uses Secure Server Layers to protect your data. To enable SSL on Internet Explorer use the following the steps below:</span>
+	<ul>
+		<li>Click on Tool option on the menu bar</li>
+		<li>Select Internet Options</li>
+		<li>Click Advance tab</li>
+		<li>Scroll down to Security option and uncheck Use SSL 2.0</li>
+	</ul>
+	</div>
+<div class="cart" id="cardId"></div>
+<div class="countinue_bt"><a href="<?php echo $this->serverUrl().$this->baseUrl().'/catalogue/';?>"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/countinue_shopping_bt.png" width="274" height="49" alt=""></a></div>
+<form name="checkout" action="<?php echo $this->serverUrl().$this->baseUrl()?>/checkout/procedcheckout/" method="post" onsubmit="return getValidate();" />
+<div id="det_tot"></div>
+<input type="hidden" name="checked_users" id="checked_users" value=""/>
+<input type="hidden" name="groupid" id="groupid" value=""/>
+<input type="hidden" name="sessionid" id="sessionid" value=""/>
+<input type="hidden" name="tempid" id="tempid" value=""/>
+</form>
+<!--cart section start end -->
+</section>
+ <div id="shipping_record" style="display:none;" ><img src='<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/loader.gif'/>
+  	
+</div>
+
+<div id="visa_enrolment" style="display:none;">
+<h3>Enroll Your Card for Verified By Visa</h3>
+<p>This site is protected with Verified by Visa (VbV), Visa Password-Protected Identity Checking Service, and requires that the card is enrolled to participate in the VbV program. If your Visa Card issued by Nigerian Banks is not enrolled, kindly follow the steps outlined below.</p>
+<ul>
+<li>Locate the nearest VISA/VPAY enabled ATM</li>
+<li>Insert your card and punch in your PIN</li>
+<li>Select the PIN change option</li>
+<li>Select Internet PIN (i-PIN) change option</li>
+<li>Insert any four - six digits of your choice as your i-PIN</li>
+<li>Re-entered the digits entered in step 5</li>
+<li>If you have done the above correctly, a message is displayed that your PIN was changed successfully. This means your card is now enrolled in the VbV program and you have an Internet PIN (i-PIN) which can be used for any internet related transaction</li>
+<li>Note the the word "i-PIN", "Password" and "VbV Code" are the same</li>
+<li>You can now visit your favourite VbV enabled site to shop securely</li>
+</ul>
+
+<h5>Important</h5>
+<p>Please note that this is only for internet related transactions and it does not change your regular PIN on ATM and POS.</p>
+
+<p style="text-align:center"><input type="button" name="confirm" value="OK" onclick="getClose('visa_enrolment')" ></p>
+</div>
+<div id="mastered_enrolment" style="display:none;">
+<h3>Enroll Your Master Card for MasterCard Secure Code</h3>
+<p>This site is a MasterCard SecureCode (MCSC) participating Merchant’s website. MCSC is designed to enable you (cardholder) make safer internet purchase transactions by authenticating your identity at the time of purchase in order to protect you from unauthorized usage of your MasterCard.</p>
+<p>MasterCard SecureCode password is strictly for online transactions and it is different from your regular Personal Identification Number (PIN) used for ATM and POS transactions.</p>
+<p>Please follow the steps below to obtain and use your MasterCard SecureCode:</p>
+
+<ul>
+<li>Click on the Continue button below to proceed to the next page</li>
+<li>Enter your MasterCard card details such as Card Number, CVV2, Name on card, Expiry date and click OK</li>
+<li>You will be redirected to your bank’s website, kindly follow the process to completion as advised by your bank</li>
+<li>The next time you make purchase on the website of a participating Merchant, simply enter the MCSC Password and any Secret Questions (if any) you created if required by your bank.</li>
+</ul>
+
+<h5>Important</h5>
+<p>The activation process is determined by your bank. Should you encounter any problem, please contact your bank</p>
+<p style="text-align:center"><input type="button" name="confirm" value="OK" onclick="getClose('mastered_enrolment')" ></p>
+</div>
+<div id="overlay"></div>
+<form name="frm" id="frm" method="post" action="">
+	<div class="pop-up">
+	<a href="javascript:;" class="close" onclick="return checkedvalue();"></a>
+	<ul class="button">
+	<li><a href="javascript:void(0);" onclick="checkAll(true);">Select All</a></li>
+	<li><a href="javascript:void(0);" onclick="checkAll(false);">Unselect All</a></li>
+	</ul>
+	<div id="groupmember">
+	</div>
+	<ul class="button none">
+	<li><a href="javascript:void(0);" onclick="checkAll(true);">Select All</a></li>
+	<li><a href="javascript:void(0);" onclick="checkAll(false);">Unselect All</a></li>
+	<li class="proceed"><a href="javascript:void(0);" class="close" id="proceedbtn"  onclick="return checkedvalue();">Proceed</a></li>
+	</ul>
+	</div>
+</form>
+
+<script>
+$(document).ready(function(){
+	$('.close').click(function(){
+		var x=0;
+		var check=$('#groupmember input[type=checkbox]:checked').length;
+		/*$('#groupmember input[type=checkbox]').each(function(){
+			if ($(this).is(":checked")) { 
+				x=1;
+				return false;
+			}else{
+				alert("Please select atleast one checkbox.");
+				return false;
+			}
+		});*/
+		if(check>0){
+		$(this).parents('.pop-up').fadeOut(500);
+		$('#overlay').fadeOut(500);
+		}else{
+				alert("Please select atleast one checkbox.");
+		}
+	});
+});
+</script>

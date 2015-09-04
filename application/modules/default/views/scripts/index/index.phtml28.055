@@ -1,0 +1,1904 @@
+<?php
+$storeSession = new Zend_Session_Namespace('storeInfo');
+$storeId=$storeSession->sid;
+$storage_company = new Zend_Auth_Storage_Session('company_type');
+$company_data = $storage_company->read();
+$user_sess_inf ='';
+if(count($company_data)>0)
+{
+	$user_id_comment = $company_data->id;	
+	$user_type = "1";
+	$user_sess_inf = '1';
+}
+$storage_user = new Zend_Auth_Storage_Session('account_type');
+$data_user = $storage_user->read();
+if(count($data_user)>0)
+{
+	$user_id_comment = $data_user->id;	
+	$user_type = "2";
+	$user_sess_inf = '1';
+}
+$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+$data_publiser = $storage_publisher->read();
+if(count($data_publiser)>0)
+{
+	$user_sess_inf = '5';
+}
+?>
+<?php
+/*$userDetails = new Zend_Session_Namespace('publisher_type');
+$compantDetails = new Zend_Session_Namespace('company_type');
+
+echo "<pre>";
+print_r($userDetails);
+print_r($compantDetails);*/
+
+
+$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+$publisher_data = $storage_publisher->read();
+
+$storage_company = new Zend_Auth_Storage_Session('company_type');
+$company_data = $storage_company->read();
+
+
+//$storage_storeinfo= new Zend_Session_Namespace('storeInfo');
+//$storeinfo_data = $storage_storeinfo->read();
+//echo ">>>>".$storage_storeinfo->sname;
+
+//if($storage_storeinfo->sid==226);
+//$storage_storeinfo->curname='&#8358';
+//echo ">>>".$storage_storeinfo->curname;
+
+
+$productPrice = new Publisher_Model_DbTable_BookPrices();
+
+$producturrency = new Admin_Model_DbTable_Countries();
+
+?>
+<!--Banner -->
+<script type="text/javascript">
+	$( document ).ready(function() {
+		
+		 $( "#mgzin" ).click(function( event ) {
+			if(document.getElementById("moreId").style.display=='')
+			{
+				document.getElementById("lessId").style.display='';
+				document.getElementById("moreId").style.display='none';
+			}
+			else if(document.getElementById("lessId").style.display=='')
+			{
+				document.getElementById("moreId").style.display='';
+				document.getElementById("lessId").style.display='none';
+			}
+		});
+		 $( "#ebk" ).click(function( event ) {
+			if(document.getElementById("ebmore").style.display=='')
+			{
+				document.getElementById("ebless").style.display='';
+				document.getElementById("ebmore").style.display='none';
+			}
+			else if(document.getElementById("ebless").style.display=='')
+			{
+				document.getElementById("ebmore").style.display='';
+				document.getElementById("ebless").style.display='none';
+			}
+		});
+		 $( "#nwsid" ).click(function( event ) {
+			if(document.getElementById("nwsmore").style.display=='')
+			{
+				document.getElementById("nwsless").style.display='';
+				document.getElementById("nwsmore").style.display='none';
+			}
+			else if(document.getElementById("nwsless").style.display=='')
+			{
+				document.getElementById("nwsmore").style.display='';
+				document.getElementById("nwsless").style.display='none';
+			}
+		});
+});
+function getrating(pr_id,usr_id,usr_type,val)
+{
+	//alert(pr_id);
+	 setTimeout(function(){  },5000)
+	if(usr_id!='')
+	{
+		$.post("<?php echo $this->serverUrl().$this->baseUrl();?>/index/insertratingproduct/",{"user_id":usr_id,"user_type":usr_type,"product_id":pr_id,"val":val},function(data){
+		$("#msg_"+pr_id).html("<font color='green'>"+data+"</font>");
+		$("#rate_"+pr_id).hide();		
+		//$("#msg_"+pr_id).fadeOut(5000);
+		//$("#rate_"+pr_id).show();
+		});
+	}
+	else
+	{
+		//$("#rate_"+pr_id).hide();
+		$("#msg_"+pr_id).html("<font color='red'>Please login.</font>");
+		$("#msg_"+pr_id).show();
+		//$("#msg_"+pr_id).show();
+	}
+	
+}
+</script>
+<section class="banner">
+
+<section class="slider">
+        <div class="flexslider">
+          <ul class="slides">
+            <li>
+  	    	    <img  alt="" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/slide1.jpg" />
+				<span>quis nostrud exercitation<br />
+ullamco laboris nisi ut <br />
+aliquip ex ea consequat</span>
+  	    		</li>
+  	    		<li>
+  	    	    <img  alt="" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/slide2.jpg" />
+				<span>quis nostrud exercitation<br />
+ullamco laboris nisi ut <br />
+aliquip ex ea consequat</span>
+  	    		</li>
+  	    		<li>
+  	    	    <img  alt="" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/slide3.jpg" />
+				<span>quis nostrud exercitation<br />
+ullamco laboris nisi ut <br />
+aliquip ex ea consequat</span>
+  	    		</li>
+  	      </ul>
+        </div>
+</section>
+ 
+<!--<div id="slidyBanner" class="slidyContainer">
+<div class="slidySlides">
+<figure class="slidyCurrent">
+<img  alt="" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/slide1.jpg">
+<br/>
+<figcaption>Lorem Ipsum<br>eBOOKS</figcaption>
+</figure>
+
+<figure>
+<img  alt=""  src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/slide1.jpg">
+<figcaption>Lorem Ipsum<br>eBOOKS</figcaption>
+</figure>
+</div>
+</div>-->
+
+</section>
+<!--Banner -->
+
+<!--left sidebar -->
+<aside class="left_panel">
+		
+		<!-- //Tab buttons -->
+<!-- //Tab 1 -->
+<div id="conetnt2_grid" class="tabContents">
+
+<!--Slider1 -->
+<section class="left_slider">
+<?php
+$modelUser = new Model_DbTable_Users();
+$this->commentObj = new User_Model_DbTable_Usercomment();
+if(isset($this->approvedNewsletterList) && !empty($this->approvedNewsletterList) && count($this->approvedNewsletterList))
+{
+?>
+<h1>Featured Newspapers  <a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/index/publication/newspapers/">/ &nbsp;&nbsp;View all</a></h1>
+<?php
+
+	
+		$modelAuthor = new Publisher_Model_DbTable_Publishers();
+		$modelImage = new Publisher_Model_DbTable_BookImages();
+	
+
+	?>
+	<!--<h1>Featured Newspapers</h1>-->
+		<?php if(count($this->approvedNewsletterList)>4)
+		{
+			 
+		?>
+		<div class="jcarousel-skin-tango">
+		<div class="jcarousel-container jcarousel-container-horizontal">
+			<div class="jcarousel-clip jcarousel-clip-horizontal">
+			<ul id="mycarousel" class="jcarousel-list jcarousel-list-horizontal">
+				<?php
+				foreach($this->approvedNewsletterList as $newspaper_id=>$newspaperIssueArray)
+				{
+					$authorInfo = $modelAuthor->getInfoByPublisherId($newspaperIssueArray['publisher_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($newspaperIssueArray['product_id']);
+					$rating = $modelUser->getRattingProduct($newspaperIssueArray['product_id']);
+					$productPriceInfo = $productPrice->getPriceByStoreId($newspaperIssueArray['product_id'],$newspaperIssueArray['country_id']);
+					
+					$reviewsData = $this->commentObj->fetchAll("productid='".$newspaperIssueArray['product_id']."' and comments!=''","id desc");
+					$this->view->reviewsData = $reviewsData;
+					?>
+					<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-<?php echo $newspaper_id+1;?> jcarousel-item-<?php echo $newspaper_id+1;?>-horizontal">
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperIssueArray['product_id'];?>/store/<?php echo $newspaperIssueArray['country_id'];?>/lang/<?php echo $newspaperIssueArray['language_id'];?>/">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon">
+						<div class="text">&nbsp;</div>
+					</div>
+					<?php
+					}
+					?>
+					
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $newspaperIssueArray['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperIssueArray['product_id'];?>/store/<?php echo $newspaperIssueArray['country_id'];?>/lang/<?php echo $newspaperIssueArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo $newspaperIssueArray['title'];?>">
+					</a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+						<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperIssueArray['product_id'];?>/store/<?php echo $newspaperIssueArray['country_id'];?>/lang/<?php echo $newspaperIssueArray['language_id'];?>/">
+						
+						<?php $getBrandInfo=$this->modelBooks->getBrandInfo($newspaper_id);
+
+						$getBrandInfo=$this->modelBooks->getBrandInfo($newspaperIssueArray['title']);
+						if(!empty($getBrandInfo) && is_numeric($newspaperIssueArray['title']))
+						{
+							$titleBrand=$getBrandInfo['brand'];
+						}else
+						{
+							//$titleBrand=$newspaperIssueArray['title'];
+						}
+
+						if(!empty($newspaperIssueArray['parent_brand_id']) && $newspaperIssueArray['cat_id']!='3')
+						{
+							$productInfo=$this->modelBooks->fetchRow('id="'.$newspaperIssueArray['parent_brand_id'].'"');
+							$getParentBrandInfo=$this->modelBooks->getBrandInfo($productInfo->title);
+							if(!empty($getParentBrandInfo))
+							{
+								//$titleBrand=$getParentBrandInfo['brand'].'-'.$titleBrand;
+								$titleBrand=$getParentBrandInfo['brand'];
+							}
+						//$all=getPublicationIdsByCategoryName();	
+						}
+						$titleBrand= stripslashes($titleBrand);
+						if(strlen(stripslashes($titleBrand))>35)
+						{
+							echo substr($titleBrand,0,35)."...";
+						}
+						else
+						{
+							echo $titleBrand;
+						}
+						?>
+						</a>
+						<?php
+							if($newspaperIssueArray['publisher']!='')
+							{
+						?>
+						
+							<span class="by">by <i>
+							<?php //echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];
+							if(strlen($newspaperIssueArray['publisher'])>35)
+							{
+								echo substr(stripslashes($newspaperIssueArray['publisher']),0,35)."...";
+							}
+							else
+							{
+								echo stripslashes($newspaperIssueArray['publisher']);
+							}
+							?></i></span>
+							<?php } ?>
+							<?php
+							if(count($company_data)>0 && count($company_data)!=0)
+							{
+								$price_product = $productPriceInfo['group_price'];
+							?>
+							<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".@number_format($productPriceInfo['group_price']);  ?></p>
+							<?php 
+							}
+							else
+							{
+								$price_product = $productPriceInfo['price'];
+							?>
+							<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".@number_format($productPriceInfo['price']);?></p>
+							<?php
+							}
+							$rating = $modelUser->getRattingProduct($newspaperIssueArray['product_id']);
+							$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+							$publisher_data = $storage_publisher->read();
+							if(count($publisher_data)>0)
+							{
+								$user_id_comment = $publisher_data->id;	
+								$user_type = "4";
+							}
+							$storage_company = new Zend_Auth_Storage_Session('company_type');
+							$company_data = $storage_company->read();
+							if(count($company_data)>0)
+							{
+								$user_id_comment = $company_data->id;	
+								$user_type = "1";
+							}
+		
+							$storage_user = new Zend_Auth_Storage_Session('account_type');
+							$data_user = $storage_user->read();
+							if(count($data_user)>0)
+							{
+								$user_id_comment = $data_user->id;	
+								$user_type = "2";
+							}
+							$product_id = $newspaperIssueArray['product_id']; 
+							$rating_val = $rating;
+							$rating_image = "";
+							
+							$rating_image="<div class='rating'>
+							<div class='fl wid55 high15'><div class='ratingblock'>
+							<div id='unit_long13451'><ul id='unit_ul13451' class='unit-rating' style='width:75px;'>";
+							$width = 15*$rating_val;
+							$rating_image.="<li class='current-rating' style='width:".$width."px;'></li>";
+							for($i=1;$i<=5;$i++)
+							{
+								$rating_image.="<li></li>";
+							}
+							$rating_image.="</ul> </div></div>&nbsp;</div></div>";
+							?>
+							<p id="msg_<?php echo $product_id;?>"></p>
+							<p>
+							<div id="rate_<?php echo $newspaperIssueArray['product_id'];?>">
+							<?php echo $rating_image;?>
+							</div>							
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;"><span class="count"><?php echo count($reviewsData);?></span></span>
+							</p>
+							<?php
+				if($user_sess_inf == '5')
+				{
+				}
+				elseif($price_product == '0' || $price_product == '')
+				{
+				?>
+					<div id="free_but_prid1" >
+					<input class='inline_2' type="button" name="button" value="Free" style="color: #ffffff !important;float: left; width:85px;" onclick="getMessageFreeBut('prid1');" />
+					</div>
+					<div id="msg_but_prid1" style="display:none;">
+					You can download it on eVendor app for Ipad or Android from there respective stores.
+					</div>
+					<!-- <input class='inline_2' type="button" name="free" value="Free" style="color: #ffffff !important;" /> -->
+				<?php
+				}
+				elseif($user_sess_inf!='')
+				{
+				?>
+			
+				<div>
+					<form name="cart" action="<?php echo $this->serverUrl().$this->baseUrl().'/checkout/cart/';?>" method="post" >
+					<input type="hidden" name="product_id" id="product_id" value="<?php echo $newspaperIssueArray['product_id'];?>" />
+					<input type="hidden" name="store_id" id="store_id" value="<?php echo $newspaperIssueArray['country_id'];?>" />
+					<input type="hidden" name="price" id="price" value="<?php echo $productPriceInfo['price'];?>" />
+					<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+					<input class='inline_2' type="submit" name="submit" value="Buy Now" style="color: #ffffff !important;" />
+					</form>
+				</div>
+				<?php
+				}
+				else {
+				?>
+					 <a class='inline' href="#inline_content" onclick="getIdForm('<?php echo $newspaperIssueArray['product_id'];?>');">Buy Now</a>
+					 <form name="cartBeforLogin_<?php echo $newspaperIssueArray['product_id'];?>" id="cartBeforLogin_<?php echo $newspaperIssueArray['product_id'];?>" action="<?php echo $this->serverUrl().$this->baseUrl().'/checkout/cart/';?>" method="post" >
+					<input type="hidden" name="product_id" id="product_id" value="<?php echo $newspaperIssueArray['product_id'];?>" />
+					<input type="hidden" name="store_id" id="store_id" value="<?php echo $newspaperIssueArray['country_id'];?>" />
+					<input type="hidden" name="price" id="price" value="<?php echo $productPriceInfo['price'];?>" />
+					<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+					</form>
+				<?php
+				}
+				?>
+						</div>
+					</div>
+					
+					</li>
+					<?php
+				}
+				?>
+			</ul>
+			</div>
+		</div>
+		</div>
+		<?php
+		}
+		else
+		{
+		?>
+		<ul class="no-slide">
+			<?php
+			foreach($this->approvedNewsletterList as $newspaper_id=>$newspaperIssueArray)
+			{
+				$authorInfo = $modelAuthor->getInfoByPublisherId($newspaperIssueArray['publisher_id']);
+				$imageInfo = $modelImage->getImageInfoByProductId($newspaperIssueArray['product_id']);
+				
+				$productPriceInfo = $productPrice->getPriceByStoreId($newspaperIssueArray['product_id'],$newspaperIssueArray['country_id']);
+				
+				?>
+				<li class="no-slide-item">
+				<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperIssueArray['product_id'];?>/store/<?php echo $newspaperIssueArray['country_id'];?>/lang/<?php echo $newspaperIssueArray['language_id'];?>/">
+				<?php
+				if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+				{
+				?>
+				<div class="ribbon1">
+					<div class="text">&nbsp;</div>
+				</div>
+				<?php
+				}
+				?>
+					
+				<div class="slides marg">
+				<div class="book">
+				<?php
+				if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+				{
+				?>
+				
+				<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $newspaperIssueArray['title'];?>">
+				</a>
+				<?php
+				}
+				else
+				{
+				?>
+				<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperIssueArray['product_id'];?>/store/<?php echo $newspaperIssueArray['country_id'];?>/lang/<?php echo $newspaperIssueArray['language_id'];?>/">
+				<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo $newspaperIssueArray['title'];?>">
+				</a>
+				<?php
+				}
+				?>
+				</div>
+					<div class="info">
+						<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $newspaperIssueArray['product_id'];?>/store/<?php echo $newspaperIssueArray['country_id'];?>/lang/<?php echo $newspaperIssueArray['language_id'];?>/">
+						
+						<?php $getBrandInfo=$this->modelBooks->getBrandInfo($newspaper_id);
+						
+						$getBrandInfo=$this->modelBooks->getBrandInfo($newspaperIssueArray['title']);
+						if(!empty($getBrandInfo) && is_numeric($newspaperIssueArray['title']))
+						{
+							$titleBrand=$getBrandInfo['brand'];
+						}else
+						{
+							//$titleBrand=$newspaperIssueArray['title'];
+						}
+
+						if(!empty($newspaperIssueArray['parent_brand_id']) && $newspaperIssueArray['cat_id']!='3')
+						{
+							$productInfo=$this->modelBooks->fetchRow('id="'.$newspaperIssueArray['parent_brand_id'].'"');
+							$getParentBrandInfo=$this->modelBooks->getBrandInfo($productInfo->title);
+							if(!empty($getParentBrandInfo))
+							{
+								//$titleBrand=$getParentBrandInfo['brand']."-".$titleBrand;
+								$titleBrand=$getParentBrandInfo['brand'];
+							}
+						//$all=getPublicationIdsByCategoryName();	
+						}
+						$titleBrand= stripslashes($titleBrand);
+						if(strlen(stripslashes($titleBrand))>35)
+						{
+							echo substr($titleBrand,0,35)."...";
+						}
+						else
+						{
+							echo $titleBrand;
+						}
+						
+						//echo $newspaperIssueArray['title'];
+						?>
+						</a>
+						<?php
+							if($newspaperIssueArray['publisher']!='')
+							{
+						?>
+						
+						<span class="by">by <i><?php //echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];
+						if(strlen(stripslashes($newspaperIssueArray['publisher']))>35)
+						{
+							echo stripslashes(substr($newspaperIssueArray['publisher'],0,35));
+						}
+						else
+						{
+							echo stripslashes($newspaperIssueArray['publisher']);
+						}
+						
+						?></i></span>
+						<?php } ?>
+						<?php
+						if(count($company_data)>0 && count($company_data)!=0)
+		                {
+							$price_product = $productPriceInfo['group_price'];
+						?>
+						<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".@number_format($productPriceInfo['group_price']);?></p>
+						<?php 
+						}
+						else
+						{
+							$price_product = $productPriceInfo['price'];
+						?>
+						<p class="price"><?php  echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".@number_format($productPriceInfo['price']);?></p>
+						<?php
+						}
+						$reviewsData = $this->commentObj->fetchAll("productid='".$newspaperIssueArray['product_id']."' and comments!=''","id desc");
+						
+						$rating = $modelUser->getRattingProduct($newspaperIssueArray['product_id']);
+							$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+							$publisher_data = $storage_publisher->read();
+							if(count($publisher_data)>0)
+							{
+								$user_id_comment = $publisher_data->id;	
+								$user_type = "4";
+							}
+							$storage_company = new Zend_Auth_Storage_Session('company_type');
+							$company_data = $storage_company->read();
+							if(count($company_data)>0)
+							{
+								$user_id_comment = $company_data->id;	
+								$user_type = "1";
+							}
+		
+							$storage_user = new Zend_Auth_Storage_Session('account_type');
+							$data_user = $storage_user->read();
+							if(count($data_user)>0)
+							{
+								$user_id_comment = $data_user->id;	
+								$user_type = "2";
+							}
+							$product_id = $newspaperIssueArray['product_id']; 
+							$rating_val = $rating;
+							$rating_image = "";
+								$rating_image="<div class='rating'>
+								<div class='fl wid55 high15'><div class='ratingblock'>
+								<div id='unit_long13451'><ul id='unit_ul13451' class='unit-rating' style='width:75px;'>";
+								$width = 15*$rating_val;
+								$rating_image.="<li class='current-rating' style='width:".$width."px;'></li>";
+								for($i=1;$i<=5;$i++)
+								{
+									$rating_image.="<li style='width:13px;' ></li>";
+								}
+								$rating_image.="</ul> </div></div>&nbsp;</div></div>";
+						
+							
+							?>
+						<p id="msg_<?php echo $product_id;?>"></p>
+						<p >
+						<div id="rate_<?php echo $product_id;?>">
+							<?php echo $rating_image;?>
+							</div>		
+						
+						<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;"><span class="count"><?php echo count($reviewsData);?></span></span>
+						</p>
+							<?
+				if($user_sess_inf == '5')
+				{
+				}			
+				elseif($price_product == '0' || $price_product == '')
+				{
+				?>
+					<div id="free_but_prid2" >
+					<input class='inline_2' type="button" name="button" value="Free" style="color: #ffffff !important;float: left; width:85px;" onclick="getMessageFreeBut('prid2');" />
+					</div>
+					<div id="msg_but_prid2" style="display:none;">
+					You can download it on eVendor app for Ipad or Android from there respective stores.
+					</div>
+					<!-- <input class='inline_2' type="button" name="free" value="Free" style="color: #ffffff !important;" /> -->
+				<?php
+				}
+				elseif($user_sess_inf!='')
+				{
+				?>
+			
+				<div>
+					<form name="cart" action="<?php echo $this->serverUrl().$this->baseUrl().'/checkout/cart/';?>" method="post" >
+					<input type="hidden" name="product_id" id="product_id" value="<?php echo $newspaperIssueArray['product_id'];?>" />
+					<input type="hidden" name="store_id" id="store_id" value="<?php echo $newspaperIssueArray['country_id'];?>" />
+					<input type="hidden" name="price" id="price" value="<?php echo $productPriceInfo['price'];?>" />
+					<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+					<input class='inline_2' type="submit" name="submit" value="Buy Now" style="color: #ffffff !important;" />
+					</form>
+				</div>
+				<?php
+				}
+				else {
+				?>
+					 <a class='inline' href="#inline_content" onclick="getIdForm('<?php echo $newspaperIssueArray['product_id'];?>');" >Buy Now</a>
+					 <form name="cartBeforLogin_<?php echo $newspaperIssueArray['product_id'];?>" id="cartBeforLogin_<?php echo $newspaperIssueArray['product_id'];?>" action="<?php echo $this->serverUrl().$this->baseUrl().'/checkout/cart/';?>" method="post" >
+					<input type="hidden" name="product_id" id="product_id" value="<?php echo $newspaperIssueArray['product_id'];?>" />
+					<input type="hidden" name="store_id" id="store_id" value="<?php echo $newspaperIssueArray['country_id'];?>" />
+					<input type="hidden" name="price" id="price" value="<?php echo $productPriceInfo['price'];?>" />
+					<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+					</form>
+				<?php
+				}
+				?>
+					</div>
+				</div>
+				
+				</li>
+				<?php
+			}
+			?>
+		</ul>
+		<?php
+		}
+	
+	
+	?>
+	
+	<?php
+}
+else
+{
+?>
+	<h1>About Newspapers</h1>
+	
+	<div class="jcarousel-skin-tango">
+	<p>
+	 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+	 </p>
+	</div>
+	
+<?php
+}
+?>
+</section>
+<!--Slider1 -->
+
+
+
+<!--Slider3 -->
+<section class="left_slider featured_magazines ">
+<?php
+	
+if(isset($this->approvedMagazineList) && !empty($this->approvedMagazineList) && count($this->approvedMagazineList)>0)
+{
+?>
+<h1>Featured Magazines<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/index/publication/magazines/">/ &nbsp;&nbsp;View all</a></h1>
+<?php
+$modelAuthor = new Publisher_Model_DbTable_Publishers();
+
+$modelImage = new Publisher_Model_DbTable_BookImages();
+?>
+	<!--<h1>Featured eBooks</h1>-->
+	<?php 
+		if(count($this->approvedMagazineList)>4)
+		{
+		?>
+		<div class="jcarousel-skin-tango">
+		<div class="jcarousel-container jcarousel-container-horizontal">
+			<div class="jcarousel-clip jcarousel-clip-horizontal">
+			<ul id="mycarouse3" class="jcarousel-list jcarousel-list-horizontal">
+				<?php
+				foreach($this->approvedMagazineList as $magazine_id=>$magazineIssuesArray)
+				{
+					$authorInfo = $modelAuthor->getInfoByPublisherId($magazineIssuesArray['publisher_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($magazineIssuesArray['product_id']);
+					$rating = $modelUser->getRattingProduct($magazineIssuesArray['product_id']);
+					$productPriceInfo = $productPrice->getPriceByStoreId($magazineIssuesArray['product_id'],$magazineIssuesArray['country_id']);
+					$reviewsData = $this->commentObj->fetchAll("productid='".$magazineIssuesArray['product_id']."' and comments!=''","id desc");
+					?>
+					<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-<?php echo $magazine_id+1;?> jcarousel-item-<?php echo $magazine_id+1;?>-horizontal">
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineIssuesArray['product_id'];?>/store/<?php echo $magazineIssuesArray['country_id'];?>/lang/<?php echo $magazineIssuesArray['language_id'];?>/">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon">
+						<div class="text"></div>
+					</div>
+					<?php
+					}
+					?>
+					
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $magazineIssuesArray['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineIssuesArray['product_id'];?>/store/<?php echo $magazineIssuesArray['country_id'];?>/lang/<?php echo $magazineIssuesArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo $magazineIssuesArray['title'];?>">
+					</a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+						<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineIssuesArray['product_id'];?>/store/<?php echo $magazineIssuesArray['country_id'];?>/lang/<?php echo $magazineIssuesArray['language_id'];?>/">
+						<?php $getBrandInfo=$this->modelBooks->getBrandInfo($magazine_id); 
+						//magazineArray
+						//echo substr($magazineIssuesArray['title'],0,20); 
+								$getBrandInfo=$this->modelBooks->getBrandInfo($magazineIssuesArray['title']);
+						if(!empty($getBrandInfo) && is_numeric($magazineIssuesArray['title']))
+						{
+							$titleBrand=$getBrandInfo['brand'];
+						}else
+						{
+							//$titleBrand=$magazineIssuesArray['title'];
+						}
+
+						if(!empty($magazineIssuesArray['parent_brand_id']) && $magazineIssuesArray['cat_id']!='3')
+						{
+							$productInfo=$this->modelBooks->fetchRow('id="'.$magazineIssuesArray['parent_brand_id'].'"');
+							$getParentBrandInfo=$this->modelBooks->getBrandInfo($productInfo->title);
+							if(!empty($getParentBrandInfo))
+							{
+								//$titleBrand=$getParentBrandInfo['brand'].'-'.$titleBrand;
+								$titleBrand=$getParentBrandInfo['brand'];
+							}
+						//$all=getPublicationIdsByCategoryName();	
+						}
+						$titleBrand= stripslashes($titleBrand);
+						if(strlen(stripslashes($titleBrand))>35)
+						{
+							echo substr($titleBrand,0,35)."...";
+						}
+						else
+						{
+							echo $titleBrand;
+						}
+						
+						?>
+						</a>
+							<!--<a href="#"><?php $getBrandInfo=$this->modelBooks->getBrandInfo($magazine_id); 
+						
+						//	echo $magazineIssuesArray['title'];
+							
+							?>
+							</a>-->
+							<span class="by">by <i><?php //echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name']
+							$name = $authorInfo['publisher'];
+							if(strlen($name)>35)
+							{
+								echo substr($name,0,35)."...";
+							}
+							else
+							{
+								echo $name;
+							}
+							?></i></span>
+							
+							<?php
+							if(count($company_data)>0 && count($company_data)!=0)
+							{
+								$price_product = $productPriceInfo['group_price'];
+							?>
+							<p class="price"><?php  echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".@number_format($productPriceInfo['group_price']);?></p>
+							<?php 
+							}
+							else
+							{
+								$price_product = $productPriceInfo['price'];
+							?>
+							<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".@number_format($productPriceInfo['price']);?></p>
+							
+							<?php
+							}
+							
+							$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+							$publisher_data = $storage_publisher->read();
+							if(count($publisher_data)>0)
+							{
+								$user_id_comment = $publisher_data->id;	
+								$user_type = "4";
+							}
+							$storage_company = new Zend_Auth_Storage_Session('company_type');
+							$company_data = $storage_company->read();
+							if(count($company_data)>0)
+							{
+								$user_id_comment = $company_data->id;	
+								$user_type = "1";
+							}
+		
+							$storage_user = new Zend_Auth_Storage_Session('account_type');
+							$data_user = $storage_user->read();
+							if(count($data_user)>0)
+							{
+								$user_id_comment = $data_user->id;	
+								$user_type = "2";
+							}
+							$product_id = $magazineIssuesArray['product_id']; 
+							$rating_val = $rating;
+							$rating_image = "";
+							
+								$rating_image="<div class='rating'>
+								<div class='fl wid55 high15'><div class='ratingblock'>
+								<div id='unit_long13451'><ul id='unit_ul13451' class='unit-rating' style='width:75px;'>";
+								$width = 15*$rating_val;
+								$rating_image.="<li class='current-rating' style='width:".$width."px;'></li>";
+								for($i=1;$i<=5;$i++)
+								{
+									$rating_image.="<li style='width:13px;' ></li>";
+								}
+								$rating_image.="</ul> </div></div>&nbsp;</div></div>";
+							
+							?>
+							<p id="msg_<?php echo $product_id;?>"></p>
+							 <p id="rate_<?php echo $magazineIssuesArray['product_id'];?>"><?php echo $rating_image; ?><!--<img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> <img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/star.png" alt="" style="border:0px;"> -->
+							
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;"><span class="count"><?php echo count($reviewsData);?></span></span>
+							</p>
+							<p>
+							<?php
+							if($user_sess_inf == '5')
+							{
+							}
+							elseif($price_product=='0' || $price_product=='')
+							{
+							?>
+								<div id="free_but_prid3" >
+								<input class='inline_2' type="button" name="button" value="Free" style="color: #ffffff !important;float: left; width:85px;" onclick="getMessageFreeBut('prid3');" />
+								</div>
+								<div id="msg_but_prid3" style="display:none;">
+								You can download it on eVendor app for Ipad or Android from there respective stores.
+								</div>
+									<!-- <input class='inline_2' type="button" name="free" value="Free" style="color: #ffffff !important;" /> -->
+							<?php
+							}
+							elseif($user_sess_inf!='')
+									{
+									?>
+								
+									<div>
+										<form name="cart" action="<?php echo $this->serverUrl().$this->baseUrl().'/checkout/cart/';?>" method="post" >
+										<input type="hidden" name="product_id" id="product_id" value="<?php echo $magazineIssuesArray['product_id'];?>" />
+										<input type="hidden" name="store_id" id="store_id" value="<?php echo $magazineIssuesArray['country_id'];?>" />
+										<input type="hidden" name="price" id="price" value="<?php echo $productPriceInfo['price'];?>" />
+										<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+										<input class='inline_2' type="submit" name="submit" value="Buy Now" style="color: #ffffff !important;" />
+										</form>
+									</div>
+									<?php
+									}
+									else {
+									?>
+										 <a class='inline' href="#inline_content" onclick="getIdForm('<?php echo $magazineIssuesArray['product_id'];?>');">Buy Now</a>
+										 <form name="cartBeforLogin_<?php echo $magazineIssuesArray['product_id'];?>" id="cartBeforLogin_<?php echo $magazineIssuesArray['product_id'];?>" action="<?php echo $this->serverUrl().$this->baseUrl().'/checkout/cart/';?>" method="post" >
+										<input type="hidden" name="product_id" id="product_id" value="<?php echo $magazineIssuesArray['product_id'];?>" />
+										<input type="hidden" name="store_id" id="store_id" value="<?php echo $magazineIssuesArray['country_id'];?>" />
+										<input type="hidden" name="price" id="price" value="<?php echo $productPriceInfo['price'];?>" />
+										<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+										</form>
+									<?php
+									}
+									?>
+											</div>
+										</div>
+										
+										</li>
+										<?php
+									}
+									?>
+									</p>
+			</ul>
+			</div>
+		</div>
+		</div>
+		<?php
+		}
+		else
+		{
+		?>
+		<ul class="no-slide">
+		<?php
+				foreach($this->approvedMagazineList as $magazine_id=>$magazineIssuesArray)
+				{
+					$authorInfo = $modelAuthor->getInfoByPublisherId($magazineIssuesArray['publisher_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($magazineIssuesArray['id']);
+					$productPriceInfo = $productPrice->getPriceByStoreId($magazineIssuesArray['product_id'],$magazineIssuesArray['country_id']);
+					$reviewsData = $this->commentObj->fetchAll("productid='".$magazineIssuesArray['product_id']."' and comments!=''","id desc");
+					?>
+					<li class="no-slide-item">
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineIssuesArray['product_id'];?>/store/<?php echo $magazineIssuesArray['country_id'];?>/lang/<?php echo $magazineIssuesArray['language_id'];?>/">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon1">
+						<div class="text">&nbsp;</div>
+					</div>
+					<?php
+					}
+					?>
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $magazineIssuesArray['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineIssuesArray['product_id'];?>/store/<?php echo $magazineIssuesArray['country_id'];?>/lang/<?php echo $magazineIssuesArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo $magazineIssuesArray['title'];?>">
+					</a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+						<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $magazineIssuesArray['product_id'];?>/store/<?php echo $magazineIssuesArray['country_id'];?>/lang/<?php echo $magazineIssuesArray['language_id'];?>/">
+						
+						<?php $getBrandInfo=$this->modelBooks->getBrandInfo($magazine_id); 
+							$getBrandInfo=$this->modelBooks->getBrandInfo($magazineIssuesArray['title']);
+						if(!empty($getBrandInfo) && is_numeric($magazineIssuesArray['title']))
+						{
+							$titleBrand=$getBrandInfo['brand'];
+						}else
+						{
+							//$titleBrand=$magazineIssuesArray['title'];
+						}
+
+						if(!empty($magazineIssuesArray['parent_brand_id']) && $magazineIssuesArray['cat_id']!='3')
+						{
+							$productInfo=$this->modelBooks->fetchRow('id="'.$magazineIssuesArray['parent_brand_id'].'"');
+							$getParentBrandInfo=$this->modelBooks->getBrandInfo($productInfo->title);
+							if(!empty($getParentBrandInfo))
+							{
+								//$titleBrand=$getParentBrandInfo['brand'].'-'.$titleBrand;
+								$titleBrand=$getParentBrandInfo['brand'];
+							}
+						//$all=getPublicationIdsByCategoryName();	
+						}
+					
+						$titleBrand= stripslashes($titleBrand);
+						if(strlen(stripslashes($titleBrand))>35)
+						{
+							echo substr($titleBrand,0,35)."...";
+						}
+						else
+						{
+							echo $titleBrand;
+						}
+						//echo $magazineIssuesArray['title'];
+						?>
+						</a>
+							<span class="by">by <i><?php 
+							$name = $authorInfo['publisher'];
+							if(strlen($name)>35)
+							{
+								echo substr($name,0,35)."...";
+							}
+							else
+							{							
+								echo $name;
+							}
+							?></i></span>
+							
+								<?php
+								if(count($company_data)>0 && count($company_data)!=0)
+								{
+									$product_price = $productPriceInfo['group_price'];
+								?>
+								<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".$productPriceInfo['group_price'];?></p>
+								<?php 
+								}
+								else
+								{
+									$product_price = $productPriceInfo['price'];
+								?>
+								<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".$productPriceInfo['price'];?></p>
+								<?php
+								}
+							$rating = $modelUser->getRattingProduct($magazineIssuesArray['product_id']);
+							$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+							$publisher_data = $storage_publisher->read();
+							if(count($publisher_data)>0)
+							{
+								$user_id_comment = $publisher_data->id;	
+								$user_type = "4";
+							}
+							$storage_company = new Zend_Auth_Storage_Session('company_type');
+							$company_data = $storage_company->read();
+							if(count($company_data)>0)
+							{
+								$user_id_comment = $company_data->id;	
+								$user_type = "1";
+							}
+		
+							$storage_user = new Zend_Auth_Storage_Session('account_type');
+							$data_user = $storage_user->read();
+							if(count($data_user)>0)
+							{
+								$user_id_comment = $data_user->id;	
+								$user_type = "2";
+							}
+							$product_id = $magazineIssuesArray['product_id']; 
+							$rating_val = $rating;
+							$rating_image = "";
+							
+								$rating_image="<div class='rating'>
+								<div class='fl wid55 high15'><div class='ratingblock'>
+								<div id='unit_long13451'><ul id='unit_ul13451' class='unit-rating' style='width:75px;'>";
+								$width = 15*$rating_val;
+								$rating_image.="<li class='current-rating' style='width:".$width."px;'></li>";
+								for($i=1;$i<=5;$i++)
+								{
+									$rating_image.="<li style='width:13px;' ></li>";
+								}
+								$rating_image.="</ul> </div></div>&nbsp;</div></div>";
+							
+							?>
+							<p id="msg_<?php echo $product_id?>"></p>
+							
+							<p id="rate_<?php echo $magazineIssuesArray['product_id']?>"><?php echo $rating_image;?>
+							
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;"><span class="count"><?php echo count($reviewsData);?></span></span>
+							</p>
+								<?php
+				if($user_sess_inf == '5')
+				{
+				}
+				elseif($product_price=='0' || $product_price=='')
+				{
+				?>
+					<div id="free_but_prid4" >
+					<input class='inline_2' type="button" name="button" value="Free" style="color: #ffffff !important;float: left; width:85px;" onclick="getMessageFreeBut('prid4');" />
+					</div>
+					<div id="msg_but_prid4" style="display:none;">
+					You can download it on eVendor app for Ipad or Android from there respective stores.
+					</div>
+					<!-- <input class='inline_2' type="button" name="Free" value="Free" style="color: #ffffff !important;" /> -->
+				<?php
+				}
+				elseif($user_sess_inf!='')
+				{
+				?>
+			
+				<div>
+					<form name="cart" action="<?php echo $this->serverUrl().$this->baseUrl().'/checkout/cart/';?>" method="post" >
+					<input type="hidden" name="product_id" id="product_id" value="<?php echo $magazineIssuesArray['product_id'];?>" />
+					<input type="hidden" name="store_id" id="store_id" value="<?php echo $magazineIssuesArray['country_id'];?>" />
+					<input type="hidden" name="price" id="price" value="<?php echo $productPriceInfo['price'];?>" />
+					<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+					<input class='inline_2' type="submit" name="submit" value="Buy Now" style="color: #ffffff !important;" />
+					</form>
+				</div>
+				<?php
+				}
+				else {
+				?>
+					 <a class='inline' href="#inline_content" onclick="getIdForm('<?php echo $magazineIssuesArray['product_id'];?>');">Buy Now</a>
+					 <form name="cartBeforLogin_<?php echo $magazineIssuesArray['product_id'];?>" id="cartBeforLogin_<?php echo $magazineIssuesArray['product_id'];?>" action="<?php echo $this->serverUrl().$this->baseUrl().'/checkout/cart/';?>" method="post" >
+					<input type="hidden" name="product_id" id="product_id" value="<?php echo $magazineIssuesArray['product_id'];?>" />
+					<input type="hidden" name="store_id" id="store_id" value="<?php echo $magazineIssuesArray['country_id'];?>" />
+					<input type="hidden" name="price" id="price" value="<?php echo $productPriceInfo['price'];?>" />
+					<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+					</form>
+				<?php
+				}
+				?>
+						</div>
+					</div>
+					
+					</li>
+					<?php
+				}
+				?>
+		</ul>
+		<?php
+		}
+	
+	
+?>
+	
+	
+	<?php
+}
+else
+{
+?>
+	<h1>About Magazines</h1>
+	
+	<div class="jcarousel-skin-tango">
+	<p>
+	 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+	 </p>
+	</div>
+	
+<?php
+}
+?>
+</section>
+<!--Slider3 -->
+
+<!--Slider2 -->
+<section class="left_slider featured_ebooks">
+<?php
+/*echo"<pre>";
+print_r($this->approvedBookList);
+echo"</pre>";
+*/		
+if(isset($this->approvedAndFeaturedBookList) && !empty($this->approvedAndFeaturedBookList))
+{
+?>
+<h1>Featured <em>e</em>Books <a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/index/publication/ebooks/">/ &nbsp;&nbsp;View all</a></h1>
+<?php
+	$modelAuthor = new Publisher_Model_DbTable_Publishers();
+	$modelImage = new Publisher_Model_DbTable_BookImages();
+?>
+	<!--<h1>Featured eBooks</h1>-->
+		<?php if(count($this->approvedAndFeaturedBookList)>4)
+		{
+		?>
+		<div class="jcarousel-skin-tango">
+		<div class="jcarousel-container jcarousel-container-horizontal">
+			<div class="jcarousel-clip jcarousel-clip-horizontal">
+			<ul id="mycarouse2" class="jcarousel-list jcarousel-list-horizontal">
+				<?php
+				foreach($this->approvedAndFeaturedBookList as $key=>$ebookArray)
+				{
+					$authorInfo = $modelAuthor->getInfoByPublisherId($ebookArray['author_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($ebookArray['product_id']);					
+				    $productPriceInfo = $productPrice->getPriceByStoreId($ebookArray['product_id'],$ebookArray['country_id']);
+					?>
+					<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-<?php echo $key+1;?> jcarousel-item-<?php echo $key+1;?>-horizontal">
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon">
+						<div class="text">&nbsp;</div>
+					</div>
+					<?php
+					}
+					?>
+					
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $ebookArray['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php 
+					$titleBrand = $ebookArray['title'];
+					$getBrandInfo=$this->modelBooks->getBrandInfo($ebookArray['title']);
+					if(!empty($getBrandInfo) && is_numeric($ebookArray['title']))
+					{
+						$titleBrand=$getBrandInfo['brand'];
+					}else
+					{
+						$titleBrand=$ebookArray['title'];
+					}
+					echo $titleBrand;
+					
+					
+					?>">
+					</a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+							<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/"><?php 
+													
+					$titleBrand = $ebookArray['title'];
+					$getBrandInfo=$this->modelBooks->getBrandInfo($ebookArray['title']);
+					if(!empty($getBrandInfo) && is_numeric($ebookArray['title']))
+					{
+						$titleBrand=$getBrandInfo['brand'];
+					}else
+					{
+						$titleBrand=$ebookArray['title'];
+					}
+					if(strlen($titleBrand)>20)
+					{
+						echo $titleBrand."...";
+					}
+					else
+					{
+						echo $titleBrand;
+					}
+					?></a>
+							<span class="by">by <i><?php echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];?></i></span>
+							<?php
+							if(count($company_data)>0 && count($company_data)!=0)
+							{
+								$product_price = $productPriceInfo['group_price'];
+							?>
+							<p class="price"><?php  echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".$productPriceInfo['group_price']; ?></p>
+							<?php 
+							}
+							else
+							{
+								$product_price = $productPriceInfo['price'];
+							?>
+							<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".$productPriceInfo['price'];?></p>
+							<?php
+							}
+							$reviewsData = $this->commentObj->fetchAll("productid='".$ebookArray['product_id']."' and comments!=''","id desc");
+							$rating = $modelUser->getRattingProduct($ebookArray['product_id']);
+							$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+							$publisher_data = $storage_publisher->read();
+							if(count($publisher_data)>0)
+							{
+								$user_id_comment = $publisher_data->id;	
+								$user_type = "4";
+							}
+							$storage_company = new Zend_Auth_Storage_Session('company_type');
+							$company_data = $storage_company->read();
+							if(count($company_data)>0)
+							{
+								$user_id_comment = $company_data->id;	
+								$user_type = "1";
+							}
+		
+							$storage_user = new Zend_Auth_Storage_Session('account_type');
+							$data_user = $storage_user->read();
+							if(count($data_user)>0)
+							{
+								$user_id_comment = $data_user->id;	
+								$user_type = "2";
+							}
+							$product_id = $ebookArray['product_id']; 
+							$rating_val = $rating;
+							$rating_image = "";
+							
+								$rating_image="<div class='rating'>
+								<div class='fl wid55 high15'><div class='ratingblock'>
+								<div id='unit_long13451'><ul id='unit_ul13451' class='unit-rating' style='width:75px;'>";
+								$width = 15*$rating_val;
+								$rating_image.="<li class='current-rating' style='width:".$width."px;'></li>";
+								for($i=1;$i<=5;$i++)
+								{
+									$rating_image.="<li style='width:13px;' ></li>";
+								}
+								$rating_image.="</ul> </div></div>&nbsp;</div></div>";
+							
+							?>
+							<p id="msg_<?php echo $product_id?>"></p>
+							
+							<p id="rate_<?php echo $ebookArray['product_id']?>"><?php echo $rating_image;?>
+							
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;"><span class="count"><?php echo count($reviewsData);?></span></span>
+								<?php
+				if($user_sess_inf == '5')
+				{
+				}
+				elseif($product_price=='0' || $product_price=='')
+				{
+				?>
+					<div id="free_but_prid5" >
+					<input class='inline_2' type="button" name="button" value="Free" style="color: #ffffff !important;float: left; width:85px;" onclick="getMessageFreeBut('prid5');" />
+					</div>
+					<div id="msg_but_prid5" style="display:none;">
+					You can download it on eVendor app for Ipad or Android from there respective stores.
+					</div>
+					<!-- 
+					<input class='inline_2' type="button" name="free" value="Free" style="color: #ffffff !important;" />
+				-->
+				<?php
+				}
+				elseif($user_sess_inf!='')
+				{
+				?>
+			
+				<div>
+					<form name="cart" action="<?php echo $this->serverUrl().$this->baseUrl().'/checkout/cart/';?>" method="post" >
+					<input type="hidden" name="product_id" id="product_id" value="<?php echo $ebookArray['product_id'];?>" />
+					<input type="hidden" name="store_id" id="store_id" value="<?php echo $ebookArray['country_id'];?>" />
+					<input type="hidden" name="price" id="price" value="<?php echo $productPriceInfo['price'];?>" />
+					<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+					<input class='inline_2' type="submit" name="submit" value="Buy Now" style="color: #ffffff !important;" />
+					</form>
+				</div>
+				<?php
+				}
+				else {
+				?>
+					 <a class='inline' href="#inline_content" onclick="getIdForm('<?php echo $ebookArray['product_id'];?>');" >Buy Now</a>
+					 <form name="cartBeforLogin_<?php echo $ebookArray['product_id'];?>" id="cartBeforLogin_<?php echo $ebookArray['product_id'];?>" action="<?php echo $this->serverUrl().$this->baseUrl().'/checkout/cart/';?>" method="post" >
+					<input type="hidden" name="product_id" id="product_id" value="<?php echo $ebookArray['product_id'];?>" />
+					<input type="hidden" name="store_id" id="store_id" value="<?php echo $ebookArray['country_id'];?>" />
+					<input type="hidden" name="price" id="price" value="<?php echo $productPriceInfo['price'];?>" />
+					<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+					
+					</form>
+				<?php
+				}
+				?>
+							</p>
+						</div>
+					</div>
+					
+					</li>
+					<?php
+				}
+				?>
+			</ul>
+			</div>
+		</div>
+		</div>
+		<?php
+		}
+		else
+		{
+		?>
+		<ul class="no-slide">
+			<?php
+				
+				foreach($this->approvedAndFeaturedBookList as $key=>$ebookArray)
+				{
+					$authorInfo = $modelAuthor->getInfoByPublisherId($ebookArray['author_id']);
+					$imageInfo = $modelImage->getImageInfoByProductId($ebookArray['product_id']);
+					$productPriceInfo = $productPrice->getPriceByStoreId($ebookArray['product_id'],$ebookArray['country_id']);
+					?>
+					<li class="no-slide-item">
+					<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+					<div class="ribbon1">
+						<div class="text">&nbsp;</div>
+					</div>
+					<?php
+					}
+					?>
+					
+					<div class="slides marg">
+					<div class="book">
+					<?php
+					if(is_file(USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name']))
+					{
+					?>
+						
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/'.USER_UPLOAD_DIR.'thumb_'.$imageInfo['image_name'];?>" alt="<?php echo $ebookArray['title'];?>">
+					</a>
+					<?php
+					}
+					else
+					{
+					?>
+						<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/">
+					<img src="<?php echo $this->serverUrl().$this->baseUrl().'/public/css/default/images/slider_noimage.jpg';?>" alt="<?php echo $ebookArray['title'];?>">
+					</a>
+					<?php
+					}
+					?>
+					</div>
+						<div class="info">
+							<a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $ebookArray['product_id'];?>/store/<?php echo $ebookArray['country_id'];?>/lang/<?php echo $ebookArray['language_id'];?>/">
+							<?php 
+							//echo$ebookArray['title'];
+							
+							$titleBrand = $ebookArray['title'];
+							$getBrandInfo=$this->modelBooks->getBrandInfo($ebookArray['title']);
+							if(!empty($getBrandInfo) && is_numeric($ebookArray['title']))
+							{
+								$titleBrand=$getBrandInfo['brand'];
+							}else
+							{
+								$titleBrand=$ebookArray['title'];
+							}
+							if(strlen($titleBrand)>20)
+							{
+								echo $titleBrand."...";
+							}
+							else
+							{
+								echo $titleBrand;
+							}
+							
+							?></a>
+							<span class="by">by <i><?php
+							$name= $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];
+							if(strlen($name)>30)
+							{
+								echo substr($name,0,30)."...";
+							}
+							else
+							{
+								echo $authorInfo['first_name'].'&nbsp;'.$authorInfo['last_name'];
+							}
+							?></i></span>
+						     <?php
+if(count($company_data)>0 && count($company_data)!=0)
+{
+?>
+<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".$productPriceInfo['group_price'];?></p>
+<?php 
+}
+else
+{
+?>
+<p class="price"><?php echo $producturrency->getCurrencyInfo($productPriceInfo['country_id'])." ".$productPriceInfo['price'];?></p>
+<?php
+}
+							$reviewsData = $this->commentObj->fetchAll("productid='".$ebookArray['product_id']."' and comments!=''","id desc");
+							$rating = $modelUser->getRattingProduct($ebookArray['product_id']);
+							$storage_publisher = new Zend_Auth_Storage_Session('publisher_type');
+							$publisher_data = $storage_publisher->read();
+							if(count($publisher_data)>0)
+							{
+								$user_id_comment = $publisher_data->id;	
+								$user_type = "4";
+							}
+							$storage_company = new Zend_Auth_Storage_Session('company_type');
+							$company_data = $storage_company->read();
+							if(count($company_data)>0)
+							{
+								$user_id_comment = $company_data->id;	
+								$user_type = "1";
+							}
+		
+							$storage_user = new Zend_Auth_Storage_Session('account_type');
+							$data_user = $storage_user->read();
+							if(count($data_user)>0)
+							{
+								$user_id_comment = $data_user->id;	
+								$user_type = "2";
+							}
+							$product_id = $ebookArray['product_id']; 
+							$rating_val = $rating;
+							$rating_image = "";
+							
+								$rating_image="<div class='rating'>
+								<div class='fl wid55 high15'><div class='ratingblock'>
+								<div id='unit_long13451'><ul id='unit_ul13451' class='unit-rating' style='width:75px;'>";
+								$width = 15*$rating_val;
+								$rating_image.="<li class='current-rating' style='width:".$width."px;'></li>";
+								for($i=1;$i<=5;$i++)
+								{
+									$rating_image.="<li style='width:13px;' ></li>";
+								}
+								$rating_image.="</ul> </div></div>&nbsp;</div></div>";
+						
+							?>
+							<p id="msg_<?php echo $product_id?>">ddd</p>
+
+							
+							
+							
+							<p id="rate_<?php echo $ebookArray['product_id']?>"><?php echo $rating_image;?>
+							
+							<span class="comments"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/comments_icon.png" alt="" style="border:0px;"><span class="count"><?php echo count($reviewsData);?></span></span>
+							
+				<?php
+				if($user_sess_inf == '5')
+				{
+				}
+				elseif($product_price=='0' || $product_price=='')
+				{
+				?>
+					<div id="free_but_prid6" >
+					<input class='inline_2' type="button" name="button" value="Free" style="color: #ffffff !important;float: left; width:85px;" onclick="getMessageFreeBut('prid6');" />
+					</div>
+					<div id="msg_but_prid6" style="display:none;">
+					You can download it on eVendor app for Ipad or Android from there respective stores.
+					</div>
+					<!-- <input class='inline_2' type="button" name="free" value="Free" style="color: #ffffff !important;" />  -->
+				<?php
+				}
+				elseif($user_sess_inf!='')
+				{
+				?>
+			
+				<div>
+					<form name="cart" action="<?php echo $this->serverUrl().$this->baseUrl().'/checkout/cart/';?>" method="post" >
+					<input type="hidden" name="product_id" id="product_id" value="<?php echo $ebookArray['product_id'];?>" />
+					<input type="hidden" name="store_id" id="store_id" value="<?php echo $ebookArray['country_id'];?>" />
+					<input type="hidden" name="price" id="price" value="<?php echo $productPriceInfo['price'];?>" />
+					<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+					<input class='inline_2' type="submit" name="submit" value="Buy Now" style="color: #ffffff !important;" />
+					</form>
+				</div>
+				<?php
+				}
+				else {
+				?>
+					 <a class='inline' href="#inline_content" onclick="getIdForm('<?php echo $ebookArray['product_id'];?>');" >Buy Now</a>
+					 <form name="cartBeforLogin_<?php echo $ebookArray['product_id'];?>" id="cartBeforLogin_<?php echo $ebookArray['product_id'];?>" action="<?php echo $this->serverUrl().$this->baseUrl().'/checkout/cart/';?>" method="post" >
+					<input type="hidden" name="product_id" id="product_id" value="<?php echo $ebookArray['product_id'];?>" />
+					<input type="hidden" name="store_id" id="store_id" value="<?php echo $ebookArray['country_id'];?>" />
+					<input type="hidden" name="price" id="price" value="<?php echo $productPriceInfo['price'];?>" />
+					<input type="hidden" name="user_type" id="user_type" value="<?php echo $user_type;?>" />
+					
+					</form>
+				<?php
+				}
+				?>
+							</p>
+						</div>
+					</div>
+					
+					</li>
+					<?php
+				}
+			?>
+		</ul>
+		<?php
+		}
+	
+	
+	?>
+	
+	<?php
+}
+else
+{
+?>
+	<h1>About eBooks</h1>
+	
+	<div class="jcarousel-skin-tango">
+	<p>
+	 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+	 </p>
+	</div>
+	
+<?php
+}
+?>
+</section>
+<!--Slider2 -->
+</div>
+ </aside>
+
+
+<!--left sidebar -->
+
+
+<!--Right sidebar -->
+<aside class="right_panel"> 
+
+<!--<h5 class="brows_category_head">Browse by Category</h5>
+<ul class="brows_category">
+<?php
+ 
+$catsearchUrl=$this->serverUrl().$this->baseUrl().'/search/index/publication/'; 
+foreach($this->allcategories as $key=>$catArray)
+{
+?>
+<li><a href="<?php echo $catsearchUrl.strtolower(trim($catArray['category_name']));?>"><?php echo $catArray['category_name'].'('.$catArray['total_publications'].')';?></a></li>
+<?php } ?>
+<li>&nbsp;</li>
+
+</ul>
+-->
+
+
+
+<div><h5>NewsPapers <?php if(count($this->getnewspapers_genres)>12){?>/ <a href="javascript:void();" id="nwsid" class="more_cate"><span id="nwsmore" >MORE</span><span id="nwsless" style="display:none;" >LESS</span></a><?php } ?></h5></div>
+
+<ul class="newspaper">
+<?php
+$this->modelGenres = new Admin_Model_DbTable_Genres();
+$this->modelBooks = new Publisher_Model_DbTable_Books();
+$genresearchUrl=$this->serverUrl().$this->baseUrl().'/search/index/publication/genre/id/'; 
+$cnt = count($this->getnewspapers_genres);
+if($cnt>12)
+{
+	$count =12;
+}
+else {
+$count	=$cnt;
+}
+for($x=0;$x<$count;$x++)
+{	  
+	 $genrecount = $this->modelBooks->getPublicationListByGenreByStore($this->getnewspapers_genres[$x]['product_type'],$storeId,"1","1");	 
+	 
+?>
+<li><a href="<?php echo $genresearchUrl.$this->getnewspapers_genres[$x]['product_type'];?>/cat_id/1/"><?php echo $this->getnewspapers_genres[$x]['genre']."(". count($genrecount).")";?></a></li>
+<?php } ?>
+<div class="last_more"><a href="javascript:void();" class="more_cate">More</a></div>
+<?php
+for($x=$count;$x<count($this->getnewspapers_genres);$x++)
+{
+	  
+	 $genrecount = $this->modelBooks->getPublicationListByGenreByStore($this->getnewspapers_genres[$x]['product_type'],$storeId);
+	 
+?>
+ <li><a href="<?php echo $genresearchUrl.$this->getnewspapers_genres[$x]['product_type'];?>/cat_id/1/"><?php echo $this->getnewspapers_genres[$x]['genre']."(". count($genrecount).")";?></a></li>
+<?php
+}
+?>
+</ul>
+
+
+
+
+<h5>Magazines<?php if(count($this->getmagazine_genres)>12){?> /  <a href="javascript:void();" id="mgzin" class="more_magazine"><span id="moreId">MORE</span><span id="lessId" style="display:none;">LESS</span></a><?php } ?></h5>
+<ul class="magazine">
+<?php
+if(count($this->getmagazine_genres)>12)
+{
+	$count =12;
+}
+else {
+$count	=count($this->getmagazine_genres);
+}
+$this->modelGenres = new Admin_Model_DbTable_Genres();
+$this->modelBooks = new Publisher_Model_DbTable_Books();
+$genresearchUrl=$this->serverUrl().$this->baseUrl().'/search/index/publication/genre/id/'; 
+for($x=0;$x<$count;$x++)
+{ 
+	 $genrecount = $this->modelBooks->getPublicationListByGenreByStore($this->getmagazine_genres[$x]['product_type'],$storeId,"1","2");
+ 
+?>
+<li><a href="<?php echo $genresearchUrl.$this->getmagazine_genres[$x]['product_type'];?>/cat_id/2/"><?php echo $this->getmagazine_genres[$x]['genre']."(". count($genrecount).")";?></a></li>
+<?php } ?>
+<div class="last_more"><a href="javascript:void();" class="more_magazine">More</a></div>
+<div style="display:none;" id="hide_magazine">
+<?php
+for($x=$count;$x<count($this->getmagazine_genres);$x++)
+{
+	$genrecount = $this->modelBooks->getPublicationListByGenreByStore($this->getmagazine_genres[$x]['product_type'],$storeId,"1","2");
+?>
+ 	<li><a href="<?php echo $genresearchUrl.$this->getmagazine_genres[$x]['product_type'];?>/cat_id/2/"><?php echo $this->getmagazine_genres[$x]['genre']."(". count($genrecount).")";?></a></li>
+ <?php
+}
+?>
+</div>
+</ul>
+
+<h5><em>e</em>books <?php if(count($this->getebooks_genres)>12){?> / <a href="javascript:void();" id="ebk" class="more_ebook"><span id="ebmore">MORE</span><span id="ebless" style="display:none;">LESS</span></a><?php } ?></h5>
+<ul class="ebook">
+<?php
+if(count($this->getebooks_genres)>12)
+{
+	$count =12;
+}
+else {
+$count	=count($this->getebooks_genres);
+}
+$this->modelGenres = new Admin_Model_DbTable_Genres();
+$this->modelBooks = new Publisher_Model_DbTable_Books();
+$genresearchUrl=$this->serverUrl().$this->baseUrl().'/search/index/publication/genre/id/'; 
+for($x=0;$x<$count;$x++)
+{  
+	 $genrecount = $this->modelBooks->getPublicationListByGenreByStore($this->getebooks_genres[$x]['product_type'],$storeId,'1','3');
+	 
+?>
+<li><a href="<?php echo $genresearchUrl.$this->getebooks_genres[$x]['product_type'];?>/cat_id/3/"><?php echo $this->getebooks_genres[$x]['genre']."(". count($genrecount).")";?></a></li>
+<?php } ?>
+<div class="last_more"><a href="javascript:void();" class="more_ebook">More</a></div> 
+<div style="display:none;" id="hide_ebook">
+<?php
+for($x=$count;$x<count($this->getebooks_genres);$x++)
+{
+	
+	 $genrecount = $this->modelBooks->getPublicationListByGenreByStore($this->getebooks_genres[$x]['product_type'],$storeId,"1","3");
+	?>
+	<li><a href="<?php echo $genresearchUrl.$this->getebooks_genres[$x]['product_type'];?>/cat_id/3/"><?php echo $this->getebooks_genres[$x]['genre']."(". count($genrecount).")";?></a></li>
+<?php
+}
+?>
+</div>
+</ul>
+
+</aside>
+<!--Right sidebar -->
+
+
+<!--Article section -->
+<section class="article_section">
+<h2>Most Commented</h2>
+<?php
+
+/*echo "<pre>";
+print_r($this->most_commented_data);
+exit;*/
+
+$most_commented_data =$this->most_commented_data;
+$date1=explode(" ",$most_commented_data[0]['add_time']);
+$date2=explode(" ",$most_commented_data[1]['add_time']);
+$date3=explode(" ",$most_commented_data[2]['add_time']);
+$date4=explode(" ",$most_commented_data[3]['add_time']);
+?>
+<!--Left artical -->
+<section class="left_s">
+
+<article>
+<p><span class="date"><?php echo $date1[0];?></span> <b><?php echo stripslashes($most_commented_data[0]['title']);?></b><br>
+<?php echo stripslashes($most_commented_data[0]['comments']);?></p>
+<p><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $most_commented_data[0]['product_id'];?>/store/<?php echo $most_commented_data[0]['country_id'];?>/lang/<?php echo $most_commented_data[0]['language_id'];?>/">Read more</a></p>
+</article>
+
+
+<article>
+<p><span class="date"><?php echo $date2[0];?></span> <b><?php echo stripslashes($most_commented_data[1]['title']);?></b><br>
+<?php echo stripslashes($most_commented_data[1]['comments']);?></p>
+<p><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $most_commented_data[1]['product_id'];?>/store/<?php echo $most_commented_data[1]['country_id'];?>/lang/<?php echo $most_commented_data[1]['language_id'];?>/">Read more</a></p>
+</article>
+
+
+
+</section>
+<!--Left artical -->
+
+<!--Right artical -->
+<section class="right_s">
+
+<article>
+<p><span class="date"><?php echo $date2[0];?></span> <b><?php echo stripslashes($most_commented_data[2]['title']);?></b><br>
+<?php echo stripslashes($most_commented_data[2]['comments']);?></p>
+<p><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $most_commented_data[2]['product_id'];?>/store/<?php echo $most_commented_data[2]['country_id'];?>/lang/<?php echo $most_commented_data[2]['language_id'];?>/">Read more</a></p>
+</article>
+
+
+<article>
+<p><span class="date"><?php echo $date3[0];?></span> <b><?php echo stripslashes($most_commented_data[3]['title']);?></b><br>
+<?php echo stripslashes($most_commented_data[3]['comments']);?></p>
+<p><a href="<?php echo $this->serverUrl().$this->baseUrl();?>/catalogue/detail/id/<?php echo $most_commented_data[3]['product_id'];?>/store/<?php echo $most_commented_data[3]['country_id'];?>/lang/<?php echo $most_commented_data[3]['language_id'];?>/">Read more</a></p>
+</article>
+
+
+
+</section>
+<!--Right artical -->
+<!--Article section -->
+
+</section>
+<br/>
+
+<style>
+.inline_content1
+	{
+   display: none;
+    height: auto;
+    left:37%;
+    margin-left:0;
+    margin-top: 0px;
+    min-height: 50px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 10px;
+    position: absolute;
+    top:70%;
+    width:25%;
+	background:#000;
+    z-index: 1000;
+	border:#666 solid 3px;
+}
+.inline_content11
+	{
+   display: none;
+    height: auto;
+    left:50%;
+    margin-left:-12.5%;
+	margin-top:-25px;
+    min-height: 50px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 10px;
+    position: fixed;
+    top:50%;
+    width:25%;
+	background:#000;
+    z-index: 1000;
+	border:#666 solid 3px;
+}
+</style>
+<div style='display:none'>
+			<div id='inline_content' style='padding:10px;'>
+					<div class="login_area" style="margin:0px;">
+				<h3><span>Login</span> <!--Publisher Panel--></h3>
+				<span id="err_msg"></span>
+				<form onsubmit="return getLogin();" method="post" action="#" id="form-publisher-login" name="form-publisher-login">
+				<div class="row">
+					<label>Username<em>*</em> :</label>
+					<input type="text" message="Please enter your username" value="" id="user_name" name="user_name">
+					<span id="err_user_name" ></span>
+				</div>
+				
+				<div class="row">
+					<label>Password<em>*</em> :</label>
+					<input type="password" message="Please enter your username" value="" id="user_pass" name="user_pass">
+					<span id="err_user_password"></span>
+					<input type="hidden" name="product_form_name" id="product_form_name" value="" />
+				</div>
+				
+				<div class="row">
+	
+					<input type="submit" value="Login" name="btnLogin">
+				</div>
+				
+				
+				</form>
+			</div>
+			</div>
+		</div>
+		
+		<div id='msg_div_free' class="inline_content1" style='display:none'>
+			<div  style='padding:10px;'>
+					<div class="login_area" style="margin:0px;">
+				<h3><span>Free</span></h3><span style="color: #FFFFFF; position: absolute; right: 0; text-align: right; top: 0;"><a style="color:#fff; text-decoration:none;" href="javascript:void(0);" onclick="closwinmsg();">Close</a></span>			
+				<span >You can download it on eVendor app for Ipad or Android from there respective stores.</span>
+			</div>
+			</div>
+		</div>
+<script type="text/javascript">
+function getLogin()
+{
+	$("#err_msg").html("");
+	$("#err_user_name").html("");
+	$("#err_user_password").html("");
+	var user_name = document.getElementById("user_name").value;
+	var pass= document.getElementById("user_pass").value;	
+	if(user_name=='')
+	{
+		$("#err_user_name").html("<font color='red'>please enter user name.</font>");
+		return false;
+	}
+	if(pass=='')
+	{
+		$("#err_user_password").html("<font color='red'>please enter user name.</font>");
+		return false;
+	}
+	$.post("<?php echo $this->serverUrl().$this->baseUrl();?>/auth/loginajax/",{"user_name":user_name,"user_password":pass},function(data){
+		//alert(data);
+		if(data=='s')
+		{
+			id=document.getElementById("product_form_name").value;
+			document.getElementById("cartBeforLogin_"+id).submit();
+		}
+		else
+		{
+			$("#err_msg").html("<font color='red'>"+data+"</font>");
+		}
+	});
+	return false;
+}
+function getIdForm(val)
+{
+	$("#err_msg").html('');
+	$("#err_user_name").html('');
+	$("#err_user_password").html('');
+	document.getElementById("product_form_name").value=val;
+}
+/*function getMessageFreeBut(id)
+{
+	$("#free_but"+id).hide();
+	$("#msg_but"+id).show();
+	
+}*/
+function closwinmsg()
+{
+	
+	$("#msg_div_free").hide();
+	$("#err_msg").html('');
+	$("#err_user_name").html('');
+	$("#err_user_password").html('');
+}
+function getMessageFreeBut()
+{
+	$("#msg_div_free").removeClass("inline_content1");
+	$("#msg_div_free").addClass("inline_content11");	
+	$("#msg_div_free").show();
+	
+	
+}
+</script>
+

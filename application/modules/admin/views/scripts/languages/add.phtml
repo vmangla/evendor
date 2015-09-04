@@ -1,0 +1,72 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'languages','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'languages','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Languages</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<div class="action-header">
+				<span class="action-title">Add Language</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>" title="Back">Back</a></li>
+				</ul>
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			
+			<form id="form-add-language" method="post" onsubmit="return validate_add_language('form-add-language');">
+			
+				<table class="table-form" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="20%" class="tdrightBold">Language<span class="required">*</span> : </td>
+						<td>
+							<input type="text" name="language_name" id="language_name" value="<?php if(isset($formData['language_name'])){echo $formData['language_name'];}?>" class="req form-textfield"  message="Please enter language_name"  invalidmessage="Please enter valid language_name"/>
+							<?php if(array_key_exists('language_name',$formErrors)){echo '<div class="inline-error">'.$formErrors['language_name'].'</div>';}?>
+						</td>
+					</tr>
+					
+					<tr>
+						<td width="20%" class="tdrightBold">Status : </td>
+						<td>
+							<input type="radio" name="status" value="1" checked="checked">Active
+							&nbsp;&nbsp;
+							<input type="radio" name="status" value="0">Inactive
+						</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">&nbsp;</td>
+						<td>
+							<input type="submit" value="Add" class="button-Add" title="Add"/>
+							<input type="button" value="Cancel" name="btnCancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';" title="Cancel" />
+						</td>
+					</tr>
+				  
+				 </table>
+			</form>
+	</div>
+</div>
+<?php /************JAVASCRIPT CODE**************/?>
+
+<script type="text/javascript">
+function validate_add_language(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>

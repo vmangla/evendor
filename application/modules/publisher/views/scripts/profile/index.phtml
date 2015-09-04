@@ -1,0 +1,101 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'publisher','controller'=>'profile','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'publisher','controller'=>'','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+if(isset($formData['tab_ajax']) && $formData['tab_ajax']=='dashboard')
+{
+$return_function="getDashboard('hide-4');";
+}
+else
+{
+	$return_function="getSettingPanel();";
+}
+
+?>
+<div id="panel">
+	<div class="panel-header"><h3>My Profile</h3></div>
+	<div class="panel-content">
+		<div class="panel-sub-content">
+			
+			<div class="action-header">
+			<span class="action-title">&nbsp;</span>
+			<ul class="horizonal-menu">
+				<li class="back"><a href="<?php echo $backUrl;?>" title="Back" onclick="return <?php echo $return_function;?>">Back</a></li>
+			</ul>
+			</div>
+						
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		<br  clear="all"/>
+			
+			<table cellpadding="0" cellspacing="0">
+				<!--<tr>
+					<td width="30%" class="tdrightBold">User Type</td>
+					<td><?php echo $this->profileInfo['user_type'];?></td>
+				</tr>-->
+				
+				<tr>
+					<td width="30%" class="tdrightBold">First Name</td>
+					<td><?php echo $this->profileInfo['first_name'];?></td>
+				</tr>
+				<tr>
+					<td width="30%" class="tdrightBold">Last Name</td>
+					<td><?php echo $this->profileInfo['last_name'];?></td>
+				</tr>
+				<tr>
+					<td width="30%" class="tdrightBold">Username</td>
+					<td><?php echo $this->profileInfo['emailid'];?></td>
+				</tr>
+				<!--<tr>
+					<td width="30%" class="tdrightBold">Username</td>
+					<td><?php echo $this->profileInfo['username'];?></td>
+				</tr>-->
+				
+				<tr>
+					<td width="30%" class="tdrightBold">Publisher</td>
+					<td><?php echo $this->profileInfo['publisher'];?></td>
+				</tr>
+								
+				<!--<tr>
+					<td width="30%" class="tdrightBold">Location</td>
+					<td><?php echo $this->profileInfo['location'];?></td>
+				</tr>
+				<tr>
+					<td width="30%" class="tdrightBold">City</td>
+					<td><?php echo $this->profileInfo['city'];?></td>
+				</tr>-->
+				
+				<tr>
+					<td width="30%" class="tdrightBold">Country</td>
+					<td>
+					<?php
+					$modelPublisher = new Publisher_Model_DbTable_Publishers();
+					$countryInfo=$modelPublisher->getCountryInfo($this->profileInfo['country']);
+					?>
+					<?php echo $countryInfo['country'];?>
+					</td>
+				</tr>
+				
+				<!--<tr>
+					<td width="30%" class="tdrightBold">Pincode</td>
+					<td><?php echo $this->profileInfo['pincode'];?></td>
+				</tr>-->
+				
+				<tr>
+					<td width="30%" class="tdrightBold">Phone</td>
+					<td><?php echo $this->profileInfo['phone'];?></td>
+				</tr>
+				
+				<tr>
+					<td width="30%" class="tdrightBold">&nbsp;</td>
+					<td>
+					<a href="<?php echo $this->url(array('module'=>'publisher','controller'=>'profile','action'=>'updateprofile'),'',true);?>" title="Edit Profile" onclick="return goToPage(this.href,'tab4','dashboard');" ><input type="button" value="Edit Profile" name="btnEdit" class="button-Save" /></a>
+					<input type="button" value="Cancel" name="btnCancel" title="Cancel" class="button-cancel" onclick="return <?php echo $return_function;?>" /></td>
+				</tr>
+			</table>
+		</div>	
+	</div>
+</div>

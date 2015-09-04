@@ -1,0 +1,211 @@
+<?php 
+$cancelUrl=$this->url(array('module'=>'default','controller'=>'index','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+<div id="content">
+
+	<div class="div-register">
+		<form id="form-add-user" method="post" onsubmit="return validate_user('form-add-user');" enctype="multipart/form-data">
+			<table width="99%">
+				<tr>
+					<td width="30%" style="vertical-align:top;">
+					<h1>SignUp - Step-2</h1>
+					<div>
+						<span>Profile Picture</span>
+						<input type="file" name="profile_picture"/>
+					</div>
+					</td>
+					<td>
+						<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+						<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+						<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+						
+							<table>
+							
+								<tr>
+									<td class="tdleftBold">Location<span class="required">*</span> : </td>
+									<td colspan="3">
+										<input type="text" name="location" id="location" value="<?php if(isset($formData['location'])){echo $formData['location'];}?>"  class="req" style="width:100%;"  message="Please enter your location"/>
+										<?php if(array_key_exists('location',$formErrors)){echo '<div class="inline-error">'.$formErrors['location'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">Date of Birth<span class="required">&nbsp;</span> : </td>
+									<td colspan="3">
+										<select name="day" id="day" style="width:80px;">
+											<option value="">Day</option>
+											<?php
+											$dayList=CommonFunctions::getNumDaysList();
+											foreach($dayList as $key=>$val)
+											{
+											?>
+												<option value="<?php echo $key;?>"><?php echo $val;?></option>
+											<?php
+											}
+											?>
+										</select>
+										<select name="month" id="month" style="width:80px;">
+											<option value="">Month</option>
+											<?php
+											$monthList=CommonFunctions::getNumMonthList();
+											foreach($monthList as $key=>$val)
+											{
+											?>
+												<option value="<?php echo $key;?>"><?php echo $val;?></option>
+											<?php
+											}
+											?>
+										</select>
+										<select name="year" id="year" style="width:80px;">
+											<option value="">Year</option>
+											<?php
+											$yearList=CommonFunctions::getNumYearList();
+											foreach($yearList as $key=>$val)
+											{
+											?>
+												<option value="<?php echo $key;?>"><?php echo $val;?></option>
+											<?php
+											}
+											?>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td class="tdleftBold">About Me<span class="required">&nbsp;</span> : </td>
+									<td colspan="3">
+										<textarea name="about_me" id="about_us"style="width:100%;height:70px;"><?php if(isset($formData['about_me'])){echo $formData['about_me'];}?></textarea>
+										<?php if(array_key_exists('about_me',$formErrors)){echo '<div class="inline-error">'.$formErrors['about_me'].'</div>';}?>
+									</td>
+								</tr>
+								<!--
+								<tr>
+									<td class="tdleftBold">Gender<span class="required">&nbsp;</span> : </td>
+									<td>
+										<select name="gender" id="gender" style="width:100px;">
+											<option value="Male">Male</option>
+											<option value="Female">Female</option>
+										</select>
+									</td>
+								</tr>
+								-->
+								<tr>
+									<td colspan="4"><hr/></td>
+								</tr>
+								<tr>
+									<td colspan="4"><b>Job Preferences</b></td>
+								</tr>
+								<tr>
+									<td colspan="4">Where would you like to work? Within<span class="required">&nbsp;</span> : 
+										<select name="distance" id="distance" style="width:100px;">
+											<option value="2">2 KM</option>
+											<option value="5">5 Km</option>
+										</select>
+										<?php if(array_key_exists('distance',$formErrors)){echo '<div class="inline-error">'.$formErrors['distance'].'</div>';}?>
+									of Suburb/PostCode<span class="required">&nbsp;</span> :
+										<input type="text" name="post_code" id="post_code" value="<?php if(isset($formData['post_code'])){echo $formData['post_code'];}?>" style="width:150px;"/>
+										<?php if(array_key_exists('post_code',$formErrors)){echo '<div class="inline-error">'.$formErrors['post_code'].'</div>';}?>
+									</td>	
+								</tr>
+								<tr>
+									<td class="tdleftBold">Industry #1<span class="required">&nbsp;</span> : </td>
+									<td>
+										<SELECT name="industry_1" style="width:150px;">
+											<OPTION value="">---Select---</OPTION>
+											<?php
+											if(isset($this->industryList) && $this->industryList!=null && count($this->industryList)>0)
+											{
+												foreach($this->industryList as $inds)
+												{
+											?>
+													<OPTION value="<?php echo $inds->id;?>"><?php echo $inds->industry_name;?></OPTION>
+											<?php		
+												}
+											}
+											?>
+										</SELECT>
+										<?php if(array_key_exists('industry_1',$formErrors)){echo '<div class="inline-error">'.$formErrors['industry_1'].'</div>';}?>
+									</td>
+									<td class="tdleftBold">Industry #2<span class="required">&nbsp;</span> : </td>
+									<td>
+										<SELECT name="industry_2" style="width:150px;">
+											<OPTION value="">---Select---</OPTION>
+										</SELECT>
+										<?php if(array_key_exists('industry_2',$formErrors)){echo '<div class="inline-error">'.$formErrors['industry_2'].'</div>';}?>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="4">When are you available?<span class="required">&nbsp;</span> : 
+										<input type="radio" name="available_type" value="1"/>
+										&nbsp;Days
+										<input type="text" name="days" id="days" value="<?php if(isset($formData['days'])){echo $formData['days'];}?>" style="width:150px;"/>
+										<?php if(array_key_exists('days',$formErrors)){echo '<div class="inline-error">'.$formErrors['days'].'</div>';}?>
+										Hours<span class="required">&nbsp;</span> :
+										<input type="text" name="hours" id="hours" value="<?php if(isset($formData['hours'])){echo $formData['hours'];}?>" style="width:150px;"/>
+										<?php if(array_key_exists('hours',$formErrors)){echo '<div class="inline-error">'.$formErrors['hours'].'</div>';}?>
+									</td>	
+								</tr>
+								<tr>
+									<td>&nbsp;</td><td><b>OR</b></td><td>&nbsp;</td><td>&nbsp;</td>
+								</tr>
+								<tr>
+									<td valign="top" style="text-align:right;">
+										<input type="radio" name="available_type" value="2"/>
+									</td>
+									<td colspan="3">
+										<table border="1" width="100%">
+											<tr>
+												<th colspan="4" style="text-align:left;">Employees Availability</th><td colspan="2">Unavailable</td><td colspan="2">Available</td>
+											</tr>
+											<tr>
+												<th>Days</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+											</tr>
+											<tr>
+												<th style="text-align:left;">Morning</th><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+											</tr>
+											<tr>
+												<th style="text-align:left;">Afternoon</th><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+											</tr>
+											<tr>
+												<th style="text-align:left;">Evening</th><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+											</tr>
+											
+										</table>
+									</td>
+								</tr>
+							 </table>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div style="width:99%;border:1px solid #000000;text-align:right;">
+
+								<input type="submit" value="Next>>" class="button-save"/>
+						</div>
+						
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	
+ <?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+
+function validate_user(pFormId)
+{
+	/*
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}*/
+	
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>
+</div>
+

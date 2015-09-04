@@ -1,0 +1,221 @@
+<?php
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+
+?>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Report Management</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+
+			<br style="clear: both;"/>
+			<div class="action-header">
+				<span class="action-title">Revenue</span>
+				<!--<ul class="horizonal-menu">
+					<li class="add"><a href="<?php echo $this->url(array('module'=>'admin','controller'=>'publications','action'=>'add'),'',true);?>">Add Category</a></li>
+				</ul>-->
+			</div>
+			<br style="clear: both;"/>	
+			
+			<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">Totale Sales</th>
+				</tr>
+				<tr>
+					<td width="30%">Total Sales Amount</td><td><?php echo '$'.$this->totalSales;?></td>
+				</tr>
+				
+			</table>
+			
+			<br style="clear: both;"/>
+			
+			<form id="form-search" method="post" onsubmit="return validate_search('form-search');">
+				<table class="table-list" cellpadding="0" cellspacing="0">
+				<tr>
+					<th colspan="2">View Reports By Publisher</th>
+				</tr>
+				
+				<tr>
+				<td align="right" width="50%">
+				<div align="right">Publisher<span class="required">*</span> :  </div></td>
+				<td>
+				<?php
+				//$title_book_issue_url=$this->url(array('module'=>'admin','controller'=>'reports','action'=>'getpublisherbookissues'),'',true);
+				?>
+				<!--<select name="publisher_id" id="publisher_id" class="req"  message="Please select a publisher" onchange="return get_book_issues('<?php echo $title_book_issue_url;?>',this.value);">-->
+				
+				<select name="publisher_id" id="publisher_id" class="req"  message="Please select a publisher">
+				<option value="">Select Type</option>
+				<?php
+				for($ii=0;$ii<count($this->publisherList);$ii++)
+				{
+				?>
+				<option value="<?php echo $this->publisherList[$ii]['id']; ?>" <?php if(isset($formData["publisher_id"]) && $formData["publisher_id"]==$this->publisherList[$ii]["id"]){ ?> selected <?php } ?> ><?php echo $this->publisherList[$ii]['first_name'].'&nbsp;'.$this->publisherList[$ii]['last_name']; ?></option>
+				<?php
+				}
+				?>		   
+				</select>
+				<?php if(array_key_exists('publisher_id',$formErrors)){echo '<div class="inline-error">'.$formErrors['publisher_id'].'</div>';}?>
+				</td>
+				</tr>
+				
+				<!--<tr>
+					<td align="right" width="50%"><div align="right">E-Books/Issues<span class="required">*</span> : </div></td>
+					<td width="50%"><div id="product_list">
+					<select name="product_id" id="product_id" class="req"  message="Please select a product">
+					<option value="">Select Product</option>
+					</select>
+				
+					</div></td>
+				</tr>-->
+				
+				 
+				<tr>
+					<td align="center" colspan="2">
+					<div align="center"><input type="submit" name="searchresult" id="searchresult" value="Search"  class="button-Add">
+					<input type="button" name="showall" value="Show All" class="button-Add" onclick="javascript:document.location.href='<?php echo $this->url(array('module'=>'admin','controller'=>'reports','action'=>'revenue'),'',true);?>'" />
+			
+					</div>
+					</td>
+				</tr>
+				</table>
+			 </form>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			<br style="clear: both;"/>	
+			<table class="table-list" cellpadding="0" cellspacing="0">
+			   <tr>
+				   <th>SL.No</th>
+				   <th>Title / Brand</th>
+				   <th>Company / Individual</th>
+				   <th>Total Downloads</th>
+				   <th>First Download</th>
+				   <th>Last Download</th>
+				   <th>Sales Amount</th>
+			   </tr>
+			<?php 
+			  if(isset($this->prodList) && count($this->prodList)>0)
+			  {
+				$sNumber=1; $total_sales=0;
+				foreach($this->prodList as $row)
+				{
+			?>
+					<tr>
+					   <td><?php echo ($sNumber+($this->page-1)*$this->pageSize);?></td>
+					   <td>
+					   <?php
+					   $modelCategory = new Publisher_Model_DbTable_Books();
+					   $getProductInfo=$this->modelCompany->getProductInfo($row['product_id']);
+					   $getBrandInfo=$modelCategory->getBrandInfo($getProductInfo['title']);
+					   
+					   if(!empty($getBrandInfo))
+					   {
+							$titleBrand=$getBrandInfo['brand'];
+					   }else
+					   {
+							$titleBrand=$getProductInfo['title'];
+					   }
+						if(!empty($getProductInfo['parent_brand_id']))
+						{
+						$productInfo=$this->modelCompany->getProductInfo($getProductInfo['parent_brand_id']);
+						$getParentBrandInfo=$modelCategory->getBrandInfo($productInfo['title']);
+							if(!empty($getParentBrandInfo))
+							{
+								$titleBrand=$titleBrand.' ('.$getParentBrandInfo['brand'].')';
+							}
+						}
+						
+					   echo $titleBrand;
+						?></td>
+					   <td>
+					   <?php
+					   $modelCompanyInfo=new Company_Model_DbTable_Companies();
+					   $company_info_array = $modelCompanyInfo->getInfoByCompanyId($row['company_id']);
+					   echo $company_info_array['first_name']."&nbsp;".$company_info_array['last_name'];?></td>	   
+					   
+					   <td><?php echo $row['total_downloads']; ?></td>
+					   <td>
+						<?php 
+						echo $row['added_date'];
+						?>
+					  </td>
+					  <td>
+						<?php 
+						echo $row['updated_date'];
+						?>
+					  </td>
+					  <td>
+					  <?php $priceModel = new Publisher_Model_DbTable_BookPrices();
+					  $priceInfo = $priceModel->getPriceByStoreId($row['product_id'],$row['store_id']);
+					  echo '$'.$priceInfo['price'];
+					  $total_sales+=$priceInfo['price'];
+					  ?></td> 
+				   </tr>
+			<?php
+					$sNumber++;
+				}
+				?>
+				<tr>
+				<th colspan="6">Total Sales Amount:</th><th align="right"><?php echo '$'.$total_sales; ?></th>
+				</tr>
+				<?php
+					if($this->totalCount>$this->pageSize)
+					{
+						echo '<tr><td colspan="9">&nbsp;</td></tr>';
+						echo '<tr><td colspan="9"><div class="pagination">'.$this->paginationControl($this->prodList,'Sliding','pagination.phtml').'</div></td></tr>';
+					}
+			  }
+			  else
+			  {
+				echo '<tr><td colspan="9" class="list-not-found">Data Not Found</td></tr>';
+			  }
+			?> 
+			 </table>
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+function validate_search(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
+function get_book_issues(ajax_url,parent_publisher_id,product_id)
+{
+//alert(ajax_url+'=>'+parent_publisher_id+'=>'+product_id);
+	$.ajax({
+	    type: "POST",
+		url: ajax_url,
+		async: false,
+		data: "cat_id="+parent_publisher_id+"&product_id="+product_id,
+		success: function(result) {
+			//alert(result);
+			$('#product_list').html(result);
+		}
+	});
+	
+	return false;
+}
+
+<?php
+/*if(isset($formData["publisher_id"]) && !empty($formData["publisher_id"]))
+{
+?>
+get_book_issues('<?php echo $title_book_issue_url;?>','<?php echo $formData["publisher_id"];?>','<?php echo $formData["product_id"];?>');
+<?php
+}*/
+?>
+</script>

@@ -1,0 +1,86 @@
+<?php
+class Api_DownloadController extends Zend_Controller_Action
+{
+	var $modelApiKey=null;
+
+	public function init()
+    {
+	   $this->_helper->layout->disableLayout();       
+	   $this->_helper->viewRenderer->setNoRender(true);
+	}
+	  
+
+    public function indexAction()
+    {
+		$db = Zend_Registry::get('db');
+       
+		$parameters = $this->_request->getParams();
+		
+		$apicall = $this->_request->getParam("apicall");		
+		$bookid = $this->_request->getParam("bookid");
+		$apikey = $this->_request->getParam("apikey");
+		
+		$sql = 'SELECT * FROM pclive_apikeys where apikey="'.$apikey.'"';
+		$result = $db->query($sql);
+		$record1 = $result->FetchAll();
+ 
+		 
+		if($apicall=='')
+		{
+				echo"{'error':'Api method missing!'}";
+		}
+		
+		else if($bookid=='')
+		{
+			echo"{'error':'Book id missing!'}";
+		}
+		else if($apikey=='')
+		{
+			echo"{'error':'Api key missing!'}";
+		}
+		else if($apikey!=$record1[0]['apikey'])
+		{
+			echo"{'error':'Api key not correct!'}";
+		}
+		else
+		{
+			$this->_helper->layout()->disableLayout();
+			$this->_helper->viewRenderer->setNoRender();
+			
+		 
+						
+			$sql = "select * from pclive_products where id='$bookid'";
+			$result = $db->query($sql);
+			$records = $result->FetchAll();
+		 
+			$filename = $records[0]["file_name"];
+			
+			 
+			
+			$file = '/mnt/target02/343621/424985/www.miprojects.com/web/content/projects/evendor/public/uploads/epubfile/'.$filename;
+
+
+
+
+			if (file_exists($file)) {
+		 
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/pdf');
+			header('Content-Disposition: attachment; filename='.basename($file));
+			header('Content-Transfer-Encoding: binary');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($file));
+			ob_clean();
+			flush();
+			readfile($file);
+			exit;
+			}		
+		} 
+
+     }
+	
+}
+
+?>

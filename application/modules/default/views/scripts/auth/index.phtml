@@ -1,0 +1,47 @@
+<?php
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+<div id="login">
+	<div class="login-header">Login</div>
+	<div class="login-content">
+		<br clear="all"/>
+		<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+		<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+		<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+		<form name="form-login" id="form-login" action="" method="post" onsubmit="return validate_login('form-login');">
+			<table style="margin:20px auto;">
+				<tr>
+					<td>Username<span class="required">*</span>	:</td>
+					<td><input type="text" name="user_name" id="user_name" value="<?php if(isset($formData['user_name'])){echo $formData['user_name'];}?>" class="req" message="Please enter your username"/> </td>
+				</tr>
+				<tr>
+					<td>Password<span class="required">*</span>	:</td>
+					<td><input type="password" name="user_password" id="user_password" class="req" message="Please enter your password"/> </td>
+				</tr>
+				<tr>
+					<td colspan="2" style="text-align:right;">
+						<input type="submit" value="Login" name="btnLogin" class="btnLogin"/>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+	
+<?php /************JAVASCRIPT CODE**************/?>
+<script type="text/javascript">
+function validate_login(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>	

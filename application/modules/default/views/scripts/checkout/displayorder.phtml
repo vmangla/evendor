@@ -1,0 +1,51 @@
+<?php
+$productHistory = $this->tempOrderData;
+?>
+<style>
+#shipping_record
+	{
+    display: none;
+    height: auto;
+    left: 50%;
+    margin-left: -50px;
+    margin-top: -90px;
+    min-height: 50px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 10px;
+    position: fixed;
+    top: 50%;
+    width: 50px;
+    z-index: 1000;
+}
+.overdelay {
+    background: none repeat scroll 0 0 #000000;
+    height: 100%;
+    left: 0;
+    opacity: 0.8;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+}
+</style>
+<section id="middle">
+<div id="overdelay" class="overdelay" style="display:none;"></div>
+<!--cart section start -->
+<div><a href="javascript:void(0);" onclick="window.print();"  style="float:right;color:#fff;text-decoration:none;">Print</a></div>
+<div class="cart" id="cardId">
+	<div style="text-align:center">Thank You. Your order has been <?php echo $this->orderStatus; if(strtolower($this->orderStatus)=='declined'){ echo " due to ".$this->responseDescription; } ?> </div>
+	<div style="text-align:center">Your Reference Number</div>
+	<div style="text-align:center">Order ID: <?php echo $this->orderId;?> </div>
+	<div style="text-align:center">Transaction ID:<?php echo $this->transactionId;?></div>
+<?php
+echo $this->datahistory;
+?>
+<div class="countinue_bt"><a href="<?php echo $this->serverUrl().$this->baseUrl().'/catalogue/';?>"><img src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/css/default/images/countinue_shopping_bt.png" width="274" height="49" alt=""></a></div>	
+</div>
+
+
+<!--cart section start end -->
+</section>
+
+ 

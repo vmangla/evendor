@@ -1,0 +1,85 @@
+<?php
+$cancelUrl=$this->url(array('module'=>'admin','controller'=>'faqs','action'=>'index'),'',true);
+$backUrl=$this->url(array('module'=>'admin','controller'=>'faqs','action'=>'index'),'',true);
+$formData=(isset($this->formData))?$this->formData:array();
+$formErrors=(isset($this->formErrors))?$this->formErrors:array();
+?>
+<div class="content-box">
+	<div class="content-box-header"><h3 style="cursor: s-resize;">Faqs</h3></div>
+	<div class="content-box-content">
+	
+		<div>
+			<div class="action-header">
+				<span class="action-title">Edit Faq</span>
+				<ul class="horizonal-menu">
+					<li class="back"><a href="<?php echo $backUrl;?>" title="Back">Back</a></li>
+				</ul>
+			</div>
+			
+			<?php if(isset($this->messages)){for($i=0;$i<count($this->messages);$i++){echo $this->messages[$i];}}?>
+			<?php if(isset($this->successMessage)){echo $this->successMessage;}?>
+			<?php if(isset($this->errorMessage)){echo $this->errorMessage;}?>
+			
+			<br  clear="all"/>
+			
+			<form id="form-edit-faq" method="post" onsubmit="return validate_edit_faq('form-edit-faq');">
+				
+				<table class="table-form" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="20%" class="tdrightBold">Question<span class="required">*</span> : </td>
+						<td>
+							<input type="text" name="question" id="question" value="<?php if(isset($formData['question'])){echo $formData['question'];}?>" class="req form-textfield"  message="Please enter question"  invalidmessage="Please enter valid question"/>
+							<?php if(array_key_exists('question',$formErrors)){echo '<div class="inline-error">'.$formErrors['question'].'</div>';}?>
+						</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">Answer : </td>
+						<td><textarea name="answer" id="answer" class="form-textarea"><?php if(isset($formData['answer'])){echo $formData['answer'];}?></textarea></td>
+					</tr>
+					
+					<tr>
+						<td width="20%" class="tdrightBold">Status : </td>
+						<td>
+							<input type="radio" name="status" value="1" checked="checked">Publish
+							&nbsp;&nbsp;
+							<input type="radio" name="status" value="0" <?php if(isset($formData['status']) && $formData['status']==0){echo 'checked="checked"';}?>>Unpublish
+						</td>
+					</tr>
+					<tr>
+						<td width="20%" class="tdrightBold">&nbsp;</td>
+						<td>
+							<input type="submit" value="Save" class="button-Save" title="Save" />
+							<input type="button" value="Cancel" name="btnCancel" class="button-cancel" onclick="window.location.href='<?php echo $cancelUrl;?>';" title="Cancel" />
+						</td>
+					</tr>
+				  
+				 </table>
+			</form>
+	</div>
+</div>
+
+<?php /************JAVASCRIPT CODE**************/?>
+<script language="javascript" src="<?php echo $this->serverUrl().$this->baseUrl();?>/public/fckeditor/fckeditor.js"></script>
+<script type="text/javascript">
+$(function()
+{
+var oFCKeditor = new FCKeditor('answer') ;
+oFCKeditor.BasePath="<?php echo $this->serverUrl().$this->baseUrl();?>/public/fckeditor/";
+oFCKeditor.Height =400;
+oFCKeditor.Width = 600;
+//oFCKeditor.ToolbarSet = 'Basic';
+oFCKeditor.ReplaceTextarea() ;
+});
+function validate_edit_faq(pFormId)
+{
+	if(pFormId)
+	{
+		if(!common_validation(pFormId))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+</script>
+<?php /************END JAVASCRIPT CODE**************/?>
