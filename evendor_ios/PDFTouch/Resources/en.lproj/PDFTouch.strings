@@ -1,0 +1,31 @@
+/* 
+  PDFTouch.strings
+
+  Created by Kemal Taskin on 10/22/13.
+  Copyright (c) 2013 Yakamoz Labs. All rights reserved.
+*/
+
+
+// General
+"Cancel" = "Cancel";
+"Done" = "Done";
+"Error" = "Error";
+"OK" = "OK";
+"Open" = "Open";
+
+
+// Page Toolbar
+"%d of %d" = "%1$d of %2$d";
+"Page %d" = "Page %d";
+
+
+// PDF Viewer
+"Document is not a valid PDF file!" = "Document is not a valid PDF file!";
+"Document is password protected!" = "Document is password protected!";
+
+
+// Search
+"Search Document" = "Search Document";
+"Searching" = "Searching";
+"Search Completed" = "Search Completed";
+"%d results found" = "%d results found";
