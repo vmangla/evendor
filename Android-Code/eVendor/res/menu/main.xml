@@ -1,0 +1,51 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+   
+     <item
+        android:id="@+id/libraryMenuButton"
+        android:icon="@drawable/disable_library"
+        android:showAsAction="always"
+        
+        android:orderInCategory="1"
+        android:title=""/>
+    <item
+        android:id="@+id/bookshelveMenuButton"
+        android:icon="@drawable/disable_bookshelve"
+        android:showAsAction="always"
+        android:orderInCategory="2"
+        android:title=""/>
+   
+    
+    <item android:id="@+id/downloadMenuButton" 
+        android:icon="@drawable/disable_download" 
+        android:orderInCategory="3"
+        android:showAsAction="always" android:title="" />
+    
+    
+    
+    <item
+        android:id="@+id/downloadedMenuButton"
+        android:icon="@drawable/downloaded_books"
+        android:showAsAction="always"
+        android:orderInCategory="4"
+        android:title=""/>
+    
+    <item android:id="@+id/purchaseMenuButton" 
+        android:icon="@drawable/disable_purchase" 
+        android:showAsAction="always" 
+        android:orderInCategory="59"
+        android:title="" />
+    
+    <item android:id="@+id/accountMenuButton" 
+        
+        android:icon="@drawable/disable_account" 
+        android:showAsAction="always" 
+        android:orderInCategory="69999"
+        android:title="" />
+    <item
+        android:id="@+id/additem"
+       
+        android:showAsAction="always"
+        android:title="Add Self"/>
+
+</menu>

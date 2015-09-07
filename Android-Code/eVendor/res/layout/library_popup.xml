@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/sub_menu_bg"
+    android:orientation="vertical"
+    android:weightSum="8.0" >
+
+    <TextView
+        android:id="@+id/filter_one"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:text="Title (A-Z)"
+        android:textColor="#00f5ff"
+        android:textSize="13dp" />
+
+    <View 
+	    android:id="@+id/v_sep"
+	    android:layout_below="@id/tv_dialog_title"
+	    android:layout_width="fill_parent"
+	    android:layout_marginTop="6dp"
+	    android:layout_height="1dp"
+	    android:background="#1A1817"/>
+    
+    <TextView
+        android:id="@+id/filter_two"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:text="Title (Z-A)"
+        android:textColor="#00f5ff"
+        android:textSize="13dp" />
+
+    <View 
+	    android:id="@+id/v_sep1"
+	    android:layout_below="@id/tv_dialog_title"
+	    android:layout_width="fill_parent"
+	    android:layout_marginTop="6dp"
+	    android:layout_height="1dp"
+	    android:background="#1A1817"/>
+<TextView
+        android:id="@+id/filter_four"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:text="Price (Highest)"
+        android:textColor="#00f5ff"
+        android:textSize="13dp" />
+ 
+
+    <View 
+	    android:id="@+id/v_sep2"
+	    android:layout_below="@id/tv_dialog_title"
+	    android:layout_width="fill_parent"
+	    android:layout_marginTop="6dp"
+	    android:layout_height="1dp"
+	    android:background="#1A1817"/>
+
+       <TextView
+        android:id="@+id/filter_three"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:text="Price (Lowest)"
+        android:textColor="#00f5ff"
+        android:textSize="13dp" />
+
+</LinearLayout>

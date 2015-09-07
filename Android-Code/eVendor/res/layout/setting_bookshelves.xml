@@ -1,0 +1,86 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/center_gray_bg"
+    android:focusableInTouchMode="true"
+     >
+
+   <TextView 
+        android:id="@+id/shelve_name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginLeft="30dip"
+        android:layout_marginTop="30dip"
+        android:textSize="15sp"
+        android:text="Bookshelf Name"
+        android:textColor="@android:color/white"
+       
+        />
+    
+    <EditText
+		    android:id="@+id/shelve_name"
+		    android:layout_width="220dip"
+		    android:layout_height="35dip"
+		    android:layout_below="@id/shelve_name_text"
+            android:layout_marginLeft="30dip"
+		    android:hint="Bookshelf Name"
+		    android:paddingLeft="10dip"
+		    android:background="@drawable/login_text_area1"
+		    android:singleLine="true"
+		    android:textSize="15sp"
+		    android:textColor="@android:color/black"
+		    android:layout_marginTop="10dip"
+		    android:imeOptions="actionNext"
+            android:nextFocusDown="@+id/password"
+            android:maxLength="16"
+            />
+    
+    <TextView 
+        android:id="@+id/sheve_color_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:layout_below="@id/shelve_name"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:layout_marginTop="30dip"
+        android:layout_marginLeft="30dip"
+        android:text="Bookshelf Color"
+       
+        />
+    
+    <EditText
+		    android:id="@+id/shelve_color"
+		    android:layout_width="220dip"
+		    android:layout_height="35dip"
+		    android:layout_below="@id/sheve_color_text"
+          
+		    android:hint="Bookshelf Color"
+		    android:paddingLeft="10dip"
+		    android:background="@drawable/login_text_area1"
+		    android:textColor="@android:color/black"
+		    android:singleLine="true"
+		    android:textSize="15sp"
+		    android:layout_marginTop="10dip"
+		    android:layout_marginLeft="30dip"
+		    android:imeOptions="actionNext"
+            android:nextFocusDown="@+id/password"
+            android:focusable="false"
+            />
+    
+    <Button 
+        android:id="@+id/create"
+        android:layout_width="120dip"
+        android:layout_height="40dip"
+        android:textStyle="bold"
+        android:layout_marginBottom="30dip"
+        android:layout_alignParentBottom="true"
+        android:text="Create"
+        android:textColor="@android:color/black"
+        android:background="@drawable/blue_btn"
+        android:layout_centerHorizontal="true"
+        />
+   
+
+</RelativeLayout>

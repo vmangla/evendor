@@ -1,0 +1,82 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/download_bg1"
+     >
+    <RelativeLayout 
+        android:id="@+id/image_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        >
+        
+        
+    <TextView
+        android:id="@+id/category"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginBottom="10dip"
+        android:textColor="@android:color/white"
+        android:text="Simple"
+        android:textSize="15px"
+       
+        />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/category"
+        android:layout_marginLeft="10dip"
+        android:textColor="@android:color/white"
+        android:text="Great"
+        android:textSize="15px"
+      
+        android:ellipsize="marquee"
+        />
+        
+        </RelativeLayout>
+        
+   
+        
+     <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dip"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dip"
+       
+        >
+    
+    
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dip"
+        android:layout_toRightOf="@id/society"
+        android:textColor="@android:color/white"
+        android:text="14/12/2013"
+        android:textSize="15px"
+        android:singleLine="true"
+        />
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/date"
+        android:textColor="@android:color/white"
+        android:text="$ 10.00"
+        android:textSize="15px"
+        android:singleLine="true"
+        />
+    
+    
+       </RelativeLayout>   
+
+</RelativeLayout>

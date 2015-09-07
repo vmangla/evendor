@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#000000"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible" >
+
+        <RelativeLayout
+            android:id="@+id/RelativeLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:layout_marginTop="5dp"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp" >
+
+            <EditText
+                android:id="@+id/downloadedsearch"
+                android:layout_width="fill_parent"
+                android:layout_height="35dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/text1"
+                android:ems="10"
+                android:hint="Search"
+                android:paddingLeft="30dp"
+                android:textColor="#000000" />
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="14dp"
+                android:background="@drawable/searchicon" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/cetagry"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="3dp"
+            android:layout_marginTop="1dp"
+            android:background="#000000"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp" >
+
+            <TableRow
+                android:id="@+id/tableRow1"
+                android:layout_width="fill_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/round_corner"
+                android:measureWithLargestChild="true" >
+
+                <TextView
+                    android:id="@+id/newspaper"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundleft"
+                    android:gravity="center"
+                    android:text="Newspapers"
+                    android:textColor="#00f5ff"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/magazine"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/cell_shape"
+                    android:gravity="center"
+                    android:text="Magazines"
+                    android:textColor="#00f5ff"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/book"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:background="@drawable/cell_shape"
+                    android:gravity="center"
+                    android:text="Books"
+                    android:textColor="#00f5ff"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/flyer"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:background="@drawable/cell_shape"
+                    android:gravity="center"
+                    android:text="@string/brochure"
+                    android:textColor="#00f5ff"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/all"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundright"
+                    android:gravity="center"
+                    android:text="All"
+                    android:textColor="#00f5ff"
+                    android:textSize="12dp" />
+            </TableRow>
+        </LinearLayout>
+    </LinearLayout>
+
+    <GridView
+        android:id="@+id/grid_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_margin="10dp"
+        android:background="@drawable/center_gray_bg"
+        android:columnWidth="90dp"
+        android:gravity="center"
+        android:horizontalSpacing="10dp"
+        android:numColumns="auto_fit"
+        android:padding="10dp"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="10dp" />
+
+</LinearLayout>

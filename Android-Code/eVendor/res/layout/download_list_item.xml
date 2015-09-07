@@ -1,0 +1,203 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/download_bg1"
+    android:gravity="center" >
+   
+   <!--  <LinearLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+     
+        > -->
+
+    <ImageView
+        android:id="@+id/book_icon"
+        android:layout_width="70dip"
+        android:layout_height="80dip"
+        android:layout_margin="10dip"
+        android:paddingLeft="10dip"
+        android:layout_marginLeft="10dip"
+        android:src="@drawable/book" />
+    
+   
+    <LinearLayout
+        android:id="@+id/title_rl"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:orientation="horizontal"
+        android:weightSum="3.0"
+        android:layout_toRightOf="@id/book_icon" 
+        android:layout_centerVertical="true"
+       
+        >
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/icon"
+        android:layout_marginLeft="10dip"
+        android:textColor="@android:color/white"
+        android:text="title"
+        android:layout_weight="1.0"
+        android:textSize="15px"
+        
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:layout_gravity="center"
+        android:gravity="center|left"
+        android:layout_marginLeft="10dip"
+        android:layout_toRightOf="@id/title"
+             android:layout_weight="1.0"
+        android:ellipsize="marquee"
+        android:lines="3"
+        android:maxLines="1"
+        android:text="author"
+        android:textColor="@android:color/white"
+        android:textSize="15px" />
+    
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="15dip"
+        android:layout_toRightOf="@id/author"
+        android:layout_weight="1.0"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textSize="15px" />
+        
+        </LinearLayout>
+        
+   <!--  </LinearLayout> -->
+    
+   <!--  <TextView
+        android:id="@+id/society"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:textColor="@android:color/white"
+        android:text="Central hughes Society"
+        android:textSize="15px" 
+        android:layout_weight="1.0"
+        android:visibility="gone"
+        />
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_below="@id/title"
+        android:textColor="@android:color/white"
+        android:text="14/12/2013"
+        android:textSize="15px" 
+        android:layout_weight="1.0"
+        android:visibility="gone"
+        />
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_below="@id/title"
+        android:textColor="@android:color/white"
+        android:text="$ 10.00"
+        android:textSize="15px" 
+        android:layout_weight="1.0"
+        /> -->
+   <!--  
+    <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="50dip"
+            android:layout_height="wrap_content"
+            android:max="100" 
+            android:layout_gravity="center_vertical"
+            
+            /> -->
+    
+    <LinearLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="5dip"
+        android:layout_alignParentRight="true"
+       
+        android:weightSum="5.0"
+        android:layout_centerVertical="true"
+        >
+   <!-- <ProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="20dip"
+            android:layout_height="20dip"
+            android:max="100" /> -->
+            
+            
+            <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="80dip"
+            android:layout_height="wrap_content"
+            android:max="100" 
+            android:layout_weight="1.0"
+            android:layout_gravity="center_vertical"
+            
+            />
+    
+    <ImageView
+        android:id="@+id/btn_pause"
+        android:layout_width="15dip"
+        android:layout_height="15dip"
+        android:layout_marginLeft="10dip"
+        android:layout_weight="1.0"
+         android:visibility="gone" />
+       <!--  android:src="@drawable/icon_pause" -->
+       
+    
+    <ImageView
+        android:id="@+id/btn_continue"
+        android:layout_width="15dip"
+        android:layout_height="15dip"
+        android:layout_marginLeft="10dip"
+          android:layout_weight="1.0"
+        android:visibility="gone"
+         />
+      <!--   android:src="@drawable/icon_play" -->
+      
+    
+    <ImageView
+        android:id="@+id/btn_delete"
+        android:layout_width="15dip"
+        android:layout_height="15dip"
+        android:layout_marginLeft="10dip"
+        android:src="@drawable/icon_delete"
+        android:layout_weight="1.0"
+        android:visibility="visible"
+         />
+    
+    <TextView
+        android:id="@+id/speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:textColor="@android:color/white"
+        android:textSize="15px" 
+        android:text="0%"
+        android:layout_weight="1.0"
+        />
+    
+         </LinearLayout>
+         
+
+</RelativeLayout>

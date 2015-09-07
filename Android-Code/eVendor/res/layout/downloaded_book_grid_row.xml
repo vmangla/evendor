@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_margin="5dip"
+    android:gravity="start" >
+    <!--  android:gravity="start" cimment by arvind -->
+
+    <RelativeLayout
+        android:id="@+id/rlgrid_image"
+        android:layout_width="82dip"
+        android:layout_height="100dip"
+        android:layout_centerHorizontal="true"
+        android:background="#00f5ff"
+        android:padding="3dp" >
+
+          <ImageView
+        android:id="@+id/grid_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/book"
+        android:scaleType="fitXY" />
+    </RelativeLayout>
+    
+    <ImageView
+        android:id="@+id/added_button"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_alignBottom="@id/rlgrid_image"
+        android:layout_marginBottom="10dip"
+        android:layout_marginLeft="-40dp"
+        android:layout_toRightOf="@+id/rlgrid_image"
+        android:background="@drawable/added"
+        android:visibility="visible" />
+    
+   <!--  <RatingBar 
+	   android:id="@+id/ratingbar_default"
+	   android:layout_width="wrap_content"
+	   android:layout_height="wrap_content" 
+	   android:gravity="center"
+	   android:layout_centerHorizontal="true"
+	   android:layout_marginTop="5dip"
+	   style="@style/foodRatingBarSmall"
+	   android:layout_below="@id/grid_image"
+	   android:numStars="5"
+	   android:focusable="false"
+       android:focusableInTouchMode="false"
+	   />   -->
+
+    <TextView
+        android:id="@+id/grid_label"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlgrid_image"
+        android:layout_centerHorizontal="true"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:paddingTop="5dp"
+        android:singleLine="true"
+        android:text="Book Title"
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
+
+</RelativeLayout>
